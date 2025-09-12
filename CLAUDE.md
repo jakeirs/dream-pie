@@ -1,34 +1,371 @@
 # My Expo App - CLAUDE.md
 
 ## Project Overview
-React Native Expo app demonstrating **React Native Reanimated 4.1.0** and **@gorhom/bottom-sheet** integration with NativeWind styling.
+React Native Expo app demonstrating **React Native Reanimated 4.1.0** and **@gorhom/bottom-sheet** integration with **Expo Router** navigation and **NativeWind** styling. Features a professional component architecture with organized folder structure.
 
 ## Current Architecture
 
 ### Dependencies
 - **Expo SDK**: 54.0.2
 - **React Native**: 0.81.4
+- **Expo Router**: File-based routing system
 - **React Native Reanimated**: 4.1.0
 - **@gorhom/bottom-sheet**: 5.2.6
 - **NativeWind**: Latest (Tailwind CSS for React Native)
 - **React Native Gesture Handler**: 2.28.0
 - **React Native Safe Area Context**: 5.6.0
 
-### Current App Structure
-```
-my-expo-app/
-├── App.tsx                 # Main app component with animations & bottom sheet demo
-├── components/             # React components
-├── assets/                 # Static assets
-├── global.css             # Global styles
-└── package.json           # Dependencies
+### 🚀 **React Native Reanimated 4.x Gesture API**
+
+**IMPORTANT**: This project uses **Reanimated 4.1.0** which requires the **new Gesture API**. The old `useAnimatedGestureHandler` API has been **removed** and will cause crashes.
+
+#### **✅ Correct Gesture Implementation (Reanimated 4.x)**
+```typescript
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import Animated, { 
+  useSharedValue, 
+  useAnimatedStyle, 
+  withSpring,
+  runOnJS 
+} from 'react-native-reanimated';
+
+const gesture = Gesture.Pan()
+  .onStart(() => {
+    scale.value = withSpring(1.05);
+  })
+  .onUpdate((event) => {
+    translateX.value = event.translationX;
+  })
+  .onEnd(() => {
+    scale.value = withSpring(1);
+    translateX.value = withSpring(0);
+    if (onPress) {
+      runOnJS(onPress)();
+    }
+  });
+
+return <GestureDetector gesture={gesture}>{content}</GestureDetector>;
 ```
 
-### Current Features (App.tsx)
-- **Reanimated Animations**: Scale, rotation, bounce, shake, fade, color interpolation, continuous rotation
-- **Bottom Sheet**: Multi-snap point modal with gesture handling (25%, 50%, 90%)
-- **NativeWind Styling**: Tailwind CSS classes for styling
-- **Gesture Handling**: Full gesture support for interactions
+#### **🎯 Gesture Types and Methods**
+```typescript
+// Pan Gesture - Touch and drag interactions
+const panGesture = Gesture.Pan()
+  .onStart(() => {})      // Gesture begins
+  .onUpdate((event) => {}) // Active dragging (replaces onActive)
+  .onEnd(() => {});       // Gesture ends
+
+// Tap Gesture - Single touch interactions  
+const tapGesture = Gesture.Tap()
+  .onStart(() => {})
+  .onEnd(() => {});
+
+// Long Press Gesture - Extended touch
+const longPressGesture = Gesture.LongPress()
+  .minDuration(500)
+  .onStart(() => {})
+  .onEnd(() => {});
+
+// Combined Gestures
+const combinedGesture = Gesture.Race(panGesture, tapGesture);
+```
+
+#### **🔧 Migration Guide: Old API → New API**
+```typescript
+// OLD (Reanimated 2.x/3.x) ❌
+useAnimatedGestureHandler({
+  onStart: () => {},
+  onActive: (event) => {},  // ❌ onActive removed
+  onEnd: () => {}
+});
+
+// NEW (Reanimated 4.x) ✅
+Gesture.Pan()
+  .onStart(() => {})
+  .onUpdate((event) => {})  // ✅ onUpdate replaces onActive
+  .onEnd(() => {});
+```
+
+#### **❌ Deprecated Implementation (Will Crash)**
+```typescript
+// DON'T USE - This will cause TypeError in Reanimated 4.x
+import { useAnimatedGestureHandler } from 'react-native-reanimated';
+import { PanGestureHandler } from 'react-native-gesture-handler';
+
+const gestureHandler = useAnimatedGestureHandler({
+  onStart: () => { /* ... */ },
+  onActive: (event) => { /* ... */ },
+  onEnd: () => { /* ... */ },
+});
+
+return <PanGestureHandler onGestureEvent={gestureHandler}>{content}</PanGestureHandler>;
+```
+
+#### **📝 Real Implementation Example: Interactive Card**
+```typescript
+// components/ui/Card/Card.tsx - Production Implementation
+import React from 'react';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withSpring,
+  interpolate,
+  runOnJS,
+} from 'react-native-reanimated';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+
+export const Card = ({ interactive = false, onPress, children }) => {
+  const scale = useSharedValue(1);
+  const rotateY = useSharedValue(0);
+  const translateX = useSharedValue(0);
+
+  // ✅ New Gesture API Implementation
+  const gesture = Gesture.Pan()
+    .onStart(() => {
+      if (interactive) {
+        scale.value = withSpring(1.05);
+      }
+    })
+    .onUpdate((event) => {
+      if (interactive) {
+        translateX.value = event.translationX * 0.1;
+        rotateY.value = interpolate(event.translationX, [-100, 100], [-5, 5]);
+      }
+    })
+    .onEnd(() => {
+      if (interactive) {
+        scale.value = withSpring(1);
+        translateX.value = withSpring(0);
+        rotateY.value = withSpring(0);
+        if (onPress) {
+          runOnJS(onPress)();
+        }
+      }
+    });
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [
+      { scale: scale.value },
+      { translateX: translateX.value },
+      { rotateY: `${rotateY.value}deg` },
+    ],
+  }));
+
+  const content = (
+    <Animated.View style={interactive ? animatedStyle : undefined}>
+      {children}
+    </Animated.View>
+  );
+
+  return interactive ? (
+    <GestureDetector gesture={gesture}>{content}</GestureDetector>
+  ) : (
+    content
+  );
+};
+```
+
+## 🗂️ **Professional Folder Structure**
+
+### **Complete App Structure**
+```
+my-expo-app/
+├── app/                           # 📱 Expo Router - App Directory
+│   ├── _layout.tsx                # Root layout with providers
+│   ├── (tabs)/                    # Tab group routing
+│   │   ├── _layout.tsx            # Tab navigation layout
+│   │   ├── index.tsx              # 🔄 Imports from components/PAGE/index
+│   │   └── explore.tsx            # 🔄 Imports from components/PAGE/explore
+│   └── modal.tsx                  # Modal screen
+│
+├── components/                    # 🏗️ Component Architecture
+│   ├── ui/                        # 🎨 Reusable UI Components
+│   │   ├── Button/
+│   │   │   ├── Button.tsx         # Animated button with variants
+│   │   │   └── index.tsx          # Export file
+│   │   ├── Card/
+│   │   │   ├── Card.tsx           # Interactive card component
+│   │   │   └── index.tsx          # Export file
+│   │   ├── AnimatedBox/
+│   │   │   ├── AnimatedBox.tsx    # Reusable animated container
+│   │   │   └── index.tsx          # Export file
+│   │   └── index.tsx              # Main UI component exports
+│   │
+│   └── PAGE/                      # 🎯 Page Components (Mirror Routing Structure)
+│       ├── index/                 # Corresponds to app/(tabs)/index.tsx
+│       │   ├── index.tsx          # Main page component
+│       │   ├── components/        # Page-specific sub-components
+│       │   │   └── index.tsx      # AnimationControls, FeatureList
+│       │   ├── hooks.ts           # Page-specific custom hooks
+│       │   └── types.ts           # Page-specific TypeScript interfaces
+│       │
+│       └── explore/               # Corresponds to app/(tabs)/explore.tsx
+│           ├── index.tsx          # Main page component
+│           ├── components/        # Page-specific sub-components
+│           │   └── index.tsx      # InteractiveStar, FeatureShowcase
+│           ├── hooks.ts           # Page-specific custom hooks
+│           └── types.ts           # Page-specific TypeScript interfaces
+│
+├── shared/                        # 🔧 Shared utilities
+│   └── constants/                 # App constants
+├── hooks/                         # 🪝 Global custom hooks
+├── assets/                        # 🖼️ Static assets
+├── global.css                     # 🎨 Global styles
+└── package.json                   # 📦 Dependencies
+```
+
+## 📋 **Developer Guidelines**
+
+### **🔑 Core Architecture Principles**
+
+#### **1. Single Responsibility Pattern**
+- **Rule**: Each `app/` route file should contain **ONLY ONE COMPONENT IMPORT**
+- **Pattern**: `app/(tabs)/[route].tsx` → `import PageComponent from '../../components/PAGE/[route]'`
+
+**✅ Correct Example:**
+```typescript
+// app/(tabs)/index.tsx
+import IndexPage from '../../components/PAGE/index';
+
+export default function IndexScreen() {
+  return <IndexPage />;
+}
+```
+
+**❌ Incorrect Example:**
+```typescript
+// app/(tabs)/index.tsx - DON'T DO THIS
+import React from 'react';
+import { View, Text } from 'react-native';
+// ... lots of component logic here
+```
+
+#### **2. Mirror Routing Structure in components/PAGE/**
+- **Rule**: `components/PAGE/` folder structure must **exactly mirror** the `app/` routing structure
+- **Purpose**: Makes navigation and component organization predictable
+
+**Routing Structure Mapping:**
+```
+app/(tabs)/index.tsx        →  components/PAGE/index/
+app/(tabs)/explore.tsx      →  components/PAGE/explore/
+app/(tabs)/profile.tsx      →  components/PAGE/profile/
+app/modal.tsx              →  components/PAGE/modal/
+app/[id].tsx               →  components/PAGE/[id]/
+```
+
+#### **3. Page Component Structure**
+Each page directory in `components/PAGE/` follows this **mandatory structure**:
+
+```
+components/PAGE/[pageName]/
+├── index.tsx              # ✅ Main page component (default export)
+├── components/            # ✅ Page-specific sub-components
+│   └── index.tsx          # ✅ Export sub-components  
+├── hooks.ts              # ✅ Page-specific custom hooks
+└── types.ts              # ✅ Page-specific TypeScript types
+```
+
+**Example Implementation:**
+```typescript
+// components/PAGE/index/index.tsx
+import React from 'react';
+import { useAnimationControls } from './hooks';
+import { AnimationControls } from './components';
+import { IndexPageProps } from './types';
+
+export default function IndexPage({ className = '' }: IndexPageProps) {
+  const animations = useAnimationControls();
+  
+  return (
+    <View className={`flex-1 ${className}`}>
+      <AnimationControls animations={animations} />
+    </View>
+  );
+}
+```
+
+#### **4. UI Component Organization**
+- **Location**: `components/ui/`
+- **Structure**: Each component in its own folder with TypeScript file and index export
+- **Purpose**: Reusable components shared across multiple pages
+
+```
+components/ui/
+├── Button/
+│   ├── Button.tsx         # Component implementation
+│   └── index.tsx          # Export: export { Button } from './Button';
+├── Card/
+│   ├── Card.tsx
+│   └── index.tsx
+└── index.tsx             # Main exports: export * from './Button';
+```
+
+### **🚀 Expo Router Best Practices**
+
+#### **File-Based Routing Rules**
+1. **Route Files**: Place in `app/` directory
+2. **Layouts**: Use `_layout.tsx` for nested layouts
+3. **Route Groups**: Use `(groupName)/` for organization without affecting URL
+4. **Dynamic Routes**: Use `[param].tsx` for dynamic segments
+5. **Import Pattern**: Always import from corresponding `components/PAGE/` directory
+
+#### **Navigation Flow**
+```
+User Request → app/[route].tsx → components/PAGE/[route]/index.tsx → Render UI
+```
+
+#### **Example Route Structure**
+```typescript
+// app/(tabs)/_layout.tsx - Tab Layout
+export default function TabLayout() {
+  return (
+    <Tabs>
+      <Tabs.Screen name="index" options={{ title: 'Home' }} />
+      <Tabs.Screen name="explore" options={{ title: 'Explore' }} />
+    </Tabs>
+  );
+}
+
+// app/(tabs)/index.tsx - Home Route
+import IndexPage from '../../components/PAGE/index';
+export default function IndexScreen() {
+  return <IndexPage />;
+}
+```
+
+### **📚 Component Development Workflow**
+
+#### **Creating New Pages**
+1. **Create Route**: Add file in `app/` directory
+2. **Create Page Structure**: Create matching directory in `components/PAGE/`
+3. **Implement Component**: Build page in `components/PAGE/[name]/index.tsx`
+4. **Add Supporting Files**: Create `hooks.ts`, `types.ts`, `components/index.tsx`
+5. **Import in Route**: Single import in `app/` route file
+
+#### **Creating New UI Components**
+1. **Create Folder**: `components/ui/[ComponentName]/`
+2. **Implement Component**: Create `[ComponentName].tsx` with TypeScript
+3. **Add Exports**: Create `index.tsx` export file
+4. **Update Main Export**: Add to `components/ui/index.tsx`
+
+## Current Features
+
+### **Home Tab (`components/PAGE/index/`)**
+- **Advanced Animations**: 10 animation types (scale, rotate, bounce, shake, fade, color, spin, slide, flip, pulse)
+- **Bottom Sheet**: Multi-snap point modal (25%, 50%, 90%) with gesture handling
+- **Reusable Components**: Uses `Button` and `Card` from UI library
+- **Custom Hooks**: `useAnimationControls` for animation management
+
+### **Explore Tab (`components/PAGE/explore/`)**
+- **Interactive Cards**: Tap-to-expand feature showcase cards
+- **Animated Star**: Interactive star with counter and reset functionality  
+- **Feature Documentation**: Detailed information about app capabilities
+- **User Journey**: Step-by-step app navigation guide
+
+### **UI Component Library (`components/ui/`)**
+- **Button**: 6 variants (primary, secondary, success, warning, danger, info) with animations
+- **Card**: Interactive cards with gesture support and variant styling
+- **AnimatedBox**: Versatile animated container with multiple animation types
 
 ## Development Commands
 ```bash
@@ -38,7 +375,7 @@ npm run android        # Run on Android
 npm run ios           # Run on iOS  
 npm run web           # Run on web
 
-# Code Quality
+# Code Quality  
 npm run lint          # Lint and format check
 npm run format        # Auto-fix linting and formatting
 
@@ -46,56 +383,44 @@ npm run format        # Auto-fix linting and formatting
 npm run prebuild      # Prepare for native build
 ```
 
-## Next Steps - Expo Router Migration Plan
+## 🎯 **Development Rules**
 
-### Target Architecture (Based on dream-pie structure)
-```
-my-expo-app/
-├── app/
-│   ├── _layout.tsx           # Root layout with providers
-│   ├── (tabs)/
-│   │   ├── _layout.tsx       # Tab layout configuration
-│   │   ├── index.tsx         # Home tab (current App.tsx content)
-│   │   └── explore.tsx       # Explore tab
-│   └── modal.tsx             # Modal screen
-├── components/
-│   ├── ui/                   # UI components
-│   ├── PAGE/                 # Page components
-│   └── haptic-tab.tsx        # Custom tab component
-├── shared/
-│   └── constants/            # App constants
-├── hooks/                    # Custom hooks
-├── global.css               # Global styles
-└── expo-env.d.ts            # Expo environment types
-```
+### **✅ DO:**
+- Keep route files in `app/` minimal (single import only)
+- Mirror routing structure exactly in `components/PAGE/`
+- Use TypeScript interfaces for all components
+- Create reusable UI components in `components/ui/`
+- Follow the established folder structure religiously
+- Use custom hooks for complex logic
+- Implement proper error boundaries
+- **ALWAYS use the new Gesture API with `Gesture.Pan()` and `GestureDetector`**
+- **Use `onUpdate()` instead of `onActive()` for gesture events**
+- **Import gestures from `react-native-gesture-handler`, NOT `react-native-reanimated`**
 
-### Dependencies to Add
-- `expo-router`: ~6.0.0 (latest compatible)
-- `@react-navigation/bottom-tabs`: ^7.4.0
-- `@react-navigation/native`: ^7.1.8
-- `expo-linking`: ~8.0.7
-- `react-native-screens`: ~4.16.0
+### **❌ DON'T:**
+- Put business logic directly in `app/` route files
+- Create components outside the established structure
+- Mix page-specific and reusable UI components
+- Skip TypeScript types and interfaces
+- Create deeply nested component structures
+- Import multiple page components in route files
+- **NEVER use `useAnimatedGestureHandler` (removed in Reanimated 4.x)**
+- **NEVER use `PanGestureHandler` directly (use `GestureDetector` instead)**
+- **NEVER import gesture handlers from `react-native-reanimated`**
 
-### Migration Steps
-1. Install Expo Router and navigation dependencies
-2. Update `package.json` main entry to `expo-router/entry`
-3. Create `app/` directory structure with layouts
-4. Move current App.tsx content to `app/(tabs)/index.tsx` as page component
-5. Set up tab navigation with Home and Explore tabs
-6. Configure root layout with providers (GestureHandler, SafeArea, BottomSheet)
-7. Test navigation and user journey
-8. Verify all animations and bottom sheet functionality work correctly
+## Architecture Benefits
 
-### Expected User Journey
-1. **App Launch** → Lands on Home tab (current App.tsx demo)
-2. **Tab Navigation** → Switch between Home and Explore tabs  
-3. **Animations** → All current Reanimated animations work on Home tab
-4. **Bottom Sheet** → Modal functionality preserved and accessible
-5. **Navigation** → Smooth transitions between tabs with proper state management
+### **🔧 Maintainability**
+- **Clear Separation**: Route logic separate from component implementation
+- **Predictable Structure**: Easy to locate components and understand organization
+- **Type Safety**: Full TypeScript support throughout the application
 
-## Notes
-- All current functionality will be preserved
-- Reanimated 4.1.0 and bottom-sheet integration maintained
-- NativeWind styling system continues to work
-- Gesture handling remains fully functional
-- Added navigation structure for better app organization
+### **📈 Scalability**
+- **Modular Design**: Easy to add new routes and pages
+- **Reusable Components**: UI library grows with application needs
+- **Code Organization**: Logical grouping prevents architectural debt
+
+### **👥 Team Collaboration**
+- **Consistent Patterns**: All developers follow same architectural principles
+- **Clear Ownership**: Easy to identify which team member owns what code
+- **Documentation**: Self-documenting structure with clear naming conventions

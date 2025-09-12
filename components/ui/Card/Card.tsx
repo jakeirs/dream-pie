@@ -5,10 +5,9 @@ import Animated, {
   useAnimatedStyle,
   withSpring,
   interpolate,
-  useAnimatedGestureHandler,
   runOnJS,
 } from 'react-native-reanimated';
-import { PanGestureHandler } from 'react-native-gesture-handler';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 
 interface CardProps {
   title?: string;
@@ -57,19 +56,19 @@ export const Card = ({
   const rotateY = useSharedValue(0);
   const translateX = useSharedValue(0);
 
-  const gestureHandler = useAnimatedGestureHandler({
-    onStart: () => {
+  const gesture = Gesture.Pan()
+    .onStart(() => {
       if (interactive) {
         scale.value = withSpring(1.05);
       }
-    },
-    onActive: (event) => {
+    })
+    .onUpdate((event) => {
       if (interactive) {
         translateX.value = event.translationX * 0.1;
         rotateY.value = interpolate(event.translationX, [-100, 100], [-5, 5]);
       }
-    },
-    onEnd: () => {
+    })
+    .onEnd(() => {
       if (interactive) {
         scale.value = withSpring(1);
         translateX.value = withSpring(0);
@@ -78,8 +77,7 @@ export const Card = ({
           runOnJS(onPress)();
         }
       }
-    },
-  });
+    });
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [
@@ -102,7 +100,7 @@ export const Card = ({
   );
 
   if (interactive) {
-    return <PanGestureHandler onGestureEvent={gestureHandler}>{CardContent}</PanGestureHandler>;
+    return <GestureDetector gesture={gesture}>{CardContent}</GestureDetector>;
   }
 
   return CardContent;
