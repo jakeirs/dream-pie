@@ -9,7 +9,7 @@ import Animated, {
   withRepeat,
   withTiming,
   withSequence,
-  interpolate,
+  interpolateColor,
 } from 'react-native-reanimated';
 import BottomSheet, { BottomSheetView, BottomSheetBackdrop } from '@gorhom/bottom-sheet';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
@@ -101,10 +101,8 @@ export default function App() {
   });
 
   const colorAnimatedStyle = useAnimatedStyle(() => {
-    const backgroundColor = interpolate(colorProgress.value, [0, 1], [0, 1]);
-
     return {
-      backgroundColor: backgroundColor === 0 ? '#3B82F6' : '#EF4444',
+      backgroundColor: interpolateColor(colorProgress.value, [0, 1], ['#3B82F6', '#EF4444']),
     };
   });
 
