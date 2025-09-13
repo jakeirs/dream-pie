@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text } from 'react-native';
-import { Button } from '../../../ui';
+import { Button } from '@/components/ui';
 import { AnimationControlsType } from '../types';
 
 interface AnimationControlsProps {

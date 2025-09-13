@@ -4,7 +4,7 @@ import Animated, { useAnimatedStyle, interpolateColor } from 'react-native-reani
 import BottomSheet, { BottomSheetView, BottomSheetBackdrop } from '@gorhom/bottom-sheet';
 import { useAnimationControls } from './hooks';
 import { AnimationControls, FeatureList } from './components';
-import { Button } from '../../ui';
+import { Button } from '@/components/ui';
 import { IndexPageProps } from './types';
 
 export default function IndexPage({ className = '' }: IndexPageProps) {

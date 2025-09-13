@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text } from 'react-native';
 import Animated, { useAnimatedStyle } from 'react-native-reanimated';
-import { Card, Button, AnimatedBox } from '../../../ui';
+import { Card, Button, AnimatedBox } from '@/components/ui';
 import { InteractiveStarProps, FeatureShowcaseProps } from '../types';
 
 export const InteractiveStar = ({ animations }: InteractiveStarProps) => {
