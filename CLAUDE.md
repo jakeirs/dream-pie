@@ -367,15 +367,60 @@ export default function IndexScreen() {
 - **Card**: Interactive cards with gesture support and variant styling
 - **AnimatedBox**: Versatile animated container with multiple animation types
 
+## **Port Management (localhost:8081)**
+
+**IMPORTANT**: Always use port 8081 for development and testing consistency.
+
+### **When Port 8081 is in Use:**
+
+### **Method 1: Kill All Ports (Recommended)**
+
+```bash
+# Kill all processes on ports 8081-8087
+npx kill-port 8081 8083 8084 8085 8086 8087
+
+# Then start fresh on default port 8081
+npm start -- --reset-cache
+```
+
+### **Method 2: Check What's Using the Port**
+
+```bash
+# Check which processes are using port 808x
+netstat -ano | findstr :808
+
+# Kill specific process by PID if needed
+# Note: Replace XXXX with actual PID from netstat output
+```
+
+### **Method 3: Alternative Port Check**
+
+```bash
+# Check if port 8081 specifically is free
+netstat -ano | findstr :8081
+```
+
+### **Testing Configuration**
+
+- Playwright tests are configured for `http://localhost:8081`
+- Always ensure `playwright.config.ts` uses `baseURL: "http://localhost:8081"`
+- Never change to alternative ports unless absolutely necessary
+
+### **Common Issues**
+
+- Multiple background bash processes can leave ports occupied
+- Use `npx kill-port` to clean up all development ports at once
+- Always start fresh with `npm start -- --reset-cache` after cleaning ports
+
 ## Development Commands
 ```bash
 # Development
 npm start              # Start Expo development server
 npm run android        # Run on Android
-npm run ios           # Run on iOS  
+npm run ios           # Run on iOS
 npm run web           # Run on web
 
-# Code Quality  
+# Code Quality
 npm run lint          # Lint and format check
 npm run format        # Auto-fix linting and formatting
 
