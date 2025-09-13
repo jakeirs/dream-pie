@@ -14,6 +14,241 @@ React Native Expo app demonstrating **React Native Reanimated 4.1.0** and **@gor
 - **NativeWind**: Latest (Tailwind CSS for React Native)
 - **React Native Gesture Handler**: 2.28.0
 - **React Native Safe Area Context**: 5.6.0
+- **babel-plugin-module-resolver**: 5.0.2 (Path aliases support)
+
+## 🔗 **Path Alias System**
+
+This project implements a comprehensive **absolute import alias system** to simplify imports and improve code maintainability. The system is configured across Babel, Metro, and TypeScript for full compatibility.
+
+### **🚀 Available Aliases**
+
+| Alias | Path | Usage |
+|-------|------|--------|
+| `@` | `./` (root) | Root directory access |
+| `@/components` | `./components` | All components |
+| `@/components/ui` | `./components/ui` | UI component library |
+| `@/components/PAGE` | `./components/PAGE` | Page components |
+| `@/assets` | `./assets` | Static assets |
+| `@/app` | `./app` | App directory |
+
+### **✅ Correct Usage Examples**
+
+#### **Route Files (app/ directory):**
+```typescript
+// ✅ CORRECT - Based on actual working patterns
+
+// Special case: "index" folder requires explicit /index
+import IndexPage from '@/components/PAGE/index/index';
+
+// Normal case: other folders work with auto-resolution
+import ExplorePage from '@/components/PAGE/explore';       // ✅ WORKS (auto-resolves)
+import ProfilePage from '@/components/PAGE/profile';       // ✅ WORKS (auto-resolves)
+
+// These also work but are optional for non-index folders:
+import ExplorePage from '@/components/PAGE/explore/index'; // ✅ ALSO WORKS
+import ProfilePage from '@/components/PAGE/profile/index'; // ✅ ALSO WORKS
+
+// ❌ INCORRECT - This specific pattern fails
+import IndexPage from '@/components/PAGE/index';  // ❌ FAILS - Metro can't resolve this
+
+// Example usage:
+// app/(tabs)/index.tsx
+export default function IndexScreen() {
+  return <IndexPage />;
+}
+
+// app/(tabs)/explore.tsx
+export default function ExploreScreen() {
+  return <ExplorePage />;
+}
+```
+
+#### **Component Files:**
+```typescript
+// ✅ UI Components
+import { Button, Card, AnimatedBox } from '@/components/ui';
+
+// ✅ Assets
+import logo from '@/assets/images/logo.png';
+import icon from '@/assets/icons/star.svg';
+
+// ✅ Page Components (when importing between pages)
+import HomePage from '@/components/PAGE/index/index';
+```
+
+### **🔧 Configuration Files**
+
+#### **babel.config.js**
+```javascript
+module.exports = function (api) {
+  api.cache(true);
+  let plugins = [
+    'react-native-worklets/plugin',
+    [
+      'module-resolver',
+      {
+        root: ['./'],
+        alias: {
+          '@': './',
+          '@/components': './components',
+          '@/components/ui': './components/ui',
+          '@/components/PAGE': './components/PAGE',
+          '@/assets': './assets',
+          '@/app': './app',
+          'tailwind.config': './tailwind.config.js',
+        },
+      },
+    ],
+  ];
+
+  return {
+    presets: [['babel-preset-expo', { jsxImportSource: 'nativewind' }], 'nativewind/babel'],
+    plugins,
+  };
+};
+```
+
+#### **metro.config.js**
+```javascript
+const { getDefaultConfig } = require('expo/metro-config');
+const { withNativeWind } = require('nativewind/metro');
+const path = require('path');
+
+const config = getDefaultConfig(__dirname);
+
+// Extract resolver to preserve existing properties
+const { resolver } = config;
+
+config.resolver = {
+  ...resolver,
+  alias: {
+    '@': path.resolve(__dirname, '.'),
+    '@/components': path.resolve(__dirname, './components'),
+    '@/components/ui': path.resolve(__dirname, './components/ui'),
+    '@/components/PAGE': path.resolve(__dirname, './components/PAGE'),
+    '@/assets': path.resolve(__dirname, './assets'),
+    '@/app': path.resolve(__dirname, './app'),
+  },
+};
+
+module.exports = withNativeWind(config, { input: './global.css' });
+```
+
+#### **tsconfig.json**
+```json
+{
+  "extends": "expo/tsconfig.base",
+  "compilerOptions": {
+    "strict": true,
+    "jsx": "react-jsx",
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./*"],
+      "@/components/*": ["./components/*"],
+      "@/components/ui/*": ["./components/ui/*"],
+      "@/components/PAGE/*": ["./components/PAGE/*"],
+      "@/assets/*": ["./assets/*"],
+      "@/app/*": ["./app/*"]
+    }
+  }
+}
+```
+
+### **⚠️ Critical Import Rules**
+
+#### **1. Page Component Imports (Most Important)**
+
+**📁 Actual File Structure:**
+```
+components/PAGE/
+├── index/
+│   └── index.tsx      # Main component file
+└── explore/
+    └── index.tsx      # Main component file
+```
+
+**✅ CORRECT Import Patterns:**
+```typescript
+// Special case: "index" folder requires double index
+import IndexPage from '@/components/PAGE/index/index';
+
+// Normal case: other folders can omit the /index
+import ExplorePage from '@/components/PAGE/explore';  // ✅ WORKS
+// OR with explicit /index (also works)
+import ExplorePage from '@/components/PAGE/explore/index'; // ✅ ALSO WORKS
+
+// ❌ This FAILS because there's no automatic index resolution for "index" folder
+import IndexPage from '@/components/PAGE/index';  // ❌ FAILS - Metro can't resolve
+```
+
+**🔍 Critical Rule**: The folder named `index` requires the explicit `/index` file name because Metro bundler cannot auto-resolve `@/components/PAGE/index` to `@/components/PAGE/index/index.tsx`. For all other folder names, Metro can auto-resolve to the `index.tsx` file inside.
+
+#### **2. UI Component Imports**
+```typescript
+// ✅ Import from the main UI index (recommended)
+import { Button, Card } from '@/components/ui';
+
+// ✅ Import specific components (also works)
+import { Button } from '@/components/ui/Button';
+import { Card } from '@/components/ui/Card';
+```
+
+#### **3. Asset Imports**
+```typescript
+// ✅ Static assets
+import heroImage from '@/assets/images/hero.png';
+import appIcon from '@/assets/icons/app-icon.svg';
+
+// ✅ Fonts and other assets
+import customFont from '@/assets/fonts/custom.ttf';
+```
+
+### **🚨 Common Pitfalls**
+
+#### **Metro Bundling Errors**
+```bash
+# Error: "Unable to resolve module @/components/PAGE"
+# Cause: Trying to import "index" folder without explicit file name
+
+# The ONLY problematic pattern:
+# ❌ Wrong: import IndexPage from '@/components/PAGE/index';
+# ✅ Fix:   import IndexPage from '@/components/PAGE/index/index';
+
+# All other folders work fine with auto-resolution:
+# ✅ Works: import ExplorePage from '@/components/PAGE/explore';
+# ✅ Works: import ProfilePage from '@/components/PAGE/profile';
+```
+
+#### **TypeScript Errors**
+```bash
+# Error: "Cannot find module '@/components'"
+# Cause: TypeScript path mapping not configured
+# ✅ Fix: Verify tsconfig.json paths are correct
+```
+
+### **🛠️ Troubleshooting Aliases**
+
+#### **Testing Alias Resolution**
+```bash
+# 1. Check TypeScript compilation
+npx tsc --noEmit
+
+# 2. Clear Metro cache and restart
+npm start -- --reset-cache --clear
+
+# 3. Verify all config files are correct
+# Check: babel.config.js, metro.config.js, tsconfig.json
+```
+
+#### **Common Solutions**
+```bash
+# If aliases don't work:
+1. Restart development server completely
+2. Clear all caches: npm start -- --reset-cache
+3. Check file paths match exactly
+4. Verify babel-plugin-module-resolver is installed
+5. Ensure Metro config preserves existing resolver properties
+```
 
 ### 🚀 **React Native Reanimated 4.x Gesture API**
 
@@ -220,12 +455,12 @@ my-expo-app/
 
 #### **1. Single Responsibility Pattern**
 - **Rule**: Each `app/` route file should contain **ONLY ONE COMPONENT IMPORT**
-- **Pattern**: `app/(tabs)/[route].tsx` → `import PageComponent from '../../components/PAGE/[route]'`
+- **Pattern**: `app/(tabs)/[route].tsx` → `import PageComponent from '@/components/PAGE/[route]/index'`
 
 **✅ Correct Example:**
 ```typescript
 // app/(tabs)/index.tsx
-import IndexPage from '../../components/PAGE/index';
+import IndexPage from '@/components/PAGE/index/index';
 
 export default function IndexScreen() {
   return <IndexPage />;
@@ -327,7 +562,7 @@ export default function TabLayout() {
 }
 
 // app/(tabs)/index.tsx - Home Route
-import IndexPage from '../../components/PAGE/index';
+import IndexPage from '@/components/PAGE/index/index';
 export default function IndexScreen() {
   return <IndexPage />;
 }
@@ -657,6 +892,8 @@ npx expo export --dump-sourcemap
 - Follow the established folder structure religiously
 - Use custom hooks for complex logic
 - Implement proper error boundaries
+- **ALWAYS use absolute imports with aliases (e.g., `@/components/ui`)**
+- **Include full file paths for PAGE components: `@/components/PAGE/index/index`**
 - **ALWAYS use the new Gesture API with `Gesture.Pan()` and `GestureDetector`**
 - **Use `onUpdate()` instead of `onActive()` for gesture events**
 - **Import gestures from `react-native-gesture-handler`, NOT `react-native-reanimated`**
@@ -673,6 +910,10 @@ npx expo export --dump-sourcemap
 - Skip TypeScript types and interfaces
 - Create deeply nested component structures
 - Import multiple page components in route files
+- **NEVER use relative imports (use aliases instead: `@/components/ui`)**
+- **NEVER try to import "index" folder without explicit file name (`@/components/PAGE/index` ❌)**
+- **REMEMBER: Only "index" folder needs explicit /index: `@/components/PAGE/index/index` ✅**
+- **Other folders work fine with auto-resolution: `@/components/PAGE/explore` ✅**
 - **NEVER use `useAnimatedGestureHandler` (removed in Reanimated 4.x)**
 - **NEVER use `PanGestureHandler` directly (use `GestureDetector` instead)**
 - **NEVER import gesture handlers from `react-native-reanimated`**
