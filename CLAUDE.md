@@ -30,6 +30,8 @@ This project implements a comprehensive **absolute import alias system** to simp
 | `@/components/PAGE` | `./components/PAGE` | Page components |
 | `@/assets` | `./assets` | Static assets |
 | `@/app` | `./app` | App directory |
+| `@/types` | `./types` | TypeScript interfaces |
+| `@/mockData` | `./mockData` | Mock data files |
 
 ### **✅ Correct Usage Examples**
 
@@ -74,6 +76,10 @@ import icon from '@/assets/icons/star.svg';
 
 // ✅ Page Components (when importing between pages)
 import HomePage from '@/components/PAGE/index/index';
+
+// ✅ Types and Mock Data
+import { User, Post } from '@/types';
+import { mockUsers, mockPosts } from '@/mockData';
 ```
 
 ### **🔧 Configuration Files**
@@ -583,17 +589,176 @@ export default function IndexScreen() {
 3. **Add Exports**: Create `index.tsx` export file
 4. **Update Main Export**: Add to `components/ui/index.tsx`
 
+## 📊 **Mock Data Architecture**
+
+### **🏗️ Folder Structure**
+
+This project implements a comprehensive, well-typed mock data system that follows TypeScript best practices and clear data lifecycle documentation.
+
+```
+my-expo-app/
+├── types/                     # TypeScript interfaces
+│   ├── users/
+│   │   ├── user.ts           # User interface and related types
+│   │   ├── userActivity.ts   # User activity tracking types
+│   │   └── index.ts          # Export all user types
+│   ├── content/
+│   │   ├── post.ts           # Social media post types
+│   │   ├── comment.ts        # Comment types
+│   │   └── index.ts          # Export all content types
+│   └── index.ts              # Main type exports
+│
+├── mockData/                  # Mock data (mirrors types structure)
+│   ├── users/
+│   │   ├── users.ts          # User mock data with lifecycle comments
+│   │   ├── userActivity.ts   # User activity mock data
+│   │   └── index.ts          # Export all user mock data
+│   ├── content/
+│   │   ├── posts.ts          # Social media posts mock data
+│   │   ├── comments.ts       # Comments mock data
+│   │   └── index.ts          # Export all content mock data
+│   └── index.ts              # Main mock data exports
+```
+
+### **🎯 Data Lifecycle Documentation**
+
+Every mock data file includes a mandatory header documenting the complete data lifecycle:
+
+```typescript
+/**
+ * MOCK DATA LIFECYCLE - [Data Model Name]
+ *
+ * WHEN CREATED: [Description of when this data is generated]
+ * WHERE CREATED: [Component/service that creates this data]
+ *
+ * WHEN USED: [Description of when this data is consumed]
+ * WHERE USED: [Components/pages that use this data]
+ *
+ * HOW DATA EVOLVES:
+ * - CREATE: [How new items are added]
+ * - READ: [How data is fetched/displayed]
+ * - UPDATE: [How data is modified]
+ * - DELETE: [How data is removed]
+ *
+ * RELATIONSHIPS: [Data dependencies and connections]
+ */
+```
+
+### **🔗 Path Aliases for Mock Data**
+
+The project includes dedicated path aliases for the mock data system:
+
+| Alias | Path | Usage |
+|-------|------|--------|
+| `@/types` | `./types` | TypeScript interfaces |
+| `@/mockData` | `./mockData` | Mock data files |
+
+**Usage Examples:**
+```typescript
+// ✅ Correct imports
+import { User, Post } from '@/types';
+import { mockUsers, mockPosts } from '@/mockData';
+
+// ✅ Specific imports
+import { mockPostsWithAuthors } from '@/mockData/content';
+import { UserActivity } from '@/types/users';
+```
+
+### **📝 Mock Data Guidelines for AI Agents**
+
+#### **When to Create Mock Data**
+- **User Request**: When user explicitly asks for mock data
+- **Testing Features**: When implementing/testing functionality that requires data
+- **Demo Purposes**: When showcasing app features
+- **Development**: When components need sample data for development
+
+#### **How to Create Mock Data**
+1. **Create Types First**: Always define TypeScript interfaces in `types/` before creating mock data
+2. **Follow Structure**: Mirror the exact folder structure between `types/` and `mockData/`
+3. **Add Lifecycle Comments**: Include the mandatory lifecycle documentation header
+4. **Use Helper Functions**: Create utility functions for data access (getById, filter, etc.)
+5. **Keep It Simple**: Avoid overly complex data structures unless specifically requested
+
+#### **Mock Data Creation Checklist**
+- [ ] TypeScript interface defined in `types/`
+- [ ] Mock data file created in corresponding `mockData/` folder
+- [ ] Lifecycle documentation header included
+- [ ] Data relationships documented
+- [ ] Helper functions provided (if applicable)
+- [ ] Export statements added to index files
+- [ ] Path aliases used correctly
+
+#### **Example Implementation Pattern**
+
+**1. Define Types:**
+```typescript
+// types/users/user.ts
+export interface User {
+  id: string;
+  username: string;
+  email: string;
+  avatar?: string;
+  bio?: string;
+  createdAt: string;
+}
+```
+
+**2. Create Mock Data:**
+```typescript
+// mockData/users/users.ts
+/**
+ * MOCK DATA LIFECYCLE - Users
+ * [Complete lifecycle documentation]
+ */
+
+import { User } from '@/types/users';
+
+export const mockUsers: User[] = [
+  // Simple, realistic data
+];
+
+export const getUserById = (id: string): User | undefined => {
+  return mockUsers.find(user => user.id === id);
+};
+```
+
+**3. Use in Components:**
+```typescript
+// Component usage
+import { mockUsers } from '@/mockData';
+// Use mockUsers in component
+```
+
+### **🚨 Important Rules**
+
+#### **✅ DO:**
+- Keep mock data simple and focused on the task at hand
+- Include lifecycle documentation headers
+- Follow the established folder structure exactly
+- Create helper functions for common operations
+- Use TypeScript interfaces consistently
+- Document data relationships clearly
+
+#### **❌ DON'T:**
+- Create overly complex mock data structures
+- Skip lifecycle documentation
+- Mix different data models in the same file
+- Ignore the folder structure patterns
+- Create mock data without corresponding types
+- Use relative imports (always use path aliases)
+
 ## Current Features
 
 ### **Home Tab (`components/PAGE/index/`)**
 - **Advanced Animations**: 10 animation types (scale, rotate, bounce, shake, fade, color, spin, slide, flip, pulse)
-- **Bottom Sheet**: Multi-snap point modal (25%, 50%, 90%) with gesture handling
+- **Bottom Sheet**: Multi-snap point modal (25%, 50%, 90%) with gesture handling displaying typed mock data
+- **Mock Data Display**: Users and posts with proper TypeScript typing
 - **Reusable Components**: Uses `Button` and `Card` from UI library
 - **Custom Hooks**: `useAnimationControls` for animation management
 
 ### **Explore Tab (`components/PAGE/explore/`)**
 - **Interactive Cards**: Tap-to-expand feature showcase cards
-- **Animated Star**: Interactive star with counter and reset functionality  
+- **Animated Star**: Interactive star with counter and reset functionality
 - **Feature Documentation**: Detailed information about app capabilities
 - **User Journey**: Step-by-step app navigation guide
 

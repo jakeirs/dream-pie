@@ -1,11 +1,12 @@
 import React, { useRef, useCallback } from 'react';
-import { View, Text, ScrollView } from 'react-native';
+import { View, Text, ScrollView, Image } from 'react-native';
 import Animated, { useAnimatedStyle, interpolateColor } from 'react-native-reanimated';
 import BottomSheet, { BottomSheetView, BottomSheetBackdrop } from '@gorhom/bottom-sheet';
 import { useAnimationControls } from './hooks';
 import { AnimationControls, FeatureList } from './components';
 import { Button } from '@/components/ui';
 import { IndexPageProps } from './types';
+import { mockPostsWithAuthors, mockUsers } from '@/mockData';
 
 export default function IndexPage({ className = '' }: IndexPageProps) {
   const { values, animations } = useAnimationControls();
@@ -73,7 +74,7 @@ export default function IndexPage({ className = '' }: IndexPageProps) {
           <Text className="text-center text-xl font-semibold text-gray-700">Bottom Sheet Demo</Text>
           <View className="items-center">
             <Button
-              title="Open Bottom Sheet"
+              title="Show Mock Data"
               onPress={handleOpenBottomSheet}
               variant="secondary"
               size="lg"
@@ -97,39 +98,63 @@ export default function IndexPage({ className = '' }: IndexPageProps) {
         backgroundStyle={{ backgroundColor: '#FFFFFF' }}>
         <BottomSheetView className="flex-1 p-6">
           <Text className="mb-4 text-center text-2xl font-bold text-gray-800">
-            🎉 Bottom Sheet Demo
+            📱 Mock Data Demo
           </Text>
 
           <Text className="mb-6 text-center text-gray-600">
-            This is a React Native Bottom Sheet with gesture handling. You can drag it up and down,
-            or swipe down to close.
+            Displaying typed mock data from our structured data system
           </Text>
 
-          <View className="space-y-4">
-            <View className="rounded-lg bg-blue-50 p-4">
-              <Text className="mb-2 font-semibold text-blue-800">Snap Points</Text>
-              <Text className="text-blue-600">25%, 50%, 90% of screen height</Text>
+          <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+            {/* Users Section */}
+            <View className="mb-6">
+              <Text className="mb-3 text-lg font-semibold text-gray-800">👥 Users</Text>
+              {mockUsers.slice(0, 2).map(user => (
+                <View key={user.id} className="mb-3 rounded-lg bg-gray-50 p-4">
+                  <View className="flex-row items-center">
+                    <Image
+                      source={{ uri: user.avatar }}
+                      className="h-10 w-10 rounded-full mr-3"
+                    />
+                    <View className="flex-1">
+                      <Text className="font-semibold text-gray-800">@{user.username}</Text>
+                      <Text className="text-sm text-gray-600">{user.bio}</Text>
+                    </View>
+                  </View>
+                </View>
+              ))}
             </View>
 
-            <View className="rounded-lg bg-green-50 p-4">
-              <Text className="mb-2 font-semibold text-green-800">Gestures</Text>
-              <Text className="text-green-600">Pan, swipe, and tap gestures supported</Text>
+            {/* Posts Section */}
+            <View className="mb-6">
+              <Text className="mb-3 text-lg font-semibold text-gray-800">📝 Posts</Text>
+              {mockPostsWithAuthors.slice(0, 2).map(post => (
+                <View key={post.id} className="mb-4 rounded-lg bg-blue-50 p-4">
+                  <View className="flex-row items-center mb-2">
+                    <Image
+                      source={{ uri: post.author.avatar }}
+                      className="h-8 w-8 rounded-full mr-2"
+                    />
+                    <Text className="font-semibold text-blue-800">@{post.author.username}</Text>
+                  </View>
+                  <Text className="text-gray-700 mb-2">{post.content}</Text>
+                  <View className="flex-row justify-between">
+                    <Text className="text-sm text-blue-600">❤️ {post.likesCount} likes</Text>
+                    <Text className="text-sm text-blue-600">💬 {post.commentsCount} comments</Text>
+                  </View>
+                </View>
+              ))}
             </View>
 
-            <View className="rounded-lg bg-purple-50 p-4">
-              <Text className="mb-2 font-semibold text-purple-800">Backdrop</Text>
-              <Text className="text-purple-600">Custom backdrop with opacity animation</Text>
-            </View>
-
-            <View className="mt-6 items-center">
+            <View className="items-center pb-4">
               <Button
-                title="Close Bottom Sheet"
+                title="Close Mock Data"
                 onPress={handleCloseBottomSheet}
-                variant="danger"
+                variant="primary"
                 size="lg"
               />
             </View>
-          </View>
+          </ScrollView>
         </BottomSheetView>
       </BottomSheet>
     </View>

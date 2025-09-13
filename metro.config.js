@@ -16,6 +16,8 @@ config.resolver = {
     '@/components/PAGE': path.resolve(__dirname, './components/PAGE'),
     '@/assets': path.resolve(__dirname, './assets'),
     '@/app': path.resolve(__dirname, './app'),
+    '@/types': path.resolve(__dirname, './types'),
+    '@/mockData': path.resolve(__dirname, './mockData'),
   },
 };
 

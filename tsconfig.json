@@ -10,7 +10,9 @@
       "@/components/ui/*": ["./components/ui/*"],
       "@/components/PAGE/*": ["./components/PAGE/*"],
       "@/assets/*": ["./assets/*"],
-      "@/app/*": ["./app/*"]
+      "@/app/*": ["./app/*"],
+      "@/types/*": ["./types/*"],
+      "@/mockData/*": ["./mockData/*"]
     }
   }
 }

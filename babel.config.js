@@ -13,6 +13,8 @@ module.exports = function (api) {
           '@/components/PAGE': './components/PAGE',
           '@/assets': './assets',
           '@/app': './app',
+          '@/types': './types',
+          '@/mockData': './mockData',
           'tailwind.config': './tailwind.config.js',
         },
       },
