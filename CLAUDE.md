@@ -68,7 +68,7 @@ export default function ExploreScreen() {
 #### **Component Files:**
 ```typescript
 // ✅ UI Components
-import { Button, Card, AnimatedBox } from '@/components/ui';
+import { Button, Card, AnimatedBox, BottomSheet } from '@/components/ui';
 
 // ✅ Assets
 import logo from '@/assets/images/logo.png';
