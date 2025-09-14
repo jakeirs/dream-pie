@@ -3,3 +3,5 @@ export { Card } from './Card/Card';
 export { AnimatedBox } from './AnimatedBox/AnimatedBox';
 export { BottomSheet } from './BottomSheet';
 export type { BottomSheetProps } from './BottomSheet';
+export { Icon, ICON_FAMILY_NAME } from './icons';
+export { PageHeader } from './PageHeader';

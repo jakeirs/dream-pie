@@ -4,7 +4,7 @@ import Animated, { useAnimatedStyle, interpolateColor } from 'react-native-reani
 import BottomSheet, { BottomSheetView, BottomSheetBackdrop } from '@gorhom/bottom-sheet';
 import { useAnimationControls } from './hooks';
 import { AnimationControls, FeatureList } from './components';
-import { Button } from '@/components/ui';
+import { Button, PageHeader, ICON_FAMILY_NAME } from '@/components/ui';
 import { IndexPageProps } from './types';
 import { mockPostsWithAuthors, mockUsers } from '@/mockData';
 
@@ -22,6 +22,10 @@ export default function IndexPage({ className = '' }: IndexPageProps) {
 
   const handleCloseBottomSheet = useCallback(() => {
     bottomSheetRef.current?.close();
+  }, []);
+
+  const handleSettingsPress = useCallback(() => {
+    console.log('Settings pressed!');
   }, []);
 
   const renderBackdrop = useCallback(
@@ -52,6 +56,14 @@ export default function IndexPage({ className = '' }: IndexPageProps) {
 
   return (
     <View className={`flex-1 bg-gray-100 ${className}`}>
+      <PageHeader
+        title="Home"
+        rightIcon={{
+          name: 'cog',
+          family: ICON_FAMILY_NAME.FontAwesome5,
+          onPress: handleSettingsPress,
+        }}
+      />
       <ScrollView className="flex-1 px-4 py-6">
         <Text className="mb-8 text-center text-3xl font-bold text-gray-800">
           Reanimated 4 + Bottom Sheet Demo
