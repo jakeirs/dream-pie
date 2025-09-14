@@ -766,6 +766,51 @@ import { mockUsers } from '@/mockData';
 - **Button**: 6 variants (primary, secondary, success, warning, danger, info) with animations
 - **Card**: Interactive cards with gesture support and variant styling
 - **AnimatedBox**: Versatile animated container with multiple animation types
+- **BottomSheet**: Reusable wrapper for @gorhom/bottom-sheet with predefined settings
+
+### **BottomSheet Component (`components/ui/BottomSheet/`)**
+
+**Overview**: Reusable wrapper for @gorhom/bottom-sheet with professional defaults and configurable scroll behavior.
+
+**Default Configuration**:
+- Snap points: `['50%', '90%']`
+- Backdrop with 50% opacity and auto-dismiss
+- Pan-down-to-close enabled
+- Professional styling with NativeWind
+
+**Import Pattern**:
+```typescript
+import { BottomSheet } from '@/components/ui';
+import type { BottomSheetProps } from '@/components/ui';
+```
+
+**Props**:
+- `scrollView?: boolean` (default: true) - Toggles between BottomSheetScrollView/BottomSheetView
+- `children: React.ReactNode` - Content to display
+- All @gorhom/bottom-sheet props supported for customization
+
+**Basic Usage**:
+```typescript
+import React, { useRef } from 'react';
+import { BottomSheet } from '@/components/ui';
+import BottomSheetLib from '@gorhom/bottom-sheet';
+
+const MyComponent = () => {
+  const bottomSheetRef = useRef<BottomSheetLib>(null);
+
+  return (
+    <BottomSheet ref={bottomSheetRef} scrollView={true}>
+      <YourContent />
+    </BottomSheet>
+  );
+};
+```
+
+**Integration Pattern**:
+- ✅ Import directly into existing page components (`components/PAGE/[route]/index.tsx`)
+- ✅ Use `useRef` for programmatic control (expand, close, etc.)
+- ✅ No separate routing structure needed - integrate within existing components
+- ✅ Choose `scrollView={true}` for long content, `scrollView={false}` for forms/controls
 
 ## **Port Management (localhost:8081)**
 
