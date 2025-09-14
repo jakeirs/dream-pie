@@ -767,6 +767,7 @@ import { mockUsers } from '@/mockData';
 - **Card**: Interactive cards with gesture support and variant styling
 - **AnimatedBox**: Versatile animated container with multiple animation types
 - **BottomSheet**: Reusable wrapper for @gorhom/bottom-sheet with predefined settings
+- **Icon**: Professional icon system with 15+ icon families (Feather, MaterialIcons, FontAwesome, etc.)
 
 ### **BottomSheet Component (`components/ui/BottomSheet/`)**
 
@@ -811,6 +812,36 @@ const MyComponent = () => {
 - ✅ Use `useRef` for programmatic control (expand, close, etc.)
 - ✅ No separate routing structure needed - integrate within existing components
 - ✅ Choose `scrollView={true}` for long content, `scrollView={false}` for forms/controls
+
+### **Icon Component (`components/ui/icons/`)**
+
+**Overview**: Professional icon system with 15+ icon families from @expo/vector-icons with full TypeScript support.
+
+**Import Pattern**:
+```typescript
+import { Icon, IconButton, ICON_FAMILY_NAME } from '@/components/ui';
+```
+
+**Basic Usage**:
+```typescript
+// Static icon
+<Icon
+  family={ICON_FAMILY_NAME.Feather}
+  name="home"
+  size={24}
+  color="white"
+/>
+
+// Interactive icon button
+<IconButton
+  family={ICON_FAMILY_NAME.Ionicons}
+  name="heart"
+  onPress={() => console.log('Pressed')}
+  color="red"
+/>
+```
+
+**Available Families**: Feather, MaterialIcons, FontAwesome5/6, AntDesign, Ionicons, Entypo, and more. See [icons.expo.fyi](https://icons.expo.fyi) for all available icons.
 
 ## **Port Management (localhost:8081)**
 
