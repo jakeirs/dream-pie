@@ -55,7 +55,7 @@ export default function IndexPage({ className = '' }: IndexPageProps) {
   });
 
   return (
-    <View className={`flex-1 bg-gray-100 ${className}`}>
+    <View className={`flex-1 bg-background ${className}`}>
       <PageHeader
         title="Home"
         rightIcon={{
@@ -65,7 +65,7 @@ export default function IndexPage({ className = '' }: IndexPageProps) {
         }}
       />
       <ScrollView className="flex-1 px-4 py-6">
-        <Text className="mb-8 text-center text-3xl font-bold text-gray-800">
+        <Text className="mb-8 text-center text-3xl font-bold text-textPrimary">
           Reanimated 4 + Bottom Sheet Demo
         </Text>
 
@@ -83,12 +83,12 @@ export default function IndexPage({ className = '' }: IndexPageProps) {
 
         {/* Bottom Sheet Controls */}
         <View className="mb-8 space-y-4">
-          <Text className="text-center text-xl font-semibold text-gray-700">Bottom Sheet Demo</Text>
+          <Text className="text-center text-xl font-semibold text-textSecondary">Bottom Sheet Demo</Text>
           <View className="items-center">
             <Button
               title="Show Mock Data"
               onPress={handleOpenBottomSheet}
-              variant="secondary"
+              variant="primary"
               size="lg"
               className="px-8"
             />
@@ -108,29 +108,29 @@ export default function IndexPage({ className = '' }: IndexPageProps) {
         enablePanDownToClose={true}
         handleIndicatorStyle={{ backgroundColor: '#D1D5DB' }}
         backgroundStyle={{ backgroundColor: '#FFFFFF' }}>
-        <BottomSheetView className="flex-1 p-6">
-          <Text className="mb-4 text-center text-2xl font-bold text-gray-800">
+        <BottomSheetView className="flex-1 p-6 bg-card">
+          <Text className="mb-4 text-center text-2xl font-bold text-textPrimary">
             📱 Mock Data Demo
           </Text>
 
-          <Text className="mb-6 text-center text-gray-600">
+          <Text className="mb-6 text-center text-textSecondary">
             Displaying typed mock data from our structured data system
           </Text>
 
           <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
             {/* Users Section */}
             <View className="mb-6">
-              <Text className="mb-3 text-lg font-semibold text-gray-800">👥 Users</Text>
+              <Text className="mb-3 text-lg font-semibold text-textPrimary">👥 Users</Text>
               {mockUsers.slice(0, 2).map(user => (
-                <View key={user.id} className="mb-3 rounded-lg bg-gray-50 p-4">
+                <View key={user.id} className="mb-3 rounded-lg bg-cardSecondary p-4 border border-border">
                   <View className="flex-row items-center">
                     <Image
                       source={{ uri: user.avatar }}
                       className="h-10 w-10 rounded-full mr-3"
                     />
                     <View className="flex-1">
-                      <Text className="font-semibold text-gray-800">@{user.username}</Text>
-                      <Text className="text-sm text-gray-600">{user.bio}</Text>
+                      <Text className="font-semibold text-textPrimary">@{user.username}</Text>
+                      <Text className="text-sm text-textSecondary">{user.bio}</Text>
                     </View>
                   </View>
                 </View>
@@ -139,20 +139,20 @@ export default function IndexPage({ className = '' }: IndexPageProps) {
 
             {/* Posts Section */}
             <View className="mb-6">
-              <Text className="mb-3 text-lg font-semibold text-gray-800">📝 Posts</Text>
+              <Text className="mb-3 text-lg font-semibold text-textPrimary">📝 Posts</Text>
               {mockPostsWithAuthors.slice(0, 2).map(post => (
-                <View key={post.id} className="mb-4 rounded-lg bg-blue-50 p-4">
+                <View key={post.id} className="mb-4 rounded-lg bg-cardSecondary p-4 border border-border">
                   <View className="flex-row items-center mb-2">
                     <Image
                       source={{ uri: post.author.avatar }}
                       className="h-8 w-8 rounded-full mr-2"
                     />
-                    <Text className="font-semibold text-blue-800">@{post.author.username}</Text>
+                    <Text className="font-semibold text-accent">@{post.author.username}</Text>
                   </View>
-                  <Text className="text-gray-700 mb-2">{post.content}</Text>
+                  <Text className="text-textSecondary mb-2">{post.content}</Text>
                   <View className="flex-row justify-between">
-                    <Text className="text-sm text-blue-600">❤️ {post.likesCount} likes</Text>
-                    <Text className="text-sm text-blue-600">💬 {post.commentsCount} comments</Text>
+                    <Text className="text-sm text-success">❤️ {post.likesCount} likes</Text>
+                    <Text className="text-sm text-accent">💬 {post.commentsCount} comments</Text>
                   </View>
                 </View>
               ))}
@@ -162,7 +162,7 @@ export default function IndexPage({ className = '' }: IndexPageProps) {
               <Button
                 title="Close Mock Data"
                 onPress={handleCloseBottomSheet}
-                variant="primary"
+                variant="error"
                 size="lg"
               />
             </View>

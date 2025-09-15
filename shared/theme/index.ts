@@ -1,0 +1,1 @@
+export { brandColors, type BrandColors } from './colors';

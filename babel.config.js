@@ -15,6 +15,7 @@ module.exports = function (api) {
           '@/app': './app',
           '@/types': './types',
           '@/mockData': './mockData',
+          '@/shared': './shared',
           'tailwind.config': './tailwind.config.js',
         },
       },

@@ -12,7 +12,8 @@
       "@/assets/*": ["./assets/*"],
       "@/app/*": ["./app/*"],
       "@/types/*": ["./types/*"],
-      "@/mockData/*": ["./mockData/*"]
+      "@/mockData/*": ["./mockData/*"],
+      "@/shared/*": ["./shared/*"]
     }
   }
 }

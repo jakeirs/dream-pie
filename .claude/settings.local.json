@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//d/ASSETS/CHARM_PIE/APP/**)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

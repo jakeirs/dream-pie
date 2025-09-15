@@ -13,19 +13,19 @@ const AnimatedTouchableOpacity = Animated.createAnimatedComponent(TouchableOpaci
 interface ButtonProps {
   title: string;
   onPress: () => void;
-  variant?: 'primary' | 'secondary' | 'success' | 'warning' | 'danger' | 'info';
+  variant?: 'primary' | 'secondary' | 'success' | 'warning' | 'error' | 'accent';
   size?: 'sm' | 'md' | 'lg';
   disabled?: boolean;
   className?: string;
 }
 
 const variants = {
-  primary: 'bg-blue-500',
-  secondary: 'bg-gray-500',
-  success: 'bg-green-500',
-  warning: 'bg-orange-500',
-  danger: 'bg-red-500',
-  info: 'bg-indigo-500',
+  primary: 'bg-primary text-primaryForeground',
+  secondary: 'bg-cardSecondary text-textPrimary',
+  success: 'bg-success text-successForeground',
+  warning: 'bg-warning text-warningForeground',
+  error: 'bg-error text-errorForeground',
+  accent: 'bg-accent text-accentForeground',
 };
 
 const sizes = {
@@ -78,7 +78,7 @@ export const Button = ({
       onPressOut={handlePressOut}
       disabled={disabled}
       activeOpacity={0.8}>
-      <Text className={`text-center font-semibold text-white ${textSizes[size]}`}>{title}</Text>
+      <Text className={`text-center font-semibold ${textSizes[size]}`}>{title}</Text>
     </AnimatedTouchableOpacity>
   );
 };

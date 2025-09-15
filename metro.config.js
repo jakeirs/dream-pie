@@ -18,6 +18,7 @@ config.resolver = {
     '@/app': path.resolve(__dirname, './app'),
     '@/types': path.resolve(__dirname, './types'),
     '@/mockData': path.resolve(__dirname, './mockData'),
+    '@/shared': path.resolve(__dirname, './shared'),
   },
 };
 
