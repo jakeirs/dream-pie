@@ -8,7 +8,7 @@ module.exports = {
       colors: {
         // Backgrounds
         background: '#FAFAFA', // Main app background (light warm gray)
-        card: '#eaebee', // Modal/card backgrounds (warm off-white)
+        card: '#ececef', // Modal/card backgrounds (warm off-white)
         cardSecondary: '#F5F5F4', // Secondary cards (light warm gray)
 
         // Primary Brand Colors
@@ -19,6 +19,7 @@ module.exports = {
         textPrimary: '#1F1F1F', // Main headings (dark gray)
         textSecondary: '#6B7280', // Captions, descriptions
         textMuted: '#9CA3AF', // Very subtle text
+        textLight: '#FAFAFA', // Very subtle text
 
         // Interactive Elements
         accent: '#007AFF', // Links, active states (iOS blue)

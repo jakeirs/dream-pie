@@ -23,7 +23,9 @@ export const AnimationControls = ({ animations }: AnimationControlsProps) => {
 
   return (
     <View className="mb-8 space-y-4">
-      <Text className="text-center text-xl font-semibold text-textSecondary">Reanimated Animations</Text>
+      <Text className="text-center text-xl font-semibold text-textSecondary">
+        Reanimated Animations
+      </Text>
       <View className="flex-row flex-wrap justify-center gap-3">
         {buttonConfigs.map(({ title, onPress, variant }) => (
           <Button key={title} title={title} onPress={onPress} variant={variant} size="md" />
@@ -48,7 +50,7 @@ export const FeatureList = () => {
   ];
 
   return (
-    <View className="mt-8 rounded-lg bg-card p-4 shadow border border-borderLight">
+    <View className="mt-8 rounded-lg border border-borderLight bg-card p-4 shadow">
       <Text className="mb-3 text-lg font-semibold text-textPrimary">Features Demonstrated:</Text>
       {features.map((feature, index) => (
         <Text key={index} className="mb-2 text-textSecondary">

@@ -747,6 +747,160 @@ import { mockUsers } from '@/mockData';
 - Create mock data without corresponding types
 - Use relative imports (always use path aliases)
 
+## 🎨 **Color Branding & Design System**
+
+### **🌈 Unified Theme Architecture**
+
+This project implements a **dual theme system** to ensure consistent color usage across all components and styling approaches:
+
+1. **`shared/theme/colors.ts`** - TypeScript theme definitions for direct programmatic access
+2. **`tailwind.config.js`** - Tailwind CSS theme colors for className-based styling
+
+**Critical Rule**: Both systems MUST stay perfectly synchronized. Any color changes must be applied to both files simultaneously.
+
+**Current Aesthetic**: Light, warm, professional design with subtle warm grays and clean typography. Avoids stark whites and pure blacks for a more sophisticated, approachable feel.
+
+### **🎯 Brand Color Palette**
+
+| Color Token | Hex Value | Usage | Example |
+|-------------|-----------|--------|---------|
+| **Backgrounds** |
+| `background` | `#FAFAFA` | Main app background | Page containers, root backgrounds |
+| `card` | `#ececef` | Modal/card backgrounds | Cards, modals, elevated surfaces |
+| `cardSecondary` | `#F5F5F4` | Secondary cards/surfaces | Secondary content, subtle backgrounds |
+| **Brand Colors** |
+| `primary` | `#FDE047` | 🟡 Signature yellow CTA buttons | "Share!", "Create", primary actions |
+| `primaryForeground` | `#000000` | Text on primary buttons | Button text, high contrast on yellow |
+| **Text Hierarchy** |
+| `textPrimary` | `#1F1F1F` | Main headings, important text | Page titles, primary content |
+| `textSecondary` | `#6B7280` | Captions, descriptions | Subtitles, secondary information |
+| `textMuted` | `#9CA3AF` | Subtle text, placeholders | Hints, disabled text, very subtle info |
+| **Interactive Elements** |
+| `accent` | `#007AFF` | Links, active states | Links, selected tabs, active elements |
+| `accentForeground` | `#FFFFFF` | Text on accent elements | Text on blue backgrounds |
+| **Status Colors** |
+| `success` | `#34C759` | Success states | Confirmations, positive feedback |
+| `warning` | `#FF9500` | Warning states | Cautions, attention needed |
+| `error` | `#FF453A` | Error states | Errors, delete actions, failures |
+| **UI Elements** |
+| `border` | `#E5E7EB` | Dividers, borders | Card borders, separators |
+| `borderLight` | `#F3F4F6` | Subtle borders | Light separators, very subtle divisions |
+
+### **✅ Color Usage Rules**
+
+#### **✅ DO:**
+- **Always use `brandColors` from `@/shared/theme` for programmatic color access**
+- **Always use Tailwind theme classes for className-based styling** (`bg-background`, `text-textPrimary`)
+- **Keep both theme systems synchronized** when adding new colors
+- **Maintain the warm, light aesthetic** that defines the app's visual identity
+- **Use proper contrast ratios** for accessibility (test with tools)
+- **Import theme colors**: `import { brandColors } from '@/shared/theme';`
+- **Test color combinations** on both light and dark displays
+
+#### **❌ DON'T:**
+- **NEVER hardcode hex values** - always use theme variables or Tailwind classes
+- **NEVER use stark white** (`#FFFFFF`) - use `brandColors.card` for warm off-white
+- **NEVER use pure black** (`#000000` for text) - use `brandColors.textPrimary` for readable dark gray
+- **NEVER add colors to only one theme system** - sync both files always
+- **NEVER break the warm, professional aesthetic** with harsh or bright colors
+- **NEVER bypass the theme system** with inline styles or hardcoded values
+
+### **🛠️ Implementation Patterns**
+
+#### **Direct Color Access (TypeScript)**
+```typescript
+// ✅ CORRECT - Import and use theme colors
+import { brandColors } from '@/shared/theme';
+
+// Style objects
+const styles = {
+  backgroundColor: brandColors.card,
+  color: brandColors.textPrimary,
+  borderColor: brandColors.border,
+};
+
+// Animation color interpolation
+interpolateColor(progress, [0, 1], [brandColors.accent, brandColors.success]);
+
+// Component props
+<Component backgroundColor={brandColors.background} />
+```
+
+#### **Tailwind Classes (NativeWind)**
+```typescript
+// ✅ CORRECT - Use theme classes
+className="bg-background text-textPrimary border-border"
+className="bg-card text-textSecondary"
+className="bg-primary text-primaryForeground" // Yellow button
+className="text-accent" // Blue link text
+className="bg-success text-successForeground" // Success button
+
+// ❌ INCORRECT - Hardcoded colors
+className="bg-white text-black" // Use bg-card text-textPrimary
+className="bg-gray-100 text-gray-900" // Use theme equivalents
+```
+
+#### **React Native Reanimated Colors**
+```typescript
+// ✅ CORRECT - Theme colors in animations
+import { brandColors } from '@/shared/theme';
+
+const colorStyle = useAnimatedStyle(() => ({
+  backgroundColor: interpolateColor(
+    progress.value,
+    [0, 0.5, 1],
+    [brandColors.card, brandColors.primary, brandColors.success]
+  ),
+}));
+```
+
+### **🎨 Design Principles**
+
+#### **1. Light & Warm Aesthetic**
+- Warm gray backgrounds create a sophisticated, approachable feel
+- Avoid stark white/black combinations
+- Use subtle color transitions and soft shadows
+
+#### **2. Professional & Clean**
+- Maintain clean typography hierarchy with proper contrast
+- Use consistent spacing and rounded corners (following existing patterns)
+- Keep the design modern but not trendy - timeless professionalism
+
+#### **3. Accessible & Readable**
+- Ensure proper contrast ratios (4.5:1 minimum for normal text)
+- Test readability across different devices and lighting conditions
+- Provide clear visual hierarchy through color and typography
+
+#### **4. Consistent & Systematic**
+- Use theme colors exclusively - no one-off color decisions
+- Follow established patterns for similar UI elements
+- Maintain consistency across all pages and components
+
+### **📍 Theme File Locations**
+
+| File | Purpose | Usage Pattern |
+|------|---------|---------------|
+| `shared/theme/colors.ts` | TypeScript color definitions | `import { brandColors } from '@/shared/theme'` |
+| `shared/theme/index.ts` | Theme exports | Re-exports `brandColors` and types |
+| `tailwind.config.js` | Tailwind CSS theme | Automatic via `className="bg-background"` |
+
+### **🔍 Color Accessibility Guidelines**
+
+#### **Contrast Requirements:**
+- **Normal text**: 4.5:1 contrast ratio minimum
+- **Large text** (18pt+): 3:1 contrast ratio minimum
+- **Interactive elements**: Must be clearly distinguishable
+
+#### **Testing Tools:**
+- WebAIM Contrast Checker
+- Chrome DevTools Accessibility panel
+- Color Oracle (colorblind simulation)
+
+#### **Common Pitfalls to Avoid:**
+- Low contrast gray-on-gray combinations
+- Relying only on color to convey information
+- Using colors that are indistinguishable to colorblind users
+
 ## Current Features
 
 ### **Home Tab (`components/PAGE/index/`)**
@@ -1143,6 +1297,11 @@ npx expo export --dump-sourcemap
 - **Monitor terminal and browser console for errors during development**
 - **Run `npm run lint` and `npm run format` before completing tasks**
 - **Validate solutions work without crashing the app**
+- **ALWAYS use theme colors from `@/shared/theme` or Tailwind theme classes**
+- **Maintain the light, warm, professional aesthetic established in the design system**
+- **Keep both `shared/theme/colors.ts` and `tailwind.config.js` perfectly synchronized**
+- **Test color accessibility and contrast ratios (4.5:1 minimum for text)**
+- **Import theme colors**: `import { brandColors } from '@/shared/theme';`
 
 ### **❌ DON'T:**
 - Put business logic directly in `app/` route files
@@ -1162,6 +1321,12 @@ npx expo export --dump-sourcemap
 - **NEVER mark tasks complete without running the app to verify functionality**
 - **NEVER ignore console errors or terminal warnings**
 - **NEVER deploy features that cause app crashes or console errors**
+- **NEVER hardcode color hex values - always use theme variables or Tailwind classes**
+- **NEVER use stark white (#FFFFFF) - use `brandColors.card` for warm off-white**
+- **NEVER use pure black (#000000) for text - use `brandColors.textPrimary`**
+- **NEVER add colors to only one theme system - sync both files always**
+- **NEVER break the established warm, light, professional design aesthetic**
+- **NEVER bypass the theme system with inline styles or hardcoded color values**
 
 ## Architecture Benefits
 
@@ -1218,5 +1383,9 @@ netstat -ano | findstr :8081                  # Check port status
 - [ ] Code passes linting (`npm run lint`)
 - [ ] Architecture patterns followed (components/ui/ or components/PAGE/)
 - [ ] TypeScript types properly defined
+- [ ] Colors use theme system (no hardcoded hex values)
+- [ ] Design maintains light, warm, professional aesthetic
+- [ ] Theme colors are synchronized between `shared/theme/colors.ts` and `tailwind.config.js`
+- [ ] Color contrast meets accessibility standards (4.5:1 minimum for text)
 
 **Remember**: Every feature implementation MUST include testing verification. No exceptions.
