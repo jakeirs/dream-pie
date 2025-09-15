@@ -18,7 +18,7 @@
  * - Posts: activities.targetId -> posts.id (when type is 'like' or 'post')
  */
 
-import { UserActivity, ActivityType } from '@/types/users';
+import { UserActivity, ActivityType } from '@/types/users'
 
 export const mockUserActivities: UserActivity[] = [
   {
@@ -56,13 +56,13 @@ export const mockUserActivities: UserActivity[] = [
     targetId: 'post_2',
     timestamp: '2024-01-10T10:20:00Z',
   },
-];
+]
 
 // Helper functions
 export const getActivitiesByUserId = (userId: string): UserActivity[] => {
-  return mockUserActivities.filter((activity) => activity.userId === userId);
-};
+  return mockUserActivities.filter((activity) => activity.userId === userId)
+}
 
 export const getActivitiesByType = (type: ActivityType): UserActivity[] => {
-  return mockUserActivities.filter((activity) => activity.type === type);
-};
+  return mockUserActivities.filter((activity) => activity.type === type)
+}

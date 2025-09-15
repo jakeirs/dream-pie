@@ -14,19 +14,19 @@
  */
 
 export interface Comment {
-  id: string;
-  postId: string;
-  authorId: string;
-  content: string;
-  likesCount: number;
-  createdAt: string;
+  id: string
+  postId: string
+  authorId: string
+  content: string
+  likesCount: number
+  createdAt: string
 }
 
 export interface CommentWithAuthor extends Comment {
   author: {
-    id: string;
-    username: string;
-    avatar?: string;
-  };
-  isLikedByUser: boolean;
+    id: string
+    username: string
+    avatar?: string
+  }
+  isLikedByUser: boolean
 }

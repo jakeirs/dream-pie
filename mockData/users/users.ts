@@ -18,7 +18,7 @@
  * - Comments: users.id -> comments.authorId (one-to-many)
  */
 
-import { User, UserProfile } from '@/types/users';
+import { User, UserProfile } from '@/types/users'
 
 export const mockUsers: User[] = [
   {
@@ -48,15 +48,15 @@ export const mockUsers: User[] = [
     bio: '🎮 Game developer',
     createdAt: '2023-06-10T09:20:00Z',
   },
-];
+]
 
 export const mockUserProfiles: UserProfile[] = mockUsers.map((user, index) => ({
   ...user,
   isFollowing: index % 2 === 0,
   followersCount: Math.floor(Math.random() * 1000) + 100,
-}));
+}))
 
 // Helper functions
 export const getUserById = (id: string): User | undefined => {
-  return mockUsers.find((user) => user.id === id);
-};
+  return mockUsers.find((user) => user.id === id)
+}

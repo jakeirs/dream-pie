@@ -1,11 +1,11 @@
-import React from 'react';
-import { View, Text, ScrollView, Image } from 'react-native';
-import { Button } from '@/components/ui';
-import { mockPostsWithAuthors, mockUsers } from '@/mockData';
+import React from 'react'
+import { View, Text, ScrollView, Image } from 'react-native'
+import { Button } from '@/components/ui'
+import { mockPostsWithAuthors, mockUsers } from '@/mockData'
 
 interface BottomSheetContentProps {
-  demo?: any; // For future extensibility with demo configs
-  onClose: () => void;
+  demo?: any // For future extensibility with demo configs
+  onClose: () => void
 }
 
 export const BottomSheetContent: React.FC<BottomSheetContentProps> = ({ demo, onClose }) => {
@@ -63,5 +63,5 @@ export const BottomSheetContent: React.FC<BottomSheetContentProps> = ({ demo, on
         </View>
       </ScrollView>
     </View>
-  );
-};
+  )
+}

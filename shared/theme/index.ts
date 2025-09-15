@@ -1,1 +1,1 @@
-export { brandColors, type BrandColors } from './colors';
+export { brandColors, type BrandColors } from './colors'

@@ -18,8 +18,8 @@
  * - Users: comments.authorId -> users.id (many-to-one)
  */
 
-import { Comment, CommentWithAuthor } from '@/types/content';
-import { getUserById } from '@/mockData/users';
+import { Comment, CommentWithAuthor } from '@/types/content'
+import { getUserById } from '@/mockData/users'
 
 export const mockComments: Comment[] = [
   {
@@ -54,10 +54,10 @@ export const mockComments: Comment[] = [
     likesCount: 12,
     createdAt: '2024-01-09T21:20:00Z',
   },
-];
+]
 
 export const mockCommentsWithAuthors: CommentWithAuthor[] = mockComments.map((comment) => {
-  const author = getUserById(comment.authorId);
+  const author = getUserById(comment.authorId)
   return {
     ...comment,
     author: {
@@ -66,14 +66,14 @@ export const mockCommentsWithAuthors: CommentWithAuthor[] = mockComments.map((co
       avatar: author?.avatar,
     },
     isLikedByUser: Math.random() > 0.6, // Random like status
-  };
-});
+  }
+})
 
 // Helper functions
 export const getCommentsByPostId = (postId: string): Comment[] => {
-  return mockComments.filter((comment) => comment.postId === postId);
-};
+  return mockComments.filter((comment) => comment.postId === postId)
+}
 
 export const getCommentsByAuthorId = (authorId: string): Comment[] => {
-  return mockComments.filter((comment) => comment.authorId === authorId);
-};
+  return mockComments.filter((comment) => comment.authorId === authorId)
+}

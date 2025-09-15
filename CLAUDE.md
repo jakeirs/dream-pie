@@ -40,6 +40,12 @@ import { mockUsers } from '@/mockData';
 
 **Configured in:** `babel.config.js`, `metro.config.js`, `tsconfig.json`
 
+## Code Style
+
+**Prettier Configuration:** `prettier.config.js` - No semicolons (`semi: false`)
+- `npm run format` - Auto-format code without semicolons
+- `npm run lint` - Check formatting and code quality
+
 **🚨 CRITICAL RULE:** "index" folder needs explicit `/index` filename:
 ```typescript
 // ✅ WORKS: Metro can't auto-resolve "index" folder

@@ -1,28 +1,28 @@
-import '../global.css';
-import { Stack } from 'expo-router';
-import * as SplashScreen from 'expo-splash-screen';
-import { StatusBar } from 'expo-status-bar';
-import { useEffect } from 'react';
-import 'react-native-reanimated';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { Platform } from 'react-native';
-import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
-import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
-import { brandColors } from '@/shared/theme';
+import '../global.css'
+import { Stack } from 'expo-router'
+import * as SplashScreen from 'expo-splash-screen'
+import { StatusBar } from 'expo-status-bar'
+import { useEffect } from 'react'
+import 'react-native-reanimated'
+import { GestureHandlerRootView } from 'react-native-gesture-handler'
+import { Platform } from 'react-native'
+import { BottomSheetModalProvider } from '@gorhom/bottom-sheet'
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context'
+import { brandColors } from '@/shared/theme'
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
-SplashScreen.preventAutoHideAsync();
+SplashScreen.preventAutoHideAsync()
 
 export const unstable_settings = {
   anchor: '(tabs)',
-};
+}
 
 export default function RootLayout() {
   useEffect(() => {
-    SplashScreen.hideAsync();
-  }, []);
+    SplashScreen.hideAsync()
+  }, [])
 
-  const backgroundColor = brandColors.background; // Theme background color
+  const backgroundColor = brandColors.background // Theme background color
 
   return (
     <GestureHandlerRootView style={{ flex: 1, backgroundColor }}>
@@ -54,5 +54,5 @@ export default function RootLayout() {
         </SafeAreaView>
       </SafeAreaProvider>
     </GestureHandlerRootView>
-  );
+  )
 }

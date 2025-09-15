@@ -5,7 +5,7 @@
  */
 
 // User data
-export { mockUsers, mockUserProfiles, getUserById } from './users';
+export { mockUsers, mockUserProfiles, getUserById } from './users'
 
 // User activity data
-export { mockUserActivities, getActivitiesByUserId, getActivitiesByType } from './userActivity';
+export { mockUserActivities, getActivitiesByUserId, getActivitiesByType } from './userActivity'

@@ -1,11 +1,11 @@
-const { getDefaultConfig } = require('expo/metro-config');
-const { withNativeWind } = require('nativewind/metro');
-const path = require('path');
+const { getDefaultConfig } = require('expo/metro-config')
+const { withNativeWind } = require('nativewind/metro')
+const path = require('path')
 
-const config = getDefaultConfig(__dirname);
+const config = getDefaultConfig(__dirname)
 
 // Extract resolver to preserve existing properties
-const { resolver } = config;
+const { resolver } = config
 
 config.resolver = {
   ...resolver,
@@ -20,6 +20,6 @@ config.resolver = {
     '@/mockData': path.resolve(__dirname, './mockData'),
     '@/shared': path.resolve(__dirname, './shared'),
   },
-};
+}
 
-module.exports = withNativeWind(config, { input: './global.css' });
+module.exports = withNativeWind(config, { input: './global.css' })

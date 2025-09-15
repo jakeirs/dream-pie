@@ -1,8 +1,8 @@
-import React from 'react';
-import { View, Text } from 'react-native';
-import Animated, { useAnimatedStyle } from 'react-native-reanimated';
-import { Card, Button, AnimatedBox } from '@/components/ui';
-import { InteractiveStarProps, FeatureShowcaseProps } from '../types';
+import React from 'react'
+import { View, Text } from 'react-native'
+import Animated, { useAnimatedStyle } from 'react-native-reanimated'
+import { Card, Button, AnimatedBox } from '@/components/ui'
+import { InteractiveStarProps, FeatureShowcaseProps } from '../types'
 
 export const InteractiveStar = ({ animations }: InteractiveStarProps) => {
   const animatedStyle = useAnimatedStyle(() => ({
@@ -10,7 +10,7 @@ export const InteractiveStar = ({ animations }: InteractiveStarProps) => {
       { scale: animations.values.scale.value },
       { rotate: `${animations.values.rotate.value}deg` },
     ],
-  }));
+  }))
 
   return (
     <View className="mb-8 items-center">
@@ -36,8 +36,8 @@ export const InteractiveStar = ({ animations }: InteractiveStarProps) => {
         )}
       </View>
     </View>
-  );
-};
+  )
+}
 
 export const FeatureShowcase = ({ cards, features }: FeatureShowcaseProps) => {
   return (
@@ -62,8 +62,8 @@ export const FeatureShowcase = ({ cards, features }: FeatureShowcaseProps) => {
         </Card>
       ))}
     </View>
-  );
-};
+  )
+}
 
 export const NavigationSuccess = () => {
   return (
@@ -73,8 +73,8 @@ export const NavigationSuccess = () => {
       variant="info"
       className="mb-6"
     />
-  );
-};
+  )
+}
 
 export const UserJourneyCard = () => {
   const journeySteps = [
@@ -84,7 +84,7 @@ export const UserJourneyCard = () => {
     '4. Tab switching is seamless',
     '5. State is preserved across tabs',
     '6. Interactive components respond beautifully',
-  ];
+  ]
 
   return (
     <Card title="📱 User Journey" variant="success" className="mt-4">
@@ -94,5 +94,5 @@ export const UserJourneyCard = () => {
         </Text>
       ))}
     </Card>
-  );
-};
+  )
+}

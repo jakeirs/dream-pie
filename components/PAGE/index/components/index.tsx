@@ -1,10 +1,10 @@
-import React from 'react';
-import { View, Text } from 'react-native';
-import { Button } from '@/components/ui';
-import { AnimationControlsType } from '../types';
+import React from 'react'
+import { View, Text } from 'react-native'
+import { Button } from '@/components/ui'
+import { AnimationControlsType } from '../types'
 
 interface AnimationControlsProps {
-  animations: AnimationControlsType;
+  animations: AnimationControlsType
 }
 
 export const AnimationControls = ({ animations }: AnimationControlsProps) => {
@@ -19,7 +19,7 @@ export const AnimationControls = ({ animations }: AnimationControlsProps) => {
     { title: 'Slide', onPress: animations.handleSlideAnimation, variant: 'primary' as const },
     { title: 'Flip', onPress: animations.handleFlipAnimation, variant: 'secondary' as const },
     { title: 'Pulse', onPress: animations.handlePulseAnimation, variant: 'warning' as const },
-  ];
+  ]
 
   return (
     <View className="mb-8 space-y-4">
@@ -32,8 +32,8 @@ export const AnimationControls = ({ animations }: AnimationControlsProps) => {
         ))}
       </View>
     </View>
-  );
-};
+  )
+}
 
 export const FeatureList = () => {
   const features = [
@@ -47,7 +47,7 @@ export const FeatureList = () => {
     'Now with Expo Router navigation! 🚀',
     'Centralized color theming system! 🎨',
     'Organized component structure',
-  ];
+  ]
 
   return (
     <View className="mt-8 rounded-lg border border-borderLight bg-card p-4 shadow">
@@ -58,7 +58,7 @@ export const FeatureList = () => {
         </Text>
       ))}
     </View>
-  );
-};
+  )
+}
 
-export { BottomSheetContent } from './BottomSheetContent';
+export { BottomSheetContent } from './BottomSheetContent'

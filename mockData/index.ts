@@ -5,7 +5,7 @@
  */
 
 // User-related mock data
-export * from './users';
+export * from './users'
 
 // Content-related mock data
-export * from './content';
+export * from './content'

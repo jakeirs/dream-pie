@@ -5,7 +5,7 @@
  */
 
 // Post data
-export { mockPosts, mockPostsWithAuthors, getPostById, getPostsByAuthorId } from './posts';
+export { mockPosts, mockPostsWithAuthors, getPostById, getPostsByAuthorId } from './posts'
 
 // Comment data
 export {
@@ -13,4 +13,4 @@ export {
   mockCommentsWithAuthors,
   getCommentsByPostId,
   getCommentsByAuthorId,
-} from './comments';
+} from './comments'

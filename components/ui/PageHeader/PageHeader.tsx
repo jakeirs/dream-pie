@@ -1,21 +1,21 @@
-import React from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
-import { useRouter } from 'expo-router';
-import { Icon, ICON_FAMILY_NAME } from '@/components/ui/icons';
-import { brandColors } from '@/shared/theme';
+import React from 'react'
+import { View, Text, TouchableOpacity } from 'react-native'
+import { useRouter } from 'expo-router'
+import { Icon, ICON_FAMILY_NAME } from '@/components/ui/icons'
+import { brandColors } from '@/shared/theme'
 
 interface PageHeaderProps {
-  title: string | React.ReactNode;
+  title: string | React.ReactNode
   rightIcon?: {
-    name: string;
-    family: ICON_FAMILY_NAME;
-    onPress: () => void;
-    color?: string;
-  };
-  backgroundColor?: string;
-  titleColor?: string;
-  iconColor?: string;
-  borderColor?: string;
+    name: string
+    family: ICON_FAMILY_NAME
+    onPress: () => void
+    color?: string
+  }
+  backgroundColor?: string
+  titleColor?: string
+  iconColor?: string
+  borderColor?: string
 }
 
 export function PageHeader({
@@ -26,7 +26,7 @@ export function PageHeader({
   iconColor = brandColors.textPrimary,
   borderColor = brandColors.borderLight,
 }: PageHeaderProps) {
-  const router = useRouter();
+  const router = useRouter()
 
   return (
     <View
@@ -69,5 +69,5 @@ export function PageHeader({
         )}
       </View>
     </View>
-  );
+  )
 }

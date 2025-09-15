@@ -31,6 +31,6 @@ export const brandColors = {
   // UI Elements
   border: '#E5E7EB', // Dividers, borders
   borderLight: '#F3F4F6', // Light borders on white backgrounds
-};
+}
 
-export type BrandColors = typeof brandColors;
+export type BrandColors = typeof brandColors

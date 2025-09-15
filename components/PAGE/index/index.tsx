@@ -1,31 +1,31 @@
-import React, { useRef, useCallback } from 'react';
-import { View, Text, ScrollView } from 'react-native';
-import Animated, { useAnimatedStyle, interpolateColor } from 'react-native-reanimated';
-import BottomSheetLib from '@gorhom/bottom-sheet';
-import { useAnimationControls } from './hooks';
-import { AnimationControls, FeatureList, BottomSheetContent } from './components';
-import { Button, PageHeader, ICON_FAMILY_NAME, BottomSheet } from '@/components/ui';
-import { IndexPageProps } from './types';
-import { brandColors } from '@/shared/theme';
+import React, { useRef, useCallback } from 'react'
+import { View, Text, ScrollView } from 'react-native'
+import Animated, { useAnimatedStyle, interpolateColor } from 'react-native-reanimated'
+import BottomSheetLib from '@gorhom/bottom-sheet'
+import { useAnimationControls } from './hooks'
+import { AnimationControls, FeatureList, BottomSheetContent } from './components'
+import { Button, PageHeader, ICON_FAMILY_NAME, BottomSheet } from '@/components/ui'
+import { IndexPageProps } from './types'
+import { brandColors } from '@/shared/theme'
 
 export default function IndexPage({ className = '' }: IndexPageProps) {
-  const { values, animations } = useAnimationControls();
+  const { values, animations } = useAnimationControls()
 
   // Bottom Sheet ref
-  const scrollViewBottomSheetRef = useRef<BottomSheetLib>(null);
+  const scrollViewBottomSheetRef = useRef<BottomSheetLib>(null)
 
   // Bottom sheet functions
   const handleOpenBottomSheet = useCallback(() => {
-    scrollViewBottomSheetRef.current?.expand();
-  }, []);
+    scrollViewBottomSheetRef.current?.expand()
+  }, [])
 
   const closeBottomSheet = useCallback((type: string) => {
-    scrollViewBottomSheetRef.current?.close();
-  }, []);
+    scrollViewBottomSheetRef.current?.close()
+  }, [])
 
   const handleSettingsPress = useCallback(() => {
-    console.log('Settings pressed!');
-  }, []);
+    console.log('Settings pressed!')
+  }, [])
 
   // Animated styles
   const animatedStyle = useAnimatedStyle(() => {
@@ -37,8 +37,8 @@ export default function IndexPage({ className = '' }: IndexPageProps) {
         { translateY: values.translateY.value },
       ],
       opacity: values.opacity.value,
-    };
-  });
+    }
+  })
 
   const colorAnimatedStyle = useAnimatedStyle(() => {
     return {
@@ -47,8 +47,8 @@ export default function IndexPage({ className = '' }: IndexPageProps) {
         [0, 1],
         [brandColors.accent, brandColors.error]
       ),
-    };
-  });
+    }
+  })
 
   return (
     <View className={`flex-1 bg-background ${className}`}>
@@ -102,5 +102,5 @@ export default function IndexPage({ className = '' }: IndexPageProps) {
         <BottomSheetContent demo={undefined} onClose={() => closeBottomSheet('scrollView')} />
       </BottomSheet>
     </View>
-  );
+  )
 }

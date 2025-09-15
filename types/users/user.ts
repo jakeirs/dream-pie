@@ -14,15 +14,15 @@
  */
 
 export interface User {
-  id: string;
-  username: string;
-  email: string;
-  avatar?: string;
-  bio?: string;
-  createdAt: string;
+  id: string
+  username: string
+  email: string
+  avatar?: string
+  bio?: string
+  createdAt: string
 }
 
 export interface UserProfile extends User {
-  isFollowing: boolean;
-  followersCount: number;
+  isFollowing: boolean
+  followersCount: number
 }

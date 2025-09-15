@@ -1,4 +1,4 @@
-import { defineConfig } from '@playwright/test';
+import { defineConfig } from '@playwright/test'
 
 /**
  * Simplified Playwright config - Chrome only, fastest possible setup
@@ -34,4 +34,4 @@ export default defineConfig({
   expect: {
     timeout: 5 * 1000, // 5 seconds for assertions
   },
-});
+})

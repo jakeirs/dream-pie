@@ -14,19 +14,19 @@
  */
 
 export interface Post {
-  id: string;
-  authorId: string;
-  content: string;
-  likesCount: number;
-  commentsCount: number;
-  createdAt: string;
+  id: string
+  authorId: string
+  content: string
+  likesCount: number
+  commentsCount: number
+  createdAt: string
 }
 
 export interface PostWithAuthor extends Post {
   author: {
-    id: string;
-    username: string;
-    avatar?: string;
-  };
-  isLikedByUser: boolean;
+    id: string
+    username: string
+    avatar?: string
+  }
+  isLikedByUser: boolean
 }

@@ -5,7 +5,7 @@
  */
 
 // User-related types
-export * from './users';
+export * from './users'
 
 // Content-related types
-export * from './content';
+export * from './content'

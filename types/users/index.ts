@@ -5,7 +5,7 @@
  */
 
 // User core types
-export type { User, UserProfile } from './user';
+export type { User, UserProfile } from './user'
 
 // User activity types
-export type { UserActivity, ActivityType } from './userActivity';
+export type { UserActivity, ActivityType } from './userActivity'

@@ -1,32 +1,32 @@
-import React from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
-import { router } from 'expo-router';
+import React from 'react'
+import { View, Text, TouchableOpacity } from 'react-native'
+import { router } from 'expo-router'
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withSpring,
   withTiming,
-} from 'react-native-reanimated';
+} from 'react-native-reanimated'
 
 export default function ModalScreen() {
-  const scale = useSharedValue(0.8);
-  const opacity = useSharedValue(0);
+  const scale = useSharedValue(0.8)
+  const opacity = useSharedValue(0)
 
   React.useEffect(() => {
-    scale.value = withSpring(1);
-    opacity.value = withTiming(1, { duration: 300 });
-  }, [scale, opacity]);
+    scale.value = withSpring(1)
+    opacity.value = withTiming(1, { duration: 300 })
+  }, [scale, opacity])
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: scale.value }],
     opacity: opacity.value,
-  }));
+  }))
 
   const handleClose = () => {
-    scale.value = withSpring(0.8);
-    opacity.value = withTiming(0, { duration: 200 });
-    setTimeout(() => router.back(), 200);
-  };
+    scale.value = withSpring(0.8)
+    opacity.value = withTiming(0, { duration: 200 })
+    setTimeout(() => router.back(), 200)
+  }
 
   return (
     <View className="flex-1 items-center justify-center bg-black/50 px-6">
@@ -58,5 +58,5 @@ export default function ModalScreen() {
         </TouchableOpacity>
       </Animated.View>
     </View>
-  );
+  )
 }

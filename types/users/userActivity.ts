@@ -14,11 +14,11 @@
  */
 
 export interface UserActivity {
-  id: string;
-  userId: string;
-  type: ActivityType;
-  targetId: string;
-  timestamp: string;
+  id: string
+  userId: string
+  type: ActivityType
+  targetId: string
+  timestamp: string
 }
 
-export type ActivityType = 'like' | 'follow' | 'post' | 'comment';
+export type ActivityType = 'like' | 'follow' | 'post' | 'comment'

@@ -14,7 +14,7 @@ import {
   Octicons,
   SimpleLineIcons,
   Zocial,
-} from '@expo/vector-icons';
+} from '@expo/vector-icons'
 
 export const IconFamilies: any = {
   AntDesign,
@@ -32,7 +32,7 @@ export const IconFamilies: any = {
   Octicons,
   SimpleLineIcons,
   Zocial,
-};
+}
 
 export enum ICON_FAMILY_NAME {
   AntDesign = 'AntDesign',

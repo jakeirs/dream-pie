@@ -1,9 +1,9 @@
-import React, { useCallback } from 'react';
-import { View, Text, ScrollView } from 'react-native';
-import { useExploreAnimations, useFeatureCards } from './hooks';
-import { InteractiveStar, FeatureShowcase, NavigationSuccess, UserJourneyCard } from './components';
-import { ExplorePageProps, FeatureCardData } from './types';
-import { PageHeader, ICON_FAMILY_NAME } from '@/components/ui';
+import React, { useCallback } from 'react'
+import { View, Text, ScrollView } from 'react-native'
+import { useExploreAnimations, useFeatureCards } from './hooks'
+import { InteractiveStar, FeatureShowcase, NavigationSuccess, UserJourneyCard } from './components'
+import { ExplorePageProps, FeatureCardData } from './types'
+import { PageHeader, ICON_FAMILY_NAME } from '@/components/ui'
 
 const featuresData: FeatureCardData[] = [
   {
@@ -58,15 +58,15 @@ const featuresData: FeatureCardData[] = [
       'Consistent design system',
     ],
   },
-];
+]
 
 export default function ExplorePage({ className = '' }: ExplorePageProps) {
-  const animations = useExploreAnimations();
-  const cards = useFeatureCards();
+  const animations = useExploreAnimations()
+  const cards = useFeatureCards()
 
   const handleSearchPress = useCallback(() => {
-    console.log('Search pressed!');
-  }, []);
+    console.log('Search pressed!')
+  }, [])
 
   return (
     <View className={`flex-1 bg-gray-100 ${className}`}>
@@ -110,5 +110,5 @@ export default function ExplorePage({ className = '' }: ExplorePageProps) {
         </View>
       </ScrollView>
     </View>
-  );
+  )
 }
