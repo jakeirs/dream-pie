@@ -1,5 +1,5 @@
 import { Tabs } from 'expo-router';
-import { Text } from 'react-native';
+import { Icon, ICON_FAMILY_NAME } from '@/components/ui';
 
 export default function TabLayout() {
   return (
@@ -18,14 +18,28 @@ export default function TabLayout() {
         name="index"
         options={{
           title: 'Home',
-          tabBarIcon: ({ color }) => <Text style={{ fontSize: 28, color }}>🏠</Text>,
+          tabBarIcon: ({ color }) => (
+            <Icon
+              family={ICON_FAMILY_NAME.Feather}
+              name="home"
+              size={24}
+              color={color}
+            />
+          ),
         }}
       />
       <Tabs.Screen
         name="explore"
         options={{
           title: 'Explore',
-          tabBarIcon: ({ color }) => <Text style={{ fontSize: 28, color }}>🌟</Text>,
+          tabBarIcon: ({ color }) => (
+            <Icon
+              family={ICON_FAMILY_NAME.Feather}
+              name="compass"
+              size={24}
+              color={color}
+            />
+          ),
         }}
       />
     </Tabs>

@@ -1,60 +1,24 @@
-import React from 'react';
-import {
-  FontAwesome5,
-  MaterialIcons,
-  Ionicons,
-  AntDesign
-} from '@expo/vector-icons';
-import { ICON_FAMILY_NAME } from './constants';
+import { ICON_FAMILY_NAME, IconFamilies } from "./constants"
 
-interface IconProps {
-  family: ICON_FAMILY_NAME;
-  name: string;
-  size?: number;
-  color?: string;
+interface IIconProps {
+  family: ICON_FAMILY_NAME
+  name: string
+  size?: number
+  color?: string
 }
 
-export function Icon({ family, name, size = 24, color = '#000' }: IconProps) {
-  switch (family) {
-    case ICON_FAMILY_NAME.FontAwesome5:
-      return (
-        <FontAwesome5
-          name={name as any}
-          size={size}
-          color={color}
-        />
-      );
-    case ICON_FAMILY_NAME.MaterialIcons:
-      return (
-        <MaterialIcons
-          name={name as any}
-          size={size}
-          color={color}
-        />
-      );
-    case ICON_FAMILY_NAME.Ionicons:
-      return (
-        <Ionicons
-          name={name as any}
-          size={size}
-          color={color}
-        />
-      );
-    case ICON_FAMILY_NAME.AntDesign:
-      return (
-        <AntDesign
-          name={name as any}
-          size={size}
-          color={color}
-        />
-      );
-    default:
-      return (
-        <FontAwesome5
-          name="question"
-          size={size}
-          color={color}
-        />
-      );
-  }
+// pass as family e.g. ICON_FAMILY_NAME.FontAwesome6 | not just FontAwesome6
+// to avoid error of displayName of undefined
+// https://icons.expo.fyi/Index
+export const Icon = ({ family, name, size = 24, color }: IIconProps) => {
+  const IconComponent = IconFamilies[family]
+
+  return (
+    <IconComponent
+      family={family}
+      name={name}
+      size={size}
+      color={color ?? "white"}
+    />
+  )
 }
