@@ -7,6 +7,7 @@ import { AnimationControls, FeatureList } from './components';
 import { Button, PageHeader, ICON_FAMILY_NAME } from '@/components/ui';
 import { IndexPageProps } from './types';
 import { mockPostsWithAuthors, mockUsers } from '@/mockData';
+import { brandColors } from '@/shared/theme';
 
 export default function IndexPage({ className = '' }: IndexPageProps) {
   const { values, animations } = useAnimationControls();
@@ -50,7 +51,7 @@ export default function IndexPage({ className = '' }: IndexPageProps) {
 
   const colorAnimatedStyle = useAnimatedStyle(() => {
     return {
-      backgroundColor: interpolateColor(values.colorProgress.value, [0, 1], ['#3B82F6', '#EF4444']),
+      backgroundColor: interpolateColor(values.colorProgress.value, [0, 1], [brandColors.accent, brandColors.error]),
     };
   });
 
@@ -106,8 +107,8 @@ export default function IndexPage({ className = '' }: IndexPageProps) {
         snapPoints={snapPoints}
         backdropComponent={renderBackdrop}
         enablePanDownToClose={true}
-        handleIndicatorStyle={{ backgroundColor: '#D1D5DB' }}
-        backgroundStyle={{ backgroundColor: '#FFFFFF' }}>
+        handleIndicatorStyle={{ backgroundColor: brandColors.textMuted }}
+        backgroundStyle={{ backgroundColor: brandColors.card }}>
         <BottomSheetView className="flex-1 p-6 bg-card">
           <Text className="mb-4 text-center text-2xl font-bold text-textPrimary">
             📱 Mock Data Demo

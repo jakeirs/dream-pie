@@ -8,6 +8,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Platform } from 'react-native';
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
+import { brandColors } from '@/shared/theme';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -21,7 +22,7 @@ export default function RootLayout() {
     SplashScreen.hideAsync();
   }, []);
 
-  const backgroundColor = '#f3f4f6'; // Light gray background
+  const backgroundColor = brandColors.background; // Theme background color
 
   return (
     <GestureHandlerRootView style={{ flex: 1, backgroundColor }}>

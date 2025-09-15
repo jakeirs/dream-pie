@@ -5,6 +5,7 @@ import BottomSheetLib, {
   BottomSheetBackdrop,
   BottomSheetProps as BottomSheetLibProps,
 } from '@gorhom/bottom-sheet';
+import { brandColors } from '@/shared/theme';
 
 export interface BottomSheetProps extends Omit<BottomSheetLibProps, 'children'> {
   children: React.ReactNode;
@@ -31,8 +32,8 @@ export const BottomSheet = forwardRef<BottomSheetLib, BottomSheetProps>(
       snapPoints,
       index: -1,
       enablePanDownToClose: true,
-      handleIndicatorStyle: { backgroundColor: '#D1D5DB' },
-      backgroundStyle: { backgroundColor: '#FFFFFF' },
+      handleIndicatorStyle: { backgroundColor: brandColors.textMuted },
+      backgroundStyle: { backgroundColor: brandColors.card },
       backdropComponent: renderBackdrop,
     };
 

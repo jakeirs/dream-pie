@@ -7,36 +7,36 @@ module.exports = {
     extend: {
       colors: {
         // Backgrounds
-        background: '#121212',        // Main app background (dark)
-        card: '#FFFFFF',              // Modal/card backgrounds (white)
-        cardSecondary: '#1C1C1E',     // Secondary cards (dark gray)
+        background: '#FAFAFA', // Main app background (light warm gray)
+        card: '#eaebee', // Modal/card backgrounds (warm off-white)
+        cardSecondary: '#F5F5F4', // Secondary cards (light warm gray)
 
         // Primary Brand Colors
-        primary: '#FDE047',           // Yellow CTA buttons (like "Share!")
+        primary: '#FDE047', // Yellow CTA buttons (like "Share!")
         primaryForeground: '#000000', // Text on yellow buttons
 
         // Text Colors
-        textPrimary: '#FFFFFF',       // Main headings (white text)
-        textSecondary: '#8E8E93',     // Captions, descriptions
-        textMuted: '#6B7280',         // Very subtle text
+        textPrimary: '#1F1F1F', // Main headings (dark gray)
+        textSecondary: '#6B7280', // Captions, descriptions
+        textMuted: '#9CA3AF', // Very subtle text
 
         // Interactive Elements
-        accent: '#007AFF',            // Links, active states (iOS blue)
-        accentForeground: '#FFFFFF',  // Text on accent elements
+        accent: '#007AFF', // Links, active states (iOS blue)
+        accentForeground: '#FFFFFF', // Text on accent elements
 
         // Status Colors
-        success: '#34C759',           // Success states, confirmations
+        success: '#34C759', // Success states, confirmations
         successForeground: '#FFFFFF',
 
-        warning: '#FF9500',           // Warning states, cautions
+        warning: '#FF9500', // Warning states, cautions
         warningForeground: '#FFFFFF',
 
-        error: '#FF453A',             // Error states, delete actions
+        error: '#FF453A', // Error states, delete actions
         errorForeground: '#FFFFFF',
 
         // UI Elements
-        border: '#38383A',            // Dividers, borders
-        borderLight: '#E5E5EA',       // Light borders on white backgrounds
+        border: '#E5E7EB', // Dividers, borders
+        borderLight: '#F3F4F6', // Light borders on white backgrounds
       },
     },
   },

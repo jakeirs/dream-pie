@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Icon, ICON_FAMILY_NAME } from '@/components/ui/icons';
+import { brandColors } from '@/shared/theme';
 
 interface PageHeaderProps {
   title: string | React.ReactNode;
@@ -20,10 +21,10 @@ interface PageHeaderProps {
 export function PageHeader({
   title,
   rightIcon,
-  backgroundColor = '#f3f4f6',
-  titleColor = '#1f2937',
-  iconColor = '#1f2937',
-  borderColor = '#e5e7eb'
+  backgroundColor = brandColors.background,
+  titleColor = brandColors.textPrimary,
+  iconColor = brandColors.textPrimary,
+  borderColor = brandColors.borderLight
 }: PageHeaderProps) {
   const router = useRouter();
 

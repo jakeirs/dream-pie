@@ -8,6 +8,7 @@ import Animated, {
   withSequence,
   interpolateColor,
 } from 'react-native-reanimated';
+import { brandColors } from '@/shared/theme';
 
 interface AnimatedBoxProps {
   children?: React.ReactNode;
@@ -113,7 +114,7 @@ export const AnimatedBox = ({
         backgroundColor: interpolateColor(
           colorProgress.value,
           [0, 0.5, 1],
-          ['#3B82F6', '#EF4444', '#10B981']
+          [brandColors.accent, brandColors.error, brandColors.success]
         ),
       };
     }

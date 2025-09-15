@@ -1,15 +1,16 @@
 import { Tabs } from 'expo-router';
 import { Icon, ICON_FAMILY_NAME } from '@/components/ui';
+import { brandColors } from '@/shared/theme';
 
 export default function TabLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: '#3B82F6',
-        tabBarInactiveTintColor: '#9CA3AF',
+        tabBarActiveTintColor: brandColors.primary,
+        tabBarInactiveTintColor: brandColors.textMuted,
         tabBarStyle: {
-          backgroundColor: '#FFFFFF',
-          borderTopColor: '#E5E7EB',
+          backgroundColor: brandColors.primaryForeground,
+          borderTopColor: brandColors.borderLight,
           height: 60,
         },
         headerShown: false,
@@ -19,12 +20,7 @@ export default function TabLayout() {
         options={{
           title: 'Home',
           tabBarIcon: ({ color }) => (
-            <Icon
-              family={ICON_FAMILY_NAME.Feather}
-              name="home"
-              size={24}
-              color={color}
-            />
+            <Icon family={ICON_FAMILY_NAME.Feather} name="home" size={24} color={color} />
           ),
         }}
       />
@@ -33,12 +29,7 @@ export default function TabLayout() {
         options={{
           title: 'Explore',
           tabBarIcon: ({ color }) => (
-            <Icon
-              family={ICON_FAMILY_NAME.Feather}
-              name="compass"
-              size={24}
-              color={color}
-            />
+            <Icon family={ICON_FAMILY_NAME.Feather} name="compass" size={24} color={color} />
           ),
         }}
       />
