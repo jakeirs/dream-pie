@@ -14,7 +14,7 @@ import {
   Octicons,
   SimpleLineIcons,
   Zocial,
-} from "@expo/vector-icons"
+} from '@expo/vector-icons';
 
 export const IconFamilies: any = {
   AntDesign,
@@ -32,22 +32,22 @@ export const IconFamilies: any = {
   Octicons,
   SimpleLineIcons,
   Zocial,
-}
+};
 
 export enum ICON_FAMILY_NAME {
-  AntDesign = "AntDesign",
-  Entypo = "Entypo",
-  EvilIcons = "EvilIcons",
-  Feather = "Feather",
-  FontAwesome = "FontAwesome",
-  FontAwesome5 = "FontAwesome5",
-  FontAwesome6 = "FontAwesome6",
-  Fontisto = "Fontisto",
-  Foundation = "Foundation",
-  Ionicons = "Ionicons",
-  MaterialIcons = "MaterialIcons",
-  MaterialCommunityIcons = "MaterialCommunityIcons",
-  Octicons = "Octicons",
-  SimpleLineIcons = "SimpleLineIcons",
-  Zocial = "SimpleLineIconZocials",
+  AntDesign = 'AntDesign',
+  Entypo = 'Entypo',
+  EvilIcons = 'EvilIcons',
+  Feather = 'Feather',
+  FontAwesome = 'FontAwesome',
+  FontAwesome5 = 'FontAwesome5',
+  FontAwesome6 = 'FontAwesome6',
+  Fontisto = 'Fontisto',
+  Foundation = 'Foundation',
+  Ionicons = 'Ionicons',
+  MaterialIcons = 'MaterialIcons',
+  MaterialCommunityIcons = 'MaterialCommunityIcons',
+  Octicons = 'Octicons',
+  SimpleLineIcons = 'SimpleLineIcons',
+  Zocial = 'SimpleLineIconZocials',
 }

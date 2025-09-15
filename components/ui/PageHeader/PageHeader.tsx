@@ -24,22 +24,20 @@ export function PageHeader({
   backgroundColor = brandColors.background,
   titleColor = brandColors.textPrimary,
   iconColor = brandColors.textPrimary,
-  borderColor = brandColors.borderLight
+  borderColor = brandColors.borderLight,
 }: PageHeaderProps) {
   const router = useRouter();
 
   return (
     <View
-      className="flex-row justify-between items-center px-4 py-3 border-b-[0.5px]"
+      className="flex-row items-center justify-between border-b-[0.5px] px-4 py-3"
       style={{
         backgroundColor,
-        borderBottomColor: borderColor
-      }}
-    >
+        borderBottomColor: borderColor,
+      }}>
       <TouchableOpacity
         onPress={() => router.back()}
-        className="w-10 h-10 justify-center items-center"
-      >
+        className="h-10 w-10 items-center justify-center">
         <Icon
           family={ICON_FAMILY_NAME.FontAwesome5}
           name="arrow-left"
@@ -48,12 +46,9 @@ export function PageHeader({
         />
       </TouchableOpacity>
 
-      <View className="flex-1 items-center mx-4">
+      <View className="mx-4 flex-1 items-center">
         {typeof title === 'string' ? (
-          <Text
-            className="text-xl font-semibold"
-            style={{ color: titleColor }}
-          >
+          <Text className="text-xl font-semibold" style={{ color: titleColor }}>
             {title}
           </Text>
         ) : (
@@ -61,7 +56,7 @@ export function PageHeader({
         )}
       </View>
 
-      <View className="w-10 h-10 justify-center items-center">
+      <View className="h-10 w-10 items-center justify-center">
         {rightIcon && (
           <TouchableOpacity onPress={rightIcon.onPress}>
             <Icon

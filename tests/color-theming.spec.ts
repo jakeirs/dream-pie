@@ -19,7 +19,7 @@ test.describe('Color Theming System', () => {
     // Take screenshot to verify theming
     await page.screenshot({
       path: 'tests/screenshots/color-theming-dark-background.png',
-      fullPage: true
+      fullPage: true,
     });
 
     // Check if primary text is visible (white text on dark background)
@@ -33,8 +33,16 @@ test.describe('Color Theming System', () => {
 
     // Check that specific button variants are present by using more specific selectors
     const buttons = [
-      'Scale', 'Rotate', 'Bounce', 'Shake', 'Fade',
-      'Color', 'Spin', 'Slide', 'Flip', 'Pulse'
+      'Scale',
+      'Rotate',
+      'Bounce',
+      'Shake',
+      'Fade',
+      'Color',
+      'Spin',
+      'Slide',
+      'Flip',
+      'Pulse',
     ];
 
     for (const buttonText of buttons) {
@@ -46,7 +54,7 @@ test.describe('Color Theming System', () => {
     // Take screenshot of button variants
     await page.screenshot({
       path: 'tests/screenshots/color-theming-button-variants.png',
-      fullPage: true
+      fullPage: true,
     });
   });
 
@@ -68,7 +76,7 @@ test.describe('Color Theming System', () => {
     // Take screenshot of themed bottom sheet
     await page.screenshot({
       path: 'tests/screenshots/color-theming-bottom-sheet.png',
-      fullPage: true
+      fullPage: true,
     });
   });
 
@@ -88,7 +96,7 @@ test.describe('Color Theming System', () => {
     // Take screenshot after interaction
     await page.screenshot({
       path: 'tests/screenshots/color-theming-error-button.png',
-      fullPage: true
+      fullPage: true,
     });
   });
 
@@ -104,7 +112,7 @@ test.describe('Color Theming System', () => {
     // Take screenshot of themed feature list
     await page.screenshot({
       path: 'tests/screenshots/color-theming-feature-list.png',
-      fullPage: true
+      fullPage: true,
     });
   });
 
@@ -126,18 +134,18 @@ test.describe('Color Theming System', () => {
     const likeText = page.locator('text=/❤️.*likes/').first();
     const commentText = page.locator('text=/💬.*comments/').first();
 
-    if (await likeText.count() > 0) {
+    if ((await likeText.count()) > 0) {
       await expect(likeText).toBeVisible();
     }
 
-    if (await commentText.count() > 0) {
+    if ((await commentText.count()) > 0) {
       await expect(commentText).toBeVisible();
     }
 
     // Take screenshot of themed mock data
     await page.screenshot({
       path: 'tests/screenshots/color-theming-mock-data.png',
-      fullPage: true
+      fullPage: true,
     });
 
     // Close bottom sheet

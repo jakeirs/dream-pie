@@ -1,5 +1,5 @@
-import { TouchableOpacity } from "react-native";
-import { ICON_FAMILY_NAME, IconFamilies } from "./constants";
+import { TouchableOpacity } from 'react-native';
+import { ICON_FAMILY_NAME, IconFamilies } from './constants';
 
 interface IIconButtonProps {
   family: ICON_FAMILY_NAME;
@@ -10,13 +10,7 @@ interface IIconButtonProps {
 }
 
 // https://icons.expo.fyi/Index
-export const IconButton = ({
-  family,
-  name,
-  size = 24,
-  onPress,
-  color,
-}: IIconButtonProps) => {
+export const IconButton = ({ family, name, size = 24, onPress, color }: IIconButtonProps) => {
   const IconComponent = IconFamilies[family];
 
   if (!IconComponent) {
@@ -25,16 +19,8 @@ export const IconButton = ({
   }
 
   return (
-    <TouchableOpacity
-      onPress={onPress}
-      hitSlop={{ top: 10, right: 10, bottom: 10, left: 10 }}
-    >
-      <IconComponent
-        family={family}
-        name={name}
-        size={size}
-        color={color ? color : "white"}
-      />
+    <TouchableOpacity onPress={onPress} hitSlop={{ top: 10, right: 10, bottom: 10, left: 10 }}>
+      <IconComponent family={family} name={name} size={size} color={color ? color : 'white'} />
     </TouchableOpacity>
   );
 };

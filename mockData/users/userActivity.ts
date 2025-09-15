@@ -60,9 +60,9 @@ export const mockUserActivities: UserActivity[] = [
 
 // Helper functions
 export const getActivitiesByUserId = (userId: string): UserActivity[] => {
-  return mockUserActivities.filter(activity => activity.userId === userId);
+  return mockUserActivities.filter((activity) => activity.userId === userId);
 };
 
 export const getActivitiesByType = (type: ActivityType): UserActivity[] => {
-  return mockUserActivities.filter(activity => activity.type === type);
+  return mockUserActivities.filter((activity) => activity.type === type);
 };

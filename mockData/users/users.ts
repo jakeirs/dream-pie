@@ -25,7 +25,8 @@ export const mockUsers: User[] = [
     id: '1',
     username: 'alex_dev',
     email: 'alex@example.com',
-    avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face',
+    avatar:
+      'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face',
     bio: '🚀 React Native developer',
     createdAt: '2023-01-15T10:30:00Z',
   },
@@ -33,7 +34,8 @@ export const mockUsers: User[] = [
     id: '2',
     username: 'maria_design',
     email: 'maria@example.com',
-    avatar: 'https://images.unsplash.com/photo-1494790108755-2616b612b5a2?w=150&h=150&fit=crop&crop=face',
+    avatar:
+      'https://images.unsplash.com/photo-1494790108755-2616b612b5a2?w=150&h=150&fit=crop&crop=face',
     bio: '🎨 UX Designer',
     createdAt: '2023-03-22T16:45:00Z',
   },
@@ -41,7 +43,8 @@ export const mockUsers: User[] = [
     id: '3',
     username: 'david_games',
     email: 'david@example.com',
-    avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face',
+    avatar:
+      'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face',
     bio: '🎮 Game developer',
     createdAt: '2023-06-10T09:20:00Z',
   },
@@ -55,5 +58,5 @@ export const mockUserProfiles: UserProfile[] = mockUsers.map((user, index) => ({
 
 // Helper functions
 export const getUserById = (id: string): User | undefined => {
-  return mockUsers.find(user => user.id === id);
+  return mockUsers.find((user) => user.id === id);
 };

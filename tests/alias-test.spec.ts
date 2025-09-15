@@ -30,10 +30,11 @@ test.describe('Path Aliases Test', () => {
     await page.screenshot({ path: 'tests/screenshots/alias-test.png', fullPage: true });
 
     // Check for specific error patterns that would indicate alias issues
-    const hasAliasErrors = consoleErrors.some(error => 
-      error.includes('Unable to resolve') || 
-      error.includes('@/components') ||
-      error.includes('Module not found')
+    const hasAliasErrors = consoleErrors.some(
+      (error) =>
+        error.includes('Unable to resolve') ||
+        error.includes('@/components') ||
+        error.includes('Module not found')
     );
 
     // If we have alias errors, fail the test with details

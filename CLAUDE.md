@@ -1,26 +1,14 @@
 # My Expo App - CLAUDE.md
 
 ## Project Overview
-React Native Expo app demonstrating **React Native Reanimated 4.1.0** and **@gorhom/bottom-sheet** integration with **Expo Router** navigation and **NativeWind** styling. Features a professional component architecture with organized folder structure.
+React Native Expo app with **Reanimated 4.1.0**, **@gorhom/bottom-sheet**, **Expo Router**, and **NativeWind**. Professional component architecture with path aliases.
 
-## Current Architecture
+## Key Dependencies
+- **Expo SDK**: 54.0.2 | **React Native**: 0.81.4
+- **React Native Reanimated**: 4.1.0 | **@gorhom/bottom-sheet**: 5.2.6
+- **Expo Router** | **NativeWind** | **babel-plugin-module-resolver**: 5.0.2
 
-### Dependencies
-- **Expo SDK**: 54.0.2
-- **React Native**: 0.81.4
-- **Expo Router**: File-based routing system
-- **React Native Reanimated**: 4.1.0
-- **@gorhom/bottom-sheet**: 5.2.6
-- **NativeWind**: Latest (Tailwind CSS for React Native)
-- **React Native Gesture Handler**: 2.28.0
-- **React Native Safe Area Context**: 5.6.0
-- **babel-plugin-module-resolver**: 5.0.2 (Path aliases support)
-
-## 🔗 **Path Alias System**
-
-This project implements a comprehensive **absolute import alias system** to simplify imports and improve code maintainability. The system is configured across Babel, Metro, and TypeScript for full compatibility.
-
-### **🚀 Available Aliases**
+## Path Alias System
 
 | Alias | Path | Usage |
 |-------|------|--------|
@@ -33,227 +21,41 @@ This project implements a comprehensive **absolute import alias system** to simp
 | `@/types` | `./types` | TypeScript interfaces |
 | `@/mockData` | `./mockData` | Mock data files |
 
-### **✅ Correct Usage Examples**
-
-#### **Route Files (app/ directory):**
+**Usage:**
 ```typescript
-// ✅ CORRECT - Based on actual working patterns
-
-// Special case: "index" folder requires explicit /index
+// ✅ CRITICAL: "index" folder needs explicit /index
 import IndexPage from '@/components/PAGE/index/index';
 
-// Normal case: other folders work with auto-resolution
-import ExplorePage from '@/components/PAGE/explore';       // ✅ WORKS (auto-resolves)
-import ProfilePage from '@/components/PAGE/profile';       // ✅ WORKS (auto-resolves)
+// ✅ Other folders auto-resolve
+import ExplorePage from '@/components/PAGE/explore';
 
-// These also work but are optional for non-index folders:
-import ExplorePage from '@/components/PAGE/explore/index'; // ✅ ALSO WORKS
-import ProfilePage from '@/components/PAGE/profile/index'; // ✅ ALSO WORKS
+// ❌ FAILS: Metro can't resolve this
+import IndexPage from '@/components/PAGE/index';
 
-// ❌ INCORRECT - This specific pattern fails
-import IndexPage from '@/components/PAGE/index';  // ❌ FAILS - Metro can't resolve this
-
-// Example usage:
-// app/(tabs)/index.tsx
-export default function IndexScreen() {
-  return <IndexPage />;
-}
-
-// app/(tabs)/explore.tsx
-export default function ExploreScreen() {
-  return <ExplorePage />;
-}
-```
-
-#### **Component Files:**
-```typescript
-// ✅ UI Components
-import { Button, Card, AnimatedBox, BottomSheet } from '@/components/ui';
-
-// ✅ Assets
-import logo from '@/assets/images/logo.png';
-import icon from '@/assets/icons/star.svg';
-
-// ✅ Page Components (when importing between pages)
-import HomePage from '@/components/PAGE/index/index';
-
-// ✅ Types and Mock Data
-import { User, Post } from '@/types';
-import { mockUsers, mockPosts } from '@/mockData';
-```
-
-### **🔧 Configuration Files**
-
-#### **babel.config.js**
-```javascript
-module.exports = function (api) {
-  api.cache(true);
-  let plugins = [
-    'react-native-worklets/plugin',
-    [
-      'module-resolver',
-      {
-        root: ['./'],
-        alias: {
-          '@': './',
-          '@/components': './components',
-          '@/components/ui': './components/ui',
-          '@/components/PAGE': './components/PAGE',
-          '@/assets': './assets',
-          '@/app': './app',
-          'tailwind.config': './tailwind.config.js',
-        },
-      },
-    ],
-  ];
-
-  return {
-    presets: [['babel-preset-expo', { jsxImportSource: 'nativewind' }], 'nativewind/babel'],
-    plugins,
-  };
-};
-```
-
-#### **metro.config.js**
-```javascript
-const { getDefaultConfig } = require('expo/metro-config');
-const { withNativeWind } = require('nativewind/metro');
-const path = require('path');
-
-const config = getDefaultConfig(__dirname);
-
-// Extract resolver to preserve existing properties
-const { resolver } = config;
-
-config.resolver = {
-  ...resolver,
-  alias: {
-    '@': path.resolve(__dirname, '.'),
-    '@/components': path.resolve(__dirname, './components'),
-    '@/components/ui': path.resolve(__dirname, './components/ui'),
-    '@/components/PAGE': path.resolve(__dirname, './components/PAGE'),
-    '@/assets': path.resolve(__dirname, './assets'),
-    '@/app': path.resolve(__dirname, './app'),
-  },
-};
-
-module.exports = withNativeWind(config, { input: './global.css' });
-```
-
-#### **tsconfig.json**
-```json
-{
-  "extends": "expo/tsconfig.base",
-  "compilerOptions": {
-    "strict": true,
-    "jsx": "react-jsx",
-    "baseUrl": ".",
-    "paths": {
-      "@/*": ["./*"],
-      "@/components/*": ["./components/*"],
-      "@/components/ui/*": ["./components/ui/*"],
-      "@/components/PAGE/*": ["./components/PAGE/*"],
-      "@/assets/*": ["./assets/*"],
-      "@/app/*": ["./app/*"]
-    }
-  }
-}
-```
-
-### **⚠️ Critical Import Rules**
-
-#### **1. Page Component Imports (Most Important)**
-
-**📁 Actual File Structure:**
-```
-components/PAGE/
-├── index/
-│   └── index.tsx      # Main component file
-└── explore/
-    └── index.tsx      # Main component file
-```
-
-**✅ CORRECT Import Patterns:**
-```typescript
-// Special case: "index" folder requires double index
-import IndexPage from '@/components/PAGE/index/index';
-
-// Normal case: other folders can omit the /index
-import ExplorePage from '@/components/PAGE/explore';  // ✅ WORKS
-// OR with explicit /index (also works)
-import ExplorePage from '@/components/PAGE/explore/index'; // ✅ ALSO WORKS
-
-// ❌ This FAILS because there's no automatic index resolution for "index" folder
-import IndexPage from '@/components/PAGE/index';  // ❌ FAILS - Metro can't resolve
-```
-
-**🔍 Critical Rule**: The folder named `index` requires the explicit `/index` file name because Metro bundler cannot auto-resolve `@/components/PAGE/index` to `@/components/PAGE/index/index.tsx`. For all other folder names, Metro can auto-resolve to the `index.tsx` file inside.
-
-#### **2. UI Component Imports**
-```typescript
-// ✅ Import from the main UI index (recommended)
+// ✅ Standard imports
 import { Button, Card } from '@/components/ui';
-
-// ✅ Import specific components (also works)
-import { Button } from '@/components/ui/Button';
-import { Card } from '@/components/ui/Card';
+import { User, Post } from '@/types';
+import { mockUsers } from '@/mockData';
 ```
 
-#### **3. Asset Imports**
+**Configured in:** `babel.config.js`, `metro.config.js`, `tsconfig.json`
+
+**🚨 CRITICAL RULE:** "index" folder needs explicit `/index` filename:
 ```typescript
-// ✅ Static assets
-import heroImage from '@/assets/images/hero.png';
-import appIcon from '@/assets/icons/app-icon.svg';
+// ✅ WORKS: Metro can't auto-resolve "index" folder
+import IndexPage from '@/components/PAGE/index/index';
 
-// ✅ Fonts and other assets
-import customFont from '@/assets/fonts/custom.ttf';
+// ❌ FAILS: Metro bundler issue
+import IndexPage from '@/components/PAGE/index';
 ```
 
-### **🚨 Common Pitfalls**
-
-#### **Metro Bundling Errors**
+**🛠️ Troubleshooting:**
 ```bash
-# Error: "Unable to resolve module @/components/PAGE"
-# Cause: Trying to import "index" folder without explicit file name
-
-# The ONLY problematic pattern:
-# ❌ Wrong: import IndexPage from '@/components/PAGE/index';
-# ✅ Fix:   import IndexPage from '@/components/PAGE/index/index';
-
-# All other folders work fine with auto-resolution:
-# ✅ Works: import ExplorePage from '@/components/PAGE/explore';
-# ✅ Works: import ProfilePage from '@/components/PAGE/profile';
-```
-
-#### **TypeScript Errors**
-```bash
-# Error: "Cannot find module '@/components'"
-# Cause: TypeScript path mapping not configured
-# ✅ Fix: Verify tsconfig.json paths are correct
-```
-
-### **🛠️ Troubleshooting Aliases**
-
-#### **Testing Alias Resolution**
-```bash
-# 1. Check TypeScript compilation
-npx tsc --noEmit
-
-# 2. Clear Metro cache and restart
+# Clear cache and restart
 npm start -- --reset-cache --clear
 
-# 3. Verify all config files are correct
-# Check: babel.config.js, metro.config.js, tsconfig.json
-```
-
-#### **Common Solutions**
-```bash
-# If aliases don't work:
-1. Restart development server completely
-2. Clear all caches: npm start -- --reset-cache
-3. Check file paths match exactly
-4. Verify babel-plugin-module-resolver is installed
-5. Ensure Metro config preserves existing resolver properties
+# Check TypeScript
+npx tsc --noEmit
 ```
 
 ### 🚀 **React Native Reanimated 4.x Gesture API**
@@ -747,159 +549,20 @@ import { mockUsers } from '@/mockData';
 - Create mock data without corresponding types
 - Use relative imports (always use path aliases)
 
-## 🎨 **Color Branding & Design System**
+## Colors
 
-### **🌈 Unified Theme Architecture**
+**Files:** `shared/theme/colors.ts` + `tailwind.config.js` (sync both)
 
-This project implements a **dual theme system** to ensure consistent color usage across all components and styling approaches:
+**DO:**
+- `import { brandColors } from '@/shared/theme'`
+- `className="bg-background text-textPrimary"`
 
-1. **`shared/theme/colors.ts`** - TypeScript theme definitions for direct programmatic access
-2. **`tailwind.config.js`** - Tailwind CSS theme colors for className-based styling
+**DON'T:**
+- Hardcode hex values
+- Use `#FFFFFF` → use `brandColors.card`
+- Use `#000000` → use `brandColors.textPrimary`
 
-**Critical Rule**: Both systems MUST stay perfectly synchronized. Any color changes must be applied to both files simultaneously.
-
-**Current Aesthetic**: Light, warm, professional design with subtle warm grays and clean typography. Avoids stark whites and pure blacks for a more sophisticated, approachable feel.
-
-### **🎯 Brand Color Palette**
-
-| Color Token | Hex Value | Usage | Example |
-|-------------|-----------|--------|---------|
-| **Backgrounds** |
-| `background` | `#FAFAFA` | Main app background | Page containers, root backgrounds |
-| `card` | `#ececef` | Modal/card backgrounds | Cards, modals, elevated surfaces |
-| `cardSecondary` | `#F5F5F4` | Secondary cards/surfaces | Secondary content, subtle backgrounds |
-| **Brand Colors** |
-| `primary` | `#FDE047` | 🟡 Signature yellow CTA buttons | "Share!", "Create", primary actions |
-| `primaryForeground` | `#000000` | Text on primary buttons | Button text, high contrast on yellow |
-| **Text Hierarchy** |
-| `textPrimary` | `#1F1F1F` | Main headings, important text | Page titles, primary content |
-| `textSecondary` | `#6B7280` | Captions, descriptions | Subtitles, secondary information |
-| `textMuted` | `#9CA3AF` | Subtle text, placeholders | Hints, disabled text, very subtle info |
-| **Interactive Elements** |
-| `accent` | `#007AFF` | Links, active states | Links, selected tabs, active elements |
-| `accentForeground` | `#FFFFFF` | Text on accent elements | Text on blue backgrounds |
-| **Status Colors** |
-| `success` | `#34C759` | Success states | Confirmations, positive feedback |
-| `warning` | `#FF9500` | Warning states | Cautions, attention needed |
-| `error` | `#FF453A` | Error states | Errors, delete actions, failures |
-| **UI Elements** |
-| `border` | `#E5E7EB` | Dividers, borders | Card borders, separators |
-| `borderLight` | `#F3F4F6` | Subtle borders | Light separators, very subtle divisions |
-
-### **✅ Color Usage Rules**
-
-#### **✅ DO:**
-- **Always use `brandColors` from `@/shared/theme` for programmatic color access**
-- **Always use Tailwind theme classes for className-based styling** (`bg-background`, `text-textPrimary`)
-- **Keep both theme systems synchronized** when adding new colors
-- **Maintain the warm, light aesthetic** that defines the app's visual identity
-- **Use proper contrast ratios** for accessibility (test with tools)
-- **Import theme colors**: `import { brandColors } from '@/shared/theme';`
-- **Test color combinations** on both light and dark displays
-
-#### **❌ DON'T:**
-- **NEVER hardcode hex values** - always use theme variables or Tailwind classes
-- **NEVER use stark white** (`#FFFFFF`) - use `brandColors.card` for warm off-white
-- **NEVER use pure black** (`#000000` for text) - use `brandColors.textPrimary` for readable dark gray
-- **NEVER add colors to only one theme system** - sync both files always
-- **NEVER break the warm, professional aesthetic** with harsh or bright colors
-- **NEVER bypass the theme system** with inline styles or hardcoded values
-
-### **🛠️ Implementation Patterns**
-
-#### **Direct Color Access (TypeScript)**
-```typescript
-// ✅ CORRECT - Import and use theme colors
-import { brandColors } from '@/shared/theme';
-
-// Style objects
-const styles = {
-  backgroundColor: brandColors.card,
-  color: brandColors.textPrimary,
-  borderColor: brandColors.border,
-};
-
-// Animation color interpolation
-interpolateColor(progress, [0, 1], [brandColors.accent, brandColors.success]);
-
-// Component props
-<Component backgroundColor={brandColors.background} />
-```
-
-#### **Tailwind Classes (NativeWind)**
-```typescript
-// ✅ CORRECT - Use theme classes
-className="bg-background text-textPrimary border-border"
-className="bg-card text-textSecondary"
-className="bg-primary text-primaryForeground" // Yellow button
-className="text-accent" // Blue link text
-className="bg-success text-successForeground" // Success button
-
-// ❌ INCORRECT - Hardcoded colors
-className="bg-white text-black" // Use bg-card text-textPrimary
-className="bg-gray-100 text-gray-900" // Use theme equivalents
-```
-
-#### **React Native Reanimated Colors**
-```typescript
-// ✅ CORRECT - Theme colors in animations
-import { brandColors } from '@/shared/theme';
-
-const colorStyle = useAnimatedStyle(() => ({
-  backgroundColor: interpolateColor(
-    progress.value,
-    [0, 0.5, 1],
-    [brandColors.card, brandColors.primary, brandColors.success]
-  ),
-}));
-```
-
-### **🎨 Design Principles**
-
-#### **1. Light & Warm Aesthetic**
-- Warm gray backgrounds create a sophisticated, approachable feel
-- Avoid stark white/black combinations
-- Use subtle color transitions and soft shadows
-
-#### **2. Professional & Clean**
-- Maintain clean typography hierarchy with proper contrast
-- Use consistent spacing and rounded corners (following existing patterns)
-- Keep the design modern but not trendy - timeless professionalism
-
-#### **3. Accessible & Readable**
-- Ensure proper contrast ratios (4.5:1 minimum for normal text)
-- Test readability across different devices and lighting conditions
-- Provide clear visual hierarchy through color and typography
-
-#### **4. Consistent & Systematic**
-- Use theme colors exclusively - no one-off color decisions
-- Follow established patterns for similar UI elements
-- Maintain consistency across all pages and components
-
-### **📍 Theme File Locations**
-
-| File | Purpose | Usage Pattern |
-|------|---------|---------------|
-| `shared/theme/colors.ts` | TypeScript color definitions | `import { brandColors } from '@/shared/theme'` |
-| `shared/theme/index.ts` | Theme exports | Re-exports `brandColors` and types |
-| `tailwind.config.js` | Tailwind CSS theme | Automatic via `className="bg-background"` |
-
-### **🔍 Color Accessibility Guidelines**
-
-#### **Contrast Requirements:**
-- **Normal text**: 4.5:1 contrast ratio minimum
-- **Large text** (18pt+): 3:1 contrast ratio minimum
-- **Interactive elements**: Must be clearly distinguishable
-
-#### **Testing Tools:**
-- WebAIM Contrast Checker
-- Chrome DevTools Accessibility panel
-- Color Oracle (colorblind simulation)
-
-#### **Common Pitfalls to Avoid:**
-- Low contrast gray-on-gray combinations
-- Relying only on color to convey information
-- Using colors that are indistinguishable to colorblind users
+*See `shared/theme/colors.ts` or `tailwind.config.js` for all available colors*
 
 ## Current Features
 
@@ -1042,350 +705,92 @@ netstat -ano | findstr :8081
 - Use `npx kill-port` to clean up all development ports at once
 - Always start fresh with `npm start -- --reset-cache` after cleaning ports
 
-## 🧪 **Testing & Quality Assurance Workflow**
+## AI Agent Development Protocol
 
-### **🚀 AI Agent Development Protocol**
+**MANDATORY 6-Step Workflow:**
 
-**MANDATORY WORKFLOW**: When implementing features or tasks, AI agents MUST follow this testing protocol:
+1. **📋 Read Configuration:** CLAUDE.md + package.json
+2. **🛠️ Clean Environment:**
+   ```bash
+   npx kill-port 8081 8083 8084 8085 8086 8087
+   npm start -- --reset-cache
+   ```
+3. **🔍 Test Manually:** Visit `http://localhost:8081`, verify functionality
+4. **📊 Monitor Logs:** Watch terminal + browser console for errors
+5. **✅ Validation Checklist:**
+   - [ ] App starts on port 8081 without errors
+   - [ ] Feature works as intended
+   - [ ] No console errors
+   - [ ] No regressions
+6. **🔧 Quality Check:**
+   ```bash
+   npm run lint
+   npm run format
+   ```
 
-#### **📋 Step 1: Read Project Configuration**
+**Common Issues:**
+- Port conflicts: Use `npx kill-port` command above
+- Gesture errors: Use new `Gesture.Pan()` API, not `useAnimatedGestureHandler`
+- Import errors: Check path aliases, clear Metro cache
+
+**Testing & Quality:**
 ```bash
-# Always start by reading these files
-# 1. CLAUDE.md - Project architecture and guidelines
-# 2. package.json - Available scripts and dependencies
+npm run test          # Run tests
+npm run lint          # Check code quality
+npm run format        # Fix formatting
 ```
 
-#### **🛠️ Step 2: Port Management & App Startup**
+**Platform:**
 ```bash
-# Ensure clean development environment
-npx kill-port 8081 8083 8084 8085 8086 8087
-
-# Start development server on port 8081
-npm start -- --reset-cache
-
-# IMPORTANT: Always use port 8081 for consistency
-# Wait for "Metro waiting on exp://192.168.x.x:8081" message
+npm run android       # Android
+npm run ios          # iOS
+npm run web          # Web browser
 ```
 
-#### **🔍 Step 3: Feature Testing Protocol**
+## Development Rules
 
-**Basic Functionality Test:**
-```bash
-# Navigate to feature page/component in browser
-# Visit: http://localhost:8081
-# Test core functionality manually
-# Verify no crashes or errors in console
-```
+**✅ DO:**
+- Keep `app/` routes minimal (single import only)
+- Mirror `app/` structure exactly in `components/PAGE/`
+- Use absolute imports with aliases: `@/components/ui`
+- **CRITICAL:** Index folder needs explicit path: `@/components/PAGE/index/index`
+- Use `Gesture.Pan()` + `GestureDetector` (Reanimated 4.x)
+- Use `onUpdate()` instead of `onActive()`
+- Import gestures from `react-native-gesture-handler`
+- Follow 6-step AI Agent Development Protocol
+- Test all features manually at `http://localhost:8081`
+- Use theme colors: `import { brandColors } from '@/shared/theme'`
+- Sync both `shared/theme/colors.ts` & `tailwind.config.js`
 
-**Automated Test Execution:**
-```bash
-# Run specific feature tests
-npm run test
+**❌ DON'T:**
+- Put business logic in `app/` route files
+- Use relative imports
+- **NEVER:** `@/components/PAGE/index` (fails Metro resolution)
+- **NEVER:** `useAnimatedGestureHandler` (removed in 4.x)
+- **NEVER:** Import gestures from `react-native-reanimated`
+- Skip testing protocol
+- Ignore console errors
+- Hardcode color hex values
+- Use `#FFFFFF` (use `brandColors.card`)
+- Use `#000000` for text (use `brandColors.textPrimary`)
 
-# Debug mode for step-by-step verification
-npm run test:debug
 
-# Test specific files
-npx playwright test tests/[feature-name].spec.ts
-```
+## Quick Reference
 
-#### **📊 Step 4: Error Analysis & Log Monitoring**
+**Essential Workflow:**
+1. Read CLAUDE.md + package.json
+2. `npx kill-port 8081 8083 8084 8085 8086 8087 && npm start -- --reset-cache`
+3. Test at `http://localhost:8081`
+4. Monitor terminal + browser console
+5. Validate no crashes/errors
+6. `npm run lint && npm run format`
 
-**Monitor Development Logs:**
-```bash
-# Watch for these error patterns in terminal:
-# ❌ "Error: Unable to resolve module" - Import/path issues
-# ❌ "TypeError" - Reanimated 4.x gesture API issues
-# ❌ "ReferenceError" - Component/hook not found
-# ❌ "Metro bundler failed" - Build issues
-# ❌ "Network request failed" - Port/connectivity issues
-```
-
-**Browser Console Monitoring:**
-```bash
-# Open browser DevTools (F12)
-# Check Console tab for errors:
-# ❌ Red errors = Critical issues
-# ⚠️ Yellow warnings = Non-critical but should fix
-# ✅ No errors = Solution working correctly
-```
-
-#### **✅ Step 5: Solution Validation Checklist**
-
-**Pre-Completion Requirements:**
-- [ ] App starts without errors on port 8081
-- [ ] Feature page loads without crashes
-- [ ] Core functionality works as expected
-- [ ] No console errors in browser DevTools
-- [ ] No terminal errors in development server
-- [ ] Existing features still work (regression test)
-- [ ] Code follows project architecture patterns
-
-#### **🔧 Step 6: Code Quality & Linting**
-```bash
-# MANDATORY: Run before marking task complete
-npm run lint          # Check for linting errors
-npm run format        # Fix formatting issues
-
-# Fix any reported issues before completion
-```
-
-### **🎯 Feature Development Testing Process**
-
-#### **Creating New Components/Features:**
-
-**1. Implementation Phase:**
-```bash
-# Follow architecture patterns from CLAUDE.md
-# Use established folder structure
-# Implement with TypeScript interfaces
-# Follow Reanimated 4.x Gesture API guidelines
-```
-
-**2. Basic Testing:**
-```bash
-# Start development server
-npm start -- --reset-cache
-
-# Navigate to feature in browser
-# Test basic functionality
-# Verify animations/gestures work
-# Check for console errors
-```
-
-**3. Integration Testing:**
-```bash
-# Test feature with existing components
-# Verify navigation works
-# Test with different screen sizes
-# Verify responsive behavior
-```
-
-**4. Automated Testing:**
-```bash
-# Create or update test files in /tests/ directory
-# Run test suite
-npm run test
-
-# Take screenshots for visual verification
-# Update test cases as needed
-```
-
-### **🚨 Common Issues & Solutions**
-
-#### **Port Conflicts:**
-```bash
-# Error: "Port 8081 is already in use"
-npx kill-port 8081 8083 8084 8085 8086 8087
-npm start -- --reset-cache
-```
-
-#### **Gesture API Errors:**
-```bash
-# Error: "useAnimatedGestureHandler is not a function"
-# Solution: Use new Reanimated 4.x API
-# ✅ Use: Gesture.Pan() with GestureDetector
-# ❌ Don't use: useAnimatedGestureHandler
-```
-
-#### **Import Resolution:**
-```bash
-# Error: "Unable to resolve module @/components"
-# Check: tsconfig.json path mappings
-# Verify: File exists at specified path
-# Solution: Use correct relative imports
-```
-
-#### **Build Failures:**
-```bash
-# Clear Metro cache and restart
-npm start -- --reset-cache --clear
-
-# Check for TypeScript errors
-npx tsc --noEmit
-
-# Verify all imports are correct
-```
-
-### **📈 Testing Strategy by Feature Type**
-
-#### **UI Components (components/ui/):**
-- Visual rendering test
-- Interactive behavior test
-- Props validation test
-- Animation performance test
-
-#### **Page Components (components/PAGE/):**
-- Route navigation test
-- Component integration test
-- Data flow test
-- User interaction test
-
-#### **Animations & Gestures:**
-- Gesture response test
-- Animation smoothness test
-- Performance under load test
-
-#### **Bottom Sheets & Modals:**
-- Open/close functionality test
-- Gesture handling test
-- Snap points behavior test
-- Backdrop interaction test
-
-## Development Commands
-
-### **Development Server**
-```bash
-npm start              # Start Expo development server (port 8081)
-npm run android        # Run on Android device/emulator
-npm run ios           # Run on iOS device/simulator
-npm run web           # Run in web browser
-```
-
-### **Testing & Quality Assurance**
-```bash
-# Testing
-npm run test          # Run Playwright test suite
-npm run test:debug    # Run tests with visual debugging
-npx playwright test   # Run all tests
-npx playwright test --headed  # Run with browser visible
-
-# Code Quality
-npm run lint          # Check linting and formatting
-npm run format        # Auto-fix linting and formatting issues
-
-# Port Management
-npx kill-port 8081 8083 8084 8085 8086 8087  # Clean up ports
-netstat -ano | findstr :8081                  # Check port usage
-```
-
-### **Build & Deployment**
-```bash
-npm run prebuild      # Prepare for native build
-expo build           # Build production app (if configured)
-```
-
-### **Debugging & Analysis**
-```bash
-# Clear cache and restart
-npm start -- --reset-cache --clear
-
-# TypeScript checking
-npx tsc --noEmit
-
-# Bundle analysis
-npx expo export --dump-sourcemap
-```
-
-## 🎯 **Development Rules**
-
-### **✅ DO:**
-- Keep route files in `app/` minimal (single import only)
-- Mirror routing structure exactly in `components/PAGE/`
-- Use TypeScript interfaces for all components
-- Create reusable UI components in `components/ui/`
-- Follow the established folder structure religiously
-- Use custom hooks for complex logic
-- Implement proper error boundaries
-- **ALWAYS use absolute imports with aliases (e.g., `@/components/ui`)**
-- **Include full file paths for PAGE components: `@/components/PAGE/index/index`**
-- **ALWAYS use the new Gesture API with `Gesture.Pan()` and `GestureDetector`**
-- **Use `onUpdate()` instead of `onActive()` for gesture events**
-- **Import gestures from `react-native-gesture-handler`, NOT `react-native-reanimated`**
-- **MANDATORY: Follow the 6-step AI Agent Development Protocol**
-- **Test every feature by running the app and verifying functionality**
-- **Monitor terminal and browser console for errors during development**
-- **Run `npm run lint` and `npm run format` before completing tasks**
-- **Validate solutions work without crashing the app**
-- **ALWAYS use theme colors from `@/shared/theme` or Tailwind theme classes**
-- **Maintain the light, warm, professional aesthetic established in the design system**
-- **Keep both `shared/theme/colors.ts` and `tailwind.config.js` perfectly synchronized**
-- **Test color accessibility and contrast ratios (4.5:1 minimum for text)**
-- **Import theme colors**: `import { brandColors } from '@/shared/theme';`
-
-### **❌ DON'T:**
-- Put business logic directly in `app/` route files
-- Create components outside the established structure
-- Mix page-specific and reusable UI components
-- Skip TypeScript types and interfaces
-- Create deeply nested component structures
-- Import multiple page components in route files
-- **NEVER use relative imports (use aliases instead: `@/components/ui`)**
-- **NEVER try to import "index" folder without explicit file name (`@/components/PAGE/index` ❌)**
-- **REMEMBER: Only "index" folder needs explicit /index: `@/components/PAGE/index/index` ✅**
-- **Other folders work fine with auto-resolution: `@/components/PAGE/explore` ✅**
-- **NEVER use `useAnimatedGestureHandler` (removed in Reanimated 4.x)**
-- **NEVER use `PanGestureHandler` directly (use `GestureDetector` instead)**
-- **NEVER import gesture handlers from `react-native-reanimated`**
-- **NEVER skip the testing protocol when implementing features**
-- **NEVER mark tasks complete without running the app to verify functionality**
-- **NEVER ignore console errors or terminal warnings**
-- **NEVER deploy features that cause app crashes or console errors**
-- **NEVER hardcode color hex values - always use theme variables or Tailwind classes**
-- **NEVER use stark white (#FFFFFF) - use `brandColors.card` for warm off-white**
-- **NEVER use pure black (#000000) for text - use `brandColors.textPrimary`**
-- **NEVER add colors to only one theme system - sync both files always**
-- **NEVER break the established warm, light, professional design aesthetic**
-- **NEVER bypass the theme system with inline styles or hardcoded color values**
-
-## Architecture Benefits
-
-### **🔧 Maintainability**
-- **Clear Separation**: Route logic separate from component implementation
-- **Predictable Structure**: Easy to locate components and understand organization
-- **Type Safety**: Full TypeScript support throughout the application
-
-### **📈 Scalability**
-- **Modular Design**: Easy to add new routes and pages
-- **Reusable Components**: UI library grows with application needs
-- **Code Organization**: Logical grouping prevents architectural debt
-
-### **👥 Team Collaboration**
-- **Consistent Patterns**: All developers follow same architectural principles
-- **Clear Ownership**: Easy to identify which team member owns what code
-- **Documentation**: Self-documenting structure with clear naming conventions
-
-## 🤖 **AI Agent Quick Reference**
-
-### **Essential Workflow for Every Task:**
-1. **📋 Read CLAUDE.md and package.json** - Understand project setup
-2. **🛠️ Clean ports and start app** - `npx kill-port 8081 8083 8084 8085 8086 8087 && npm start -- --reset-cache`
-3. **🔍 Test feature manually** - Navigate to `http://localhost:8081` and verify functionality
-4. **📊 Monitor logs** - Watch terminal and browser console for errors
-5. **✅ Validate solution** - Ensure no crashes, errors, or regressions
-6. **🔧 Run quality checks** - `npm run lint && npm run format`
-
-### **Testing Commands Reference:**
-```bash
-# Start Development
-npm start -- --reset-cache          # Clean start on port 8081
-
-# Testing
-npm run test                         # Run all tests
-npm run test:debug                   # Debug tests visually
-npx playwright test --headed         # Run with browser visible
-
-# Quality
-npm run lint                         # Check code quality
-npm run format                       # Fix formatting
-
-# Debugging
-npx kill-port 8081 8083 8084 8085 8086 8087  # Clean ports
-netstat -ano | findstr :8081                  # Check port status
-```
-
-### **Success Criteria Checklist:**
+**Success Checklist:**
 - [ ] App starts on port 8081 without errors
-- [ ] Feature works as intended in browser
-- [ ] No red errors in browser DevTools console
-- [ ] No error messages in terminal/development server
-- [ ] Existing functionality still works (no regressions)
-- [ ] Code passes linting (`npm run lint`)
-- [ ] Architecture patterns followed (components/ui/ or components/PAGE/)
-- [ ] TypeScript types properly defined
-- [ ] Colors use theme system (no hardcoded hex values)
-- [ ] Design maintains light, warm, professional aesthetic
-- [ ] Theme colors are synchronized between `shared/theme/colors.ts` and `tailwind.config.js`
-- [ ] Color contrast meets accessibility standards (4.5:1 minimum for text)
-
-**Remember**: Every feature implementation MUST include testing verification. No exceptions.
+- [ ] Feature works in browser
+- [ ] No console errors
+- [ ] No regressions
+- [ ] Code passes linting
+- [ ] Architecture patterns followed
+- [ ] Theme colors used (no hardcoded hex)
+- [ ] Testing verification completed

@@ -56,7 +56,7 @@ export const mockComments: Comment[] = [
   },
 ];
 
-export const mockCommentsWithAuthors: CommentWithAuthor[] = mockComments.map(comment => {
+export const mockCommentsWithAuthors: CommentWithAuthor[] = mockComments.map((comment) => {
   const author = getUserById(comment.authorId);
   return {
     ...comment,
@@ -71,9 +71,9 @@ export const mockCommentsWithAuthors: CommentWithAuthor[] = mockComments.map(com
 
 // Helper functions
 export const getCommentsByPostId = (postId: string): Comment[] => {
-  return mockComments.filter(comment => comment.postId === postId);
+  return mockComments.filter((comment) => comment.postId === postId);
 };
 
 export const getCommentsByAuthorId = (authorId: string): Comment[] => {
-  return mockComments.filter(comment => comment.authorId === authorId);
+  return mockComments.filter((comment) => comment.authorId === authorId);
 };

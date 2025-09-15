@@ -60,3 +60,5 @@ export const FeatureList = () => {
     </View>
   );
 };
+
+export { BottomSheetContent } from './BottomSheetContent';
