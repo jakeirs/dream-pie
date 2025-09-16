@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, Text, Image } from 'react-native'
+import { View, Text, Image, ScrollView } from 'react-native'
 import { Button } from '@/components/ui'
 import { router } from 'expo-router'
 import { brandColors } from '@/shared/theme'
@@ -10,12 +10,10 @@ export default function ResultPage() {
   }
 
   return (
-    <View className="flex-1 bg-background">
+    <ScrollView className="flex-1 bg-background">
       <View className="flex-1 px-6 py-8">
         {/* Header */}
-        <Text className="mb-8 text-center text-4xl font-bold text-textPrimary">
-          Result Page
-        </Text>
+        <Text className="mb-8 text-center text-4xl font-bold text-textPrimary">Result Page</Text>
 
         <Text className="mb-8 text-center text-lg text-textSecondary">
           Your photo has been generated successfully!
@@ -45,11 +43,9 @@ export default function ResultPage() {
         <View className="mb-8 rounded-xl bg-cardSecondary p-4">
           <Text className="mb-2 text-lg font-bold text-textPrimary">✨ About Editing</Text>
           <Text className="text-textSecondary">
-            Your photo has been enhanced with AI magic!{'\n'}
-            • Background replaced with dream-like scenes{'\n'}
-            • Lighting optimized for perfect shots{'\n'}
-            • Colors enhanced for maximum impact{'\n'}
-            • Professional quality guaranteed
+            Your photo has been enhanced with AI magic!{'\n'}• Background replaced with dream-like
+            scenes{'\n'}• Lighting optimized for perfect shots{'\n'}• Colors enhanced for maximum
+            impact{'\n'}• Professional quality guaranteed
           </Text>
         </View>
 
@@ -61,13 +57,11 @@ export default function ResultPage() {
             backgroundColor: brandColors.primary,
             paddingVertical: 24,
           }}>
-          <Text
-            className="text-xl font-bold"
-            style={{ color: brandColors.primaryForeground }}>
+          <Text className="text-xl font-bold" style={{ color: brandColors.primaryForeground }}>
             ← Back to Create More
           </Text>
         </Button>
       </View>
-    </View>
+    </ScrollView>
   )
 }
