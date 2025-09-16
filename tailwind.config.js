@@ -19,7 +19,7 @@ module.exports = {
         textPrimary: '#1F1F1F', // Main headings (dark gray)
         textSecondary: '#6B7280', // Captions, descriptions
         textMuted: '#9CA3AF', // Very subtle text
-        textLight: '#FAFAFA', // Very subtle text
+        textLight: '#FAFAFA', // Text on dark backgrounds
 
         // Interactive Elements
         accent: '#007AFF', // Links, active states (iOS blue)
