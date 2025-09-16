@@ -626,6 +626,36 @@ import { mockUsers } from '@/mockData';
 - **AnimatedBox**: Versatile animated container with multiple animation types
 - **BottomSheet**: Reusable wrapper for @gorhom/bottom-sheet with predefined settings
 - **Icon**: Professional icon system with 15+ icon families (Feather, MaterialIcons, FontAwesome, etc.)
+- **PageHeader**: Standard header component with title and optional right icon for navigation
+
+### **PageHeader Usage (`components/ui/PageHeader/`)**
+
+**🚨 MANDATORY**: Always use `PageHeader` component instead of built-in navigation headers. Never use `headerShown: true` in Expo Router configurations.
+
+**Standard Implementation**:
+```typescript
+import { PageHeader, ICON_FAMILY_NAME } from '@/components/ui'
+import { router } from 'expo-router'
+
+// In page component
+const handleSettingsPress = () => {
+  router.push('/settings')
+}
+
+<PageHeader
+  title="Page Title"
+  rightIcon={{
+    name: 'settings',
+    family: ICON_FAMILY_NAME.Feather,
+    onPress: handleSettingsPress,
+  }}
+/>
+```
+
+**Rules**:
+- Always set `headerShown: false` in Expo Router layouts
+- Include `PageHeader` at the top of each page component
+- Use consistent Settings icon placement across all tab screens
 
 ### **BottomSheet Component (`components/ui/BottomSheet/`)**
 

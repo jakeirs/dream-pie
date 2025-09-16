@@ -64,6 +64,14 @@ export default function CreatePage() {
 
   return (
     <View className="flex-1 bg-background">
+      <PageHeader
+        title="Dream Pie"
+        rightIcon={{
+          name: 'settings',
+          family: ICON_FAMILY_NAME.Feather,
+          onPress: handleSettingsPress,
+        }}
+      />
       {/* Main Header */}
       <View className="px-6 pb-8 pt-8">
         <Text className="mb-4 text-center text-3xl font-bold text-textPrimary">

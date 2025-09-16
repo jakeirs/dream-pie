@@ -1,8 +1,9 @@
 import React, { useRef, useState } from 'react'
 import { View, Text, FlatList, TouchableOpacity, Image, Dimensions } from 'react-native'
-import { BottomSheet } from '@/components/ui'
+import { BottomSheet, PageHeader, ICON_FAMILY_NAME } from '@/components/ui'
 import { brandColors } from '@/shared/theme'
 import { BottomSheetModal } from '@gorhom/bottom-sheet'
+import { router } from 'expo-router'
 import GalleryCardModal from '@/components/PAGE/gallery-card-modal'
 
 // Mock gallery data
@@ -59,6 +60,10 @@ export default function GalleryPage() {
   const screenWidth = Dimensions.get('window').width
   const cardWidth = (screenWidth - 48) / 2 // 2 columns with padding
 
+  const handleSettingsPress = () => {
+    router.push('/settings')
+  }
+
   const handleCardPress = (item: GalleryItem) => {
     setSelectedItem(item)
     modalRef.current?.present()
@@ -92,6 +97,14 @@ export default function GalleryPage() {
 
   return (
     <View className="flex-1 bg-background">
+      <PageHeader
+        title="My Gallery"
+        rightIcon={{
+          name: 'settings',
+          family: ICON_FAMILY_NAME.Feather,
+          onPress: handleSettingsPress,
+        }}
+      />
       {/* Empty state or content */}
       {mockGalleryItems.length === 0 ? (
         <View className="flex-1 items-center justify-center px-6">

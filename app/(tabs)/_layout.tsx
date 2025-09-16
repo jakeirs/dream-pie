@@ -1,14 +1,8 @@
 import { Tabs } from 'expo-router'
 import { Icon, ICON_FAMILY_NAME } from '@/components/ui'
 import { brandColors } from '@/shared/theme'
-import { router } from 'expo-router'
-import { TouchableOpacity } from 'react-native'
 
 export default function TabLayout() {
-  const handleSettingsPress = () => {
-    router.push('/settings')
-  }
-
   return (
     <Tabs
       screenOptions={{
@@ -21,32 +15,12 @@ export default function TabLayout() {
           paddingBottom: 8,
           paddingTop: 8,
         },
-        headerShown: true,
-        headerStyle: {
-          backgroundColor: brandColors.background,
-          borderBottomColor: brandColors.borderLight,
-        },
-        headerTitleStyle: {
-          color: brandColors.textPrimary,
-          fontSize: 18,
-          fontWeight: 'bold',
-        },
-        headerRight: () => (
-          <TouchableOpacity onPress={handleSettingsPress} style={{ marginRight: 16 }}>
-            <Icon
-              family={ICON_FAMILY_NAME.Feather}
-              name="settings"
-              size={24}
-              color={brandColors.textPrimary}
-            />
-          </TouchableOpacity>
-        ),
+        headerShown: false,
       }}>
       <Tabs.Screen
         name="index"
         options={{
           title: 'Create',
-          headerTitle: 'Dream Pie',
           tabBarIcon: ({ color }) => (
             <Icon family={ICON_FAMILY_NAME.Feather} name="camera" size={26} color={color} />
           ),
@@ -56,7 +30,6 @@ export default function TabLayout() {
         name="gallery"
         options={{
           title: 'Gallery',
-          headerTitle: 'My Gallery',
           tabBarIcon: ({ color }) => (
             <Icon family={ICON_FAMILY_NAME.Feather} name="grid" size={24} color={color} />
           ),
