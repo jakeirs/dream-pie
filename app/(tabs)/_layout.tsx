@@ -2,6 +2,7 @@ import { Tabs } from 'expo-router'
 import { Icon, ICON_FAMILY_NAME } from '@/components/ui'
 import { brandColors } from '@/shared/theme'
 import { router } from 'expo-router'
+import { TouchableOpacity } from 'react-native'
 
 export default function TabLayout() {
   const handleSettingsPress = () => {
@@ -31,14 +32,14 @@ export default function TabLayout() {
           fontWeight: 'bold',
         },
         headerRight: () => (
-          <Icon
-            family={ICON_FAMILY_NAME.Feather}
-            name="settings"
-            size={24}
-            color={brandColors.textPrimary}
-            onPress={handleSettingsPress}
-            style={{ marginRight: 16 }}
-          />
+          <TouchableOpacity onPress={handleSettingsPress} style={{ marginRight: 16 }}>
+            <Icon
+              family={ICON_FAMILY_NAME.Feather}
+              name="settings"
+              size={24}
+              color={brandColors.textPrimary}
+            />
+          </TouchableOpacity>
         ),
       }}>
       <Tabs.Screen
