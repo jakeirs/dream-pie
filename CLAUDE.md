@@ -633,47 +633,69 @@ import { mockUsers } from '@/mockData';
 
 ### **BottomSheet Component (`components/ui/BottomSheet/`)**
 
-**Overview**: Reusable wrapper for @gorhom/bottom-sheet with professional defaults and configurable scroll behavior.
+**🚨 MANDATORY**: When implementing new BottomSheets, **ALWAYS** consult `_BOTTOM_SHEET_INSTRUCTION.md` for complete usage patterns, modal vs regular sheet selection, and proper configuration.
 
-**Default Configuration**:
-- Snap points: `['50%', '90%']`
-- Backdrop with 50% opacity and auto-dismiss
-- Pan-down-to-close enabled
-- Professional styling with NativeWind
+**Overview**: Professional wrapper for @gorhom/bottom-sheet with dual-mode support (regular/modal), configurable scroll behavior, and comprehensive TypeScript integration.
+
+**Key Modes**:
+- **Regular BottomSheet**: Persistent UI elements (pose library, mini player, quick actions)
+- **Modal BottomSheet**: Full overlays (paywalls, forms, detail views, confirmation dialogs)
+
+**Essential Props**:
+- `isModal?: boolean` (default: false) - Toggle between regular/modal modes
+- `scrollView?: boolean` (default: true) - ScrollView vs View container
+- `snapPoints?: string[]` (default: ['50%', '90%']) - Height percentages
+- `index?: number` (default: 0) - Initial snap point
+- `enablePanDownToClose?: boolean` (default: true) - Pan gesture to close
 
 **Import Pattern**:
 ```typescript
-import { BottomSheet } from '@/components/ui';
-import type { BottomSheetProps } from '@/components/ui';
+import { BottomSheet } from '@/components/ui'
+import BottomSheetLib, { BottomSheetModal } from '@gorhom/bottom-sheet'
+
+// Refs for different modes
+const sheetRef = useRef<BottomSheetLib>(null)        // Regular
+const modalRef = useRef<BottomSheetModal>(null)      // Modal
 ```
 
-**Props**:
-- `scrollView?: boolean` (default: true) - Toggles between BottomSheetScrollView/BottomSheetView
-- `children: React.ReactNode` - Content to display
-- All @gorhom/bottom-sheet props supported for customization
-
-**Basic Usage**:
+**Quick Usage Examples**:
 ```typescript
-import React, { useRef } from 'react';
-import { BottomSheet } from '@/components/ui';
-import BottomSheetLib from '@gorhom/bottom-sheet';
+// Regular BottomSheet (persistent)
+<BottomSheet
+  ref={sheetRef}
+  isModal={false}
+  snapPoints={['30%', '60%', '95%']}
+  index={1}>
+  <YourContent />
+</BottomSheet>
 
-const MyComponent = () => {
-  const bottomSheetRef = useRef<BottomSheetLib>(null);
-
-  return (
-    <BottomSheet ref={bottomSheetRef} scrollView={true}>
-      <YourContent />
-    </BottomSheet>
-  );
-};
+// Modal BottomSheet (overlay)
+<BottomSheet
+  ref={modalRef}
+  isModal={true}
+  scrollView={true}>
+  <YourModalContent />
+</BottomSheet>
 ```
 
-**Integration Pattern**:
-- ✅ Import directly into existing page components (`components/PAGE/[route]/index.tsx`)
-- ✅ Use `useRef` for programmatic control (expand, close, etc.)
-- ✅ No separate routing structure needed - integrate within existing components
-- ✅ Choose `scrollView={true}` for long content, `scrollView={false}` for forms/controls
+**Control Methods**:
+```typescript
+// Regular Sheet
+sheetRef.current?.expand()        // Go to highest snap point
+sheetRef.current?.collapse()      // Go to lowest snap point
+sheetRef.current?.close()         // Hide completely
+
+// Modal Sheet
+modalRef.current?.present()       // Show modal
+modalRef.current?.dismiss()       // Hide modal
+```
+
+**📚 Detailed Documentation**: See `_BOTTOM_SHEET_INSTRUCTION.md` for:
+- Complete prop reference and usage patterns
+- When to use Regular vs Modal modes
+- ScrollView vs View configuration guide
+- Real implementation examples from the codebase
+- Advanced customization and troubleshooting
 
 ### **Icon Component (`components/ui/icons/`)**
 
