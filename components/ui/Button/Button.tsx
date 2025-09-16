@@ -1,5 +1,5 @@
 import React from 'react'
-import { TouchableOpacity, Text } from 'react-native'
+import { TouchableOpacity, Text, ViewStyle } from 'react-native'
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -11,12 +11,14 @@ import Animated, {
 const AnimatedTouchableOpacity = Animated.createAnimatedComponent(TouchableOpacity)
 
 interface ButtonProps {
-  title: string
+  title?: string
+  children?: React.ReactNode
   onPress: () => void
   variant?: 'primary' | 'secondary' | 'success' | 'warning' | 'error' | 'accent'
-  size?: 'sm' | 'md' | 'lg'
+  size?: 'sm' | 'md' | 'lg' | 'small'
   disabled?: boolean
   className?: string
+  style?: ViewStyle
 }
 
 const variants = {
@@ -32,21 +34,25 @@ const sizes = {
   sm: 'px-3 py-2',
   md: 'px-4 py-2',
   lg: 'px-6 py-3',
+  small: 'px-3 py-1', // Added small size for compatibility
 }
 
 const textSizes = {
   sm: 'text-sm',
   md: 'text-base',
   lg: 'text-lg',
+  small: 'text-xs',
 }
 
 export const Button = ({
   title,
+  children,
   onPress,
   variant = 'primary',
   size = 'md',
   disabled = false,
   className = '',
+  style,
 }: ButtonProps) => {
   const scale = useSharedValue(1)
 
@@ -71,14 +77,18 @@ export const Button = ({
 
   return (
     <AnimatedTouchableOpacity
-      style={animatedStyle}
+      style={[animatedStyle, style]}
       className={baseClasses}
       onPress={onPress}
       onPressIn={handlePressIn}
       onPressOut={handlePressOut}
       disabled={disabled}
       activeOpacity={0.8}>
-      <Text className={`text-center font-semibold ${textSizes[size]}`}>{title}</Text>
+      {children ? (
+        children
+      ) : (
+        <Text className={`text-center font-semibold ${textSizes[size]}`}>{title}</Text>
+      )}
     </AnimatedTouchableOpacity>
   )
 }

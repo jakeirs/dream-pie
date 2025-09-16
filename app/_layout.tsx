@@ -9,6 +9,7 @@ import { Platform } from 'react-native'
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet'
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context'
 import { brandColors } from '@/shared/theme'
+import { BottomSheetContainer } from '@/components/ui'
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync()
@@ -50,6 +51,9 @@ export default function RootLayout() {
                 }}
               />
             </Stack>
+
+            {/* Global BottomSheet Container */}
+            <BottomSheetContainer />
           </BottomSheetModalProvider>
         </SafeAreaView>
       </SafeAreaProvider>

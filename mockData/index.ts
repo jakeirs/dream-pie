@@ -9,3 +9,6 @@ export * from './users'
 
 // Content-related mock data
 export * from './content'
+
+// Dream Pie specific mock data
+export * from './dream'

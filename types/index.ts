@@ -9,3 +9,6 @@ export * from './users'
 
 // Content-related types
 export * from './content'
+
+// Dream Pie specific types
+export * from './dream'
