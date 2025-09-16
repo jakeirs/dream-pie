@@ -13,50 +13,74 @@ export interface BottomSheetProps extends Omit<BottomSheetLibProps, 'children'> 
   children: React.ReactNode
   scrollView?: boolean
   isModal?: boolean
+  index?: number
+  backdropAppearsIndex?: number
+  enablePanDownToClose?: boolean
 }
 
-export const BottomSheet = forwardRef<BottomSheetLib | BottomSheetModal, BottomSheetProps>(
-  ({ children, scrollView = true, isModal = false, ...props }, ref) => {
-    const snapPoints = useMemo(() => ['50%', '90%'], [])
+export interface BottomSheetModalExtendedProps extends Omit<BottomSheetModalProps, 'children'> {
+  children: React.ReactNode
+  scrollView?: boolean
+  isModal: true
+}
+
+export type CombinedBottomSheetProps = BottomSheetProps | BottomSheetModalExtendedProps
+
+export const BottomSheet = forwardRef<BottomSheetLib, CombinedBottomSheetProps>(
+  ({ children, scrollView = true, index = 0, isModal = false, ...props }, ref) => {
+    const defaultSnapPoints = useMemo(() => ['50%', '90%'], [])
+    const defaultBackdropAppearsIndex = 0
 
     const renderBackdrop = useCallback(
       (backdropProps: any) => (
         <BottomSheetBackdrop
           {...backdropProps}
-          disappearsOnIndex={-1}
-          appearsOnIndex={0}
-          opacity={0.5}
+          appearsOnIndex={defaultBackdropAppearsIndex + 1}
+          disappearsOnIndex={defaultBackdropAppearsIndex}
+          opacity={0.7}
+          pressBehavior="collapse"
         />
       ),
       []
     )
 
-    const defaultProps: Partial<BottomSheetLibProps> = {
-      snapPoints,
-      index: -1,
-      enablePanDownToClose: true,
+    const renderContent = () =>
+      scrollView ? (
+        <BottomSheetScrollView className="flex-1">{children}</BottomSheetScrollView>
+      ) : (
+        <BottomSheetView className="flex-1">{children}</BottomSheetView>
+      )
+
+    if (isModal) {
+      const modalDefaultProps = {
+        enablePanDownToClose: true,
+        snapPoints: ['100%'],
+        index: 0,
+        enableDynamicSizing: false,
+        handleIndicatorStyle: { backgroundColor: brandColors.textMuted },
+        backgroundStyle: { backgroundColor: brandColors.card },
+        backdropComponent: renderBackdrop,
+      }
+
+      const modalCombinedProps = { ...modalDefaultProps, ...props }
+
+      return (
+        <BottomSheetModal ref={ref as React.RefObject<BottomSheetModal>} {...modalCombinedProps}>
+          {renderContent()}
+        </BottomSheetModal>
+      )
+    }
+
+    const defaultProps = {
+      snapPoints: props.snapPoints || defaultSnapPoints,
+      index: index,
+      enablePanDownToClose: props.enablePanDownToClose ?? true,
       handleIndicatorStyle: { backgroundColor: brandColors.textMuted },
       backgroundStyle: { backgroundColor: brandColors.card },
       backdropComponent: renderBackdrop,
     }
 
     const combinedProps = { ...defaultProps, ...props }
-
-    const renderContent = () => (
-      scrollView ? (
-        <BottomSheetScrollView className="flex-1">{children}</BottomSheetScrollView>
-      ) : (
-        <BottomSheetView className="flex-1">{children}</BottomSheetView>
-      )
-    )
-
-    if (isModal) {
-      return (
-        <BottomSheetModal ref={ref} {...combinedProps}>
-          {renderContent()}
-        </BottomSheetModal>
-      )
-    }
 
     return (
       <BottomSheetLib ref={ref} {...combinedProps}>
