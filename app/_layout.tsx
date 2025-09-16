@@ -14,7 +14,7 @@ import { brandColors } from '@/shared/theme'
 SplashScreen.preventAutoHideAsync()
 
 export const unstable_settings = {
-  anchor: '(tabs)',
+  anchor: '(auth)',
 }
 
 export default function RootLayout() {
@@ -40,12 +40,14 @@ export default function RootLayout() {
                 headerShown: false,
                 animation: Platform.OS === 'ios' ? 'default' : 'fade_from_bottom',
               }}>
+              <Stack.Screen name="(auth)" options={{ headerShown: false }} />
               <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+              <Stack.Screen name="(creation)" options={{ headerShown: false }} />
               <Stack.Screen
-                name="modal"
+                name="settings"
                 options={{
                   presentation: 'modal',
-                  title: 'Modal',
+                  title: 'Settings',
                   headerShown: false,
                 }}
               />

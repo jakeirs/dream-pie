@@ -64,14 +64,6 @@ export default function CreatePage() {
 
   return (
     <View className="flex-1 bg-background">
-      <PageHeader
-        title="Dream Pie"
-        rightIcon={{
-          name: 'settings',
-          family: ICON_FAMILY_NAME.Feather,
-          onPress: handleSettingsPress,
-        }}
-      />
       {/* Main Header */}
       <View className="px-6 pb-8 pt-8">
         <Text className="mb-4 text-center text-3xl font-bold text-textPrimary">
@@ -105,6 +97,23 @@ export default function CreatePage() {
         className="flex-1"
         contentContainerStyle={{ paddingBottom: 120 }}
         showsVerticalScrollIndicator={false}>
+        {/* Generate Photo Button */}
+        <View className="mb-8 px-6">
+          <Button
+            onPress={() => router.push('/(creation)/generation')}
+            className="w-full"
+            style={{
+              backgroundColor: brandColors.success,
+              paddingVertical: 24,
+            }}>
+            <Text
+              className="text-xl font-bold"
+              style={{ color: brandColors.primaryForeground }}>
+              🎨 Generate Photo →
+            </Text>
+          </Button>
+        </View>
+
         {/* Buy Premium Button */}
         {subscription.tier === 'free' && (
           <View className="mb-8 px-6">

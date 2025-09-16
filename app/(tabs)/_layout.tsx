@@ -1,8 +1,12 @@
 import { Tabs } from 'expo-router'
 import { Icon, ICON_FAMILY_NAME } from '@/components/ui'
 import { brandColors } from '@/shared/theme'
+import { router } from 'expo-router'
 
 export default function TabLayout() {
+  const handleSettingsPress = () => {
+    router.push('/settings')
+  }
 
   return (
     <Tabs
@@ -16,7 +20,26 @@ export default function TabLayout() {
           paddingBottom: 8,
           paddingTop: 8,
         },
-        headerShown: false,
+        headerShown: true,
+        headerStyle: {
+          backgroundColor: brandColors.background,
+          borderBottomColor: brandColors.borderLight,
+        },
+        headerTitleStyle: {
+          color: brandColors.textPrimary,
+          fontSize: 18,
+          fontWeight: 'bold',
+        },
+        headerRight: () => (
+          <Icon
+            family={ICON_FAMILY_NAME.Feather}
+            name="settings"
+            size={24}
+            color={brandColors.textPrimary}
+            onPress={handleSettingsPress}
+            style={{ marginRight: 16 }}
+          />
+        ),
       }}>
       <Tabs.Screen
         name="index"
@@ -29,7 +52,7 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="explore"
+        name="gallery"
         options={{
           title: 'Gallery',
           headerTitle: 'My Gallery',
