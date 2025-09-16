@@ -4,15 +4,18 @@ import { useAppStores } from '@/stores'
 import { Button } from '@/components/ui'
 import { brandColors } from '@/shared/theme'
 
-export default function PaywallPage() {
-  const { subscription, navigation, actions } = useAppStores()
+interface PaywallPageProps {
+  onClose: () => void
+}
+
+export default function PaywallPage({ onClose }: PaywallPageProps) {
+  const { subscription } = useAppStores()
 
   const handleUpgrade = (tier: 'pro' | 'premium') => {
-    actions.handleSubscriptionUpgrade(tier)
-  }
-
-  const handleClose = () => {
-    navigation.closeBottomSheet('paywall')
+    // Upgrade subscription
+    subscription.upgradeTier(tier)
+    // Close modal
+    onClose()
   }
 
   return (
@@ -69,14 +72,14 @@ export default function PaywallPage() {
                 onPress={() => handleUpgrade(plan.tier as 'pro' | 'premium')}
                 variant={plan.popularBadge ? 'primary' : 'secondary'}
                 className="w-full">
-                Upgrade to {plan.name}
+                <Text>Upgrade to {plan.name}</Text>
               </Button>
             </View>
           ))}
         </View>
 
-        <Button variant="danger" size="small" onPress={handleClose}>
-          Maybe Later
+        <Button variant="error" size="small" onPress={onClose}>
+          <Text>Maybe Later</Text>
         </Button>
       </ScrollView>
     </View>

@@ -4,8 +4,12 @@ import { useAppStores } from '@/stores'
 import { Button } from '@/components/ui'
 import { Pose } from '@/types/dream'
 
-export default function PoseLibraryPage() {
-  const { pose, subscription, navigation } = useAppStores()
+interface PoseLibraryPageProps {
+  onClose: () => void
+}
+
+export default function PoseLibraryPage({ onClose }: PoseLibraryPageProps) {
+  const { pose, subscription } = useAppStores()
 
   useEffect(() => {
     pose.loadPoses()
@@ -13,16 +17,12 @@ export default function PoseLibraryPage() {
 
   const handlePoseSelect = (selectedPose: Pose) => {
     if (selectedPose.isPremium && !subscription.canAccessPremiumPoses()) {
-      navigation.openBottomSheet('paywall')
+      // TODO: Need to open paywall modal - for now just return
       return
     }
 
     pose.selectPose(selectedPose)
-    navigation.closeBottomSheet('poseLibrary')
-  }
-
-  const handleClose = () => {
-    navigation.closeBottomSheet('poseLibrary')
+    onClose()
   }
 
   const renderPose = ({ item }: { item: Pose }) => {
@@ -71,8 +71,8 @@ export default function PoseLibraryPage() {
     <View className="flex-1 bg-background">
       <View className="flex-row justify-between items-center p-6 border-b border-borderLight">
         <Text className="text-xl font-bold text-textPrimary">Choose a Pose</Text>
-        <Button variant="secondary" size="small" onPress={handleClose}>
-          Done
+        <Button variant="secondary" size="small" onPress={onClose}>
+          <Text>Done</Text>
         </Button>
       </View>
 

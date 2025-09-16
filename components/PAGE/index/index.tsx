@@ -1,33 +1,44 @@
-import React from 'react'
+import React, { useRef } from 'react'
 import { View, Text, ScrollView, Image, TouchableOpacity } from 'react-native'
-import { Button, PageHeader, ICON_FAMILY_NAME } from '@/components/ui'
+import { Button, PageHeader, ICON_FAMILY_NAME, BottomSheet } from '@/components/ui'
 import { useAppStores } from '@/stores'
 import { router } from 'expo-router'
 import { brandColors } from '@/shared/theme'
+import BottomSheetLib, { BottomSheetModal } from '@gorhom/bottom-sheet'
+
+// Import content components
+import PoseLibraryContent from '@/components/PAGE/pose-library'
+import SelfieGuideContent from '@/components/PAGE/selfie-guide'
+import PaywallContent from '@/components/PAGE/paywall'
 
 export default function CreatePage() {
-  const { pose, photo, subscription, navigation } = useAppStores()
+  const { pose, photo, subscription, generation } = useAppStores()
+
+  // Local refs for modals
+  const poseLibraryRef = useRef<BottomSheetModal>(null)
+  const selfieGuideRef = useRef<BottomSheetModal>(null)
+  const paywallRef = useRef<BottomSheetModal>(null)
 
   const handlePoseChange = () => {
-    navigation.openBottomSheet('poseLibrary')
+    poseLibraryRef.current?.present()
   }
 
   const handlePhotoChange = () => {
     // In real app, this would open camera/gallery picker
     photo.setPhoto(require('@/assets/selfies/extend-photo.jpeg'))
-    navigation.openBottomSheet('selfieGuide')
+    selfieGuideRef.current?.present()
   }
 
   const handleCreatePhotoshoot = async () => {
     // Check subscription limits
     if (!subscription.canCreateMore()) {
-      navigation.openBottomSheet('paywall')
+      paywallRef.current?.present()
       return
     }
 
     // Validate inputs
     if (!pose.selectedPose) {
-      navigation.openBottomSheet('poseLibrary')
+      poseLibraryRef.current?.present()
       return
     }
 
@@ -38,8 +49,21 @@ export default function CreatePage() {
 
     // Use credit and start generation
     if (subscription.useCredit()) {
-      router.push('/(creation)/generation')
+      // Start the generation process
+      if (pose.selectedPose && photo.selectedPhoto) {
+        await generation.startGeneration(
+          pose.selectedPose.id,
+          pose.selectedPose.name,
+          pose.selectedPose.category,
+          photo.selectedPhoto
+        )
+        router.push('/(creation)/generation')
+      }
     }
+  }
+
+  const handleSettingsPress = () => {
+    router.push('/settings')
   }
 
   return (
@@ -49,7 +73,7 @@ export default function CreatePage() {
         rightIcon={{
           name: 'settings',
           family: ICON_FAMILY_NAME.Feather,
-          onPress: () => navigation.openBottomSheet('settings')
+          onPress: handleSettingsPress,
         }}
       />
 
@@ -57,48 +81,41 @@ export default function CreatePage() {
         className="flex-1"
         contentContainerStyle={{ paddingBottom: 120 }}
         showsVerticalScrollIndicator={false}>
-
         {/* Main Header */}
-        <View className="px-6 pt-8 pb-8">
-          <Text className="text-3xl font-bold text-textPrimary text-center mb-4">
+        <View className="px-6 pb-8 pt-8">
+          <Text className="mb-4 text-center text-3xl font-bold text-textPrimary">
             Let's create something new!
           </Text>
         </View>
 
         {/* Pose Selection Card */}
-        <View className="px-6 mb-6">
+        <View className="mb-6 px-6">
           <TouchableOpacity
             onPress={handlePoseChange}
-            className="bg-card rounded-2xl p-4 border border-borderLight"
+            className="rounded-2xl border border-borderLight bg-card p-4"
             style={{ minHeight: 180 }}>
-
             {pose.selectedPose ? (
               <>
                 <Image
                   source={pose.selectedPose.imageUrl}
-                  className="w-full h-32 rounded-xl mb-3"
+                  className="mb-3 h-32 w-full rounded-xl"
                   resizeMode="cover"
                 />
-                <View className="flex-row justify-between items-center">
+                <View className="flex-row items-center justify-between">
                   <Text className="text-sm text-textSecondary">Selected Pose</Text>
-                  <Button
-                    variant="warning"
-                    size="small"
-                    onPress={handlePoseChange}>
-                    Change
+                  <Button variant="warning" size="small" onPress={handlePoseChange}>
+                    <Text>Change</Text>
                   </Button>
                 </View>
               </>
             ) : (
-              <View className="flex-1 justify-center items-center">
-                <Text className="text-lg font-semibold text-textPrimary mb-2">
-                  Select a Pose
-                </Text>
-                <Text className="text-textSecondary text-center mb-4">
+              <View className="flex-1 items-center justify-center">
+                <Text className="mb-2 text-lg font-semibold text-textPrimary">Select a Pose</Text>
+                <Text className="mb-4 text-center text-textSecondary">
                   Choose from our professional pose library
                 </Text>
                 <Button variant="secondary" onPress={handlePoseChange}>
-                  Browse Poses
+                  <Text>Browse Poses</Text>
                 </Button>
               </View>
             )}
@@ -106,39 +123,33 @@ export default function CreatePage() {
         </View>
 
         {/* Photo Selection Card */}
-        <View className="px-6 mb-8">
+        <View className="mb-8 px-6">
           <TouchableOpacity
             onPress={handlePhotoChange}
-            className="bg-card rounded-2xl p-4 border border-borderLight"
+            className="rounded-2xl border border-borderLight bg-card p-4"
             style={{ minHeight: 180 }}>
-
             {photo.selectedPhoto ? (
               <>
                 <Image
                   source={{ uri: photo.selectedPhoto }}
-                  className="w-full h-32 rounded-xl mb-3"
+                  className="mb-3 h-32 w-full rounded-xl"
                   resizeMode="cover"
                 />
-                <View className="flex-row justify-between items-center">
+                <View className="flex-row items-center justify-between">
                   <Text className="text-sm text-textSecondary">Your Photo</Text>
-                  <Button
-                    variant="warning"
-                    size="small"
-                    onPress={handlePhotoChange}>
-                    Change
+                  <Button variant="warning" size="small" onPress={handlePhotoChange}>
+                    <Text>Change</Text>
                   </Button>
                 </View>
               </>
             ) : (
-              <View className="flex-1 justify-center items-center">
-                <Text className="text-lg font-semibold text-textPrimary mb-2">
-                  Add Your Photo
-                </Text>
-                <Text className="text-textSecondary text-center mb-4">
+              <View className="flex-1 items-center justify-center">
+                <Text className="mb-2 text-lg font-semibold text-textPrimary">Add Your Photo</Text>
+                <Text className="mb-4 text-center text-textSecondary">
                   Take a selfie or choose from gallery
                 </Text>
                 <Button variant="secondary" onPress={handlePhotoChange}>
-                  Add Photo
+                  <Text>Add Photo</Text>
                 </Button>
               </View>
             )}
@@ -146,13 +157,11 @@ export default function CreatePage() {
         </View>
 
         {/* Credits Info */}
-        <View className="px-6 mb-8">
-          <View className="bg-cardSecondary rounded-xl p-4">
-            <View className="flex-row justify-between items-center">
+        <View className="mb-8 px-6">
+          <View className="rounded-xl bg-cardSecondary p-4">
+            <View className="flex-row items-center justify-between">
               <View>
-                <Text className="text-sm font-medium text-textPrimary">
-                  Credits Remaining
-                </Text>
+                <Text className="text-sm font-medium text-textPrimary">Credits Remaining</Text>
                 <Text className="text-xs text-textSecondary">
                   {subscription.subscription.tier === 'free' ? 'Free Plan' : 'Pro Plan'}
                 </Text>
@@ -171,9 +180,13 @@ export default function CreatePage() {
 
         {/* Buy Premium Button */}
         {subscription.subscription.tier === 'free' && (
-          <View className="px-6 mb-8">
+          <View className="mb-8 px-6">
             <Button
-              onPress={() => navigation.openBottomSheet('paywall')}
+              onPress={() => {
+                console.log('subscription', subscription)
+
+                paywallRef.current?.present()
+              }}
               variant="success"
               className="w-full py-4">
               <Text className="text-lg font-bold text-white">
@@ -182,11 +195,10 @@ export default function CreatePage() {
             </Button>
           </View>
         )}
-
       </ScrollView>
 
       {/* Fixed Create Button */}
-      <View className="absolute bottom-0 left-0 right-0 bg-background border-t border-borderLight">
+      <View className="absolute bottom-0 left-0 right-0 border-t border-borderLight bg-background">
         <View className="px-6 py-6">
           <Button
             onPress={handleCreatePhotoshoot}
@@ -202,6 +214,25 @@ export default function CreatePage() {
           </Button>
         </View>
       </View>
+
+      {/* Bottom Sheet Modals */}
+      <BottomSheet ref={poseLibraryRef} isModal={true} scrollView={true}>
+        <PoseLibraryContent onClose={() => poseLibraryRef.current?.dismiss()} />
+      </BottomSheet>
+
+      <BottomSheet ref={selfieGuideRef} isModal={true} scrollView={true}>
+        <SelfieGuideContent onClose={() => selfieGuideRef.current?.dismiss()} />
+      </BottomSheet>
+
+      <BottomSheet ref={paywallRef} isModal={true} scrollView={true}>
+        <PaywallContent
+          onClose={() => {
+            console.log('Paywall onClose called')
+            paywallRef.current?.dismiss()
+            paywallRef.current?.close()
+          }}
+        />
+      </BottomSheet>
     </View>
   )
 }

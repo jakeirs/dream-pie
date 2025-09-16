@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test'
 
-test.describe('Dream Pie User Flows', () => {
+test.describe('Dream Pie User Flows - Complete', () => {
   test.beforeEach(async ({ page }) => {
     // Navigate to the app
     await page.goto('http://localhost:8081')
@@ -10,8 +10,8 @@ test.describe('Dream Pie User Flows', () => {
   })
 
   test('should display Create tab with Dream Pie content', async ({ page }) => {
-    // Check if Dream Pie header is visible (use more specific selector)
-    await expect(page.getByRole('heading', { name: 'Dream Pie' }).first()).toBeVisible()
+    // Check if Dream Pie header is visible
+    await expect(page.getByText('Dream Pie')).toBeVisible()
 
     // Check for main creation content
     await expect(page.locator('text=Let\'s create something new!')).toBeVisible()
@@ -22,35 +22,66 @@ test.describe('Dream Pie User Flows', () => {
     // Check for photo upload area
     await expect(page.locator('text=Add Your Photo')).toBeVisible()
 
-    // Check for premium button (since user starts as free) - look for the emoji text
+    // Check for premium button (since user starts as free)
     await expect(page.locator('text=🚀 Buy Premium')).toBeVisible()
+
+    // Check for the main Create button
+    await expect(page.locator('text=Create My Photoshoot')).toBeVisible()
   })
 
-  test('should trigger paywall when clicking Buy Premium button', async ({ page }) => {
-    // Wait for Buy Premium button and click it (look for the emoji text)
-    const premiumButton = page.locator('text=🚀 Buy Premium')
-    await expect(premiumButton).toBeVisible()
-    await premiumButton.click()
+  test('should open Settings screen when clicking settings icon', async ({ page }) => {
+    // Look for settings icon button
+    const settingsButton = page.locator('[accessibilityLabel="settings"]')
 
-    // Wait a bit for BottomSheet to potentially open
-    await page.waitForTimeout(1000)
+    if (await settingsButton.count() > 0) {
+      await settingsButton.first().click()
 
-    // The paywall should open (we're testing the click handler works)
-    // Since BottomSheet might take time to render, we just verify no errors occurred
-    console.log('✅ Premium button click completed without errors')
-  })
+      // Wait for navigation
+      await page.waitForTimeout(1000)
 
-  test('should show settings icon and allow clicking', async ({ page }) => {
-    // Look for settings icon/button in header
-    const settingsButton = page.locator('[role="button"]').filter({ hasText: /settings/i }).first()
+      // Should navigate to settings page (Focus Mode)
+      await expect(page.locator('text=Settings')).toBeVisible()
+      await expect(page.locator('text=Preferences')).toBeVisible()
 
-    if (await settingsButton.isVisible()) {
-      await settingsButton.click()
-      console.log('✅ Settings button clicked successfully')
+      console.log('✅ Settings navigation working')
     } else {
-      // Alternative: look for any clickable element that might be settings
-      console.log('⚠️ Settings button not immediately visible, but no errors')
+      console.log('⚠️ Settings button not found')
     }
+  })
+
+  test('should open all modals successfully', async ({ page }) => {
+    // Test Browse Poses Modal
+    const browsePosesButton = page.locator('text=Browse Poses')
+    await expect(browsePosesButton).toBeVisible()
+    await browsePosesButton.click()
+    await page.waitForTimeout(1000)
+    await expect(page.locator('text=Choose a Pose')).toBeVisible()
+
+    // Close modal by clicking Done
+    await page.locator('text=Done').click()
+    await page.waitForTimeout(500)
+
+    // Test Add Photo Modal
+    const addPhotoButton = page.locator('text=Add Photo')
+    await addPhotoButton.click()
+    await page.waitForTimeout(1000)
+    await expect(page.locator('text=Smart Selfie Tips')).toBeVisible()
+
+    // Close modal
+    await page.locator('text=Got it!').click()
+    await page.waitForTimeout(500)
+
+    // Test Paywall Modal
+    const buyPremiumButton = page.locator('text=🚀 Buy Premium')
+    await buyPremiumButton.click()
+    await page.waitForTimeout(1000)
+    await expect(page.locator('text=Unlock Dream Pie Pro')).toBeVisible()
+
+    // Close modal
+    await page.locator('text=Maybe Later').click()
+    await page.waitForTimeout(500)
+
+    console.log('✅ All modals working successfully')
   })
 
   test('should display Gallery tab when switching tabs', async ({ page }) => {
@@ -63,18 +94,16 @@ test.describe('Dream Pie User Flows', () => {
       // Wait for gallery content
       await page.waitForTimeout(1000)
 
-      // Should show either empty state or gallery content
-      const hasEmptyState = await page.locator('text=No photos yet').isVisible()
-      const hasGalleryContent = await page.locator('text=My Gallery').isVisible()
+      // Should show gallery content or empty state
+      const hasContent = await page.locator('text=My Gallery').isVisible() ||
+                        await page.locator('text=No creations yet').isVisible()
 
-      expect(hasEmptyState || hasGalleryContent).toBe(true)
+      expect(hasContent).toBe(true)
       console.log('✅ Gallery tab navigation working')
-    } else {
-      console.log('⚠️ Gallery tab not found, checking if tabs are rendered differently')
     }
   })
 
-  test('should not have import.meta errors in console', async ({ page }) => {
+  test('should not have critical console errors', async ({ page }) => {
     const errors: string[] = []
 
     page.on('console', msg => {
@@ -83,19 +112,28 @@ test.describe('Dream Pie User Flows', () => {
       }
     })
 
-    // Wait for app to fully load
-    await page.waitForTimeout(3000)
+    // Wait for app to fully load and interact with modals
+    await page.waitForTimeout(2000)
 
-    // Check for import.meta specific errors
-    const importMetaErrors = errors.filter(error =>
-      error.includes('import.meta') || error.includes('Cannot use import.meta outside a module')
+    // Test a modal to trigger any potential errors
+    await page.locator('text=Browse Poses').click()
+    await page.waitForTimeout(1000)
+    await page.locator('text=Done').click()
+    await page.waitForTimeout(1000)
+
+    // Check for critical errors (ignore minor warnings)
+    const criticalErrors = errors.filter(error =>
+      error.includes('import.meta') ||
+      error.includes('Cannot use import.meta outside a module') ||
+      error.includes('TypeError') ||
+      error.includes('ReferenceError')
     )
 
-    expect(importMetaErrors.length).toBe(0)
-    console.log('✅ No import.meta errors found!')
+    expect(criticalErrors.length).toBe(0)
+    console.log('✅ No critical errors found!')
 
     if (errors.length > 0) {
-      console.log('Other console errors (may be normal):', errors.slice(0, 3))
+      console.log('Minor warnings (may be normal):', errors.slice(0, 2))
     }
   })
 })

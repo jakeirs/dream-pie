@@ -143,7 +143,7 @@ export default function ResultPage() {
           {isNew && (
             <Button
               onPress={handleSaveToGallery}
-              variant="info"
+              variant="accent"
               className="w-full flex-row items-center justify-center py-4">
               <Icon
                 family={ICON_FAMILY_NAME.Feather}

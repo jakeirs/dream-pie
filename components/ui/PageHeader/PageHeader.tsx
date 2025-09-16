@@ -12,6 +12,12 @@ interface PageHeaderProps {
     onPress: () => void
     color?: string
   }
+  leftIcon?: {
+    name: string
+    family: ICON_FAMILY_NAME
+    onPress: () => void
+    color?: string
+  }
   backgroundColor?: string
   titleColor?: string
   iconColor?: string
@@ -21,6 +27,7 @@ interface PageHeaderProps {
 export function PageHeader({
   title,
   rightIcon,
+  leftIcon,
   backgroundColor = brandColors.background,
   titleColor = brandColors.textPrimary,
   iconColor = brandColors.textPrimary,
@@ -35,16 +42,27 @@ export function PageHeader({
         backgroundColor,
         borderBottomColor: borderColor,
       }}>
-      <TouchableOpacity
-        onPress={() => router.back()}
-        className="h-10 w-10 items-center justify-center">
-        <Icon
-          family={ICON_FAMILY_NAME.FontAwesome5}
-          name="arrow-left"
-          size={20}
-          color={iconColor}
-        />
-      </TouchableOpacity>
+      <View className="h-10 w-10 items-center justify-center">
+        {leftIcon ? (
+          <TouchableOpacity onPress={leftIcon.onPress} accessibilityRole="button" accessibilityLabel="Back">
+            <Icon
+              family={leftIcon.family}
+              name={leftIcon.name}
+              size={20}
+              color={leftIcon.color ?? iconColor}
+            />
+          </TouchableOpacity>
+        ) : (
+          <TouchableOpacity onPress={() => router.back()} accessibilityRole="button" accessibilityLabel="Back">
+            <Icon
+              family={ICON_FAMILY_NAME.FontAwesome5}
+              name="arrow-left"
+              size={20}
+              color={iconColor}
+            />
+          </TouchableOpacity>
+        )}
+      </View>
 
       <View className="mx-4 flex-1 items-center">
         {typeof title === 'string' ? (
@@ -58,7 +76,7 @@ export function PageHeader({
 
       <View className="h-10 w-10 items-center justify-center">
         {rightIcon && (
-          <TouchableOpacity onPress={rightIcon.onPress}>
+          <TouchableOpacity onPress={rightIcon.onPress} accessibilityRole="button" accessibilityLabel={rightIcon.name}>
             <Icon
               family={rightIcon.family}
               name={rightIcon.name}

@@ -1,14 +1,12 @@
 import React from 'react'
 import { View, Text, ScrollView } from 'react-native'
-import { useAppStores } from '@/stores'
 import { Button, Icon, ICON_FAMILY_NAME } from '@/components/ui'
 
-export default function SelfieGuidePage() {
-  const { navigation } = useAppStores()
+interface SelfieGuidePageProps {
+  onClose: () => void
+}
 
-  const handleClose = () => {
-    navigation.closeBottomSheet('selfieGuide')
-  }
+export default function SelfieGuidePage({ onClose }: SelfieGuidePageProps) {
 
   const tips = [
     {
@@ -37,8 +35,8 @@ export default function SelfieGuidePage() {
     <View className="flex-1 bg-background">
       <View className="flex-row justify-between items-center p-6 border-b border-borderLight">
         <Text className="text-xl font-bold text-textPrimary">Smart Selfie Tips</Text>
-        <Button variant="secondary" size="small" onPress={handleClose}>
-          Got it!
+        <Button variant="secondary" size="small" onPress={onClose}>
+          <Text>Got it!</Text>
         </Button>
       </View>
 

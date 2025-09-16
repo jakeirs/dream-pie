@@ -1,84 +1,46 @@
 /**
- * ZUSTAND STORE LIFECYCLE - Navigation Store
+ * ZUSTAND STORE LIFECYCLE - Navigation Store (Simplified)
  *
- * STATE PURPOSE: Manages BottomSheet states, modal visibility, and navigation flow
- * WHEN CREATED: App initialization, first navigation action
- * WHERE CREATED: App root, navigation actions from any component
+ * STATE PURPOSE: Manages navigation flow state and history tracking
+ * WHEN CREATED: App initialization, navigation actions
+ * WHERE CREATED: App root, navigation actions from components
  *
- * WHEN UPDATED: Modal open/close actions, navigation flow changes
- * WHERE UPDATED: BottomSheet components, page transitions, user interactions
+ * WHEN UPDATED: Navigation flow changes, route history updates
+ * WHERE UPDATED: Page transitions, user navigation actions
  *
  * STATE EVOLUTION:
- * - INITIALIZE: All BottomSheets closed, no active flow
- * - READ: Components check modal visibility, current flow state
- * - UPDATE: Open/close modals, track navigation flow
- * - PERSIST: Navigation history (optional)
- * - RESET: Close all modals on app restart
+ * - INITIALIZE: Creation flow, empty history
+ * - READ: Components check current flow, navigation state
+ * - UPDATE: Track navigation flow, manage history
+ * - PERSIST: Navigation history for back navigation
+ * - RESET: Flow resets on app restart
  *
  * RELATIONSHIPS:
- * - Connects to all PAGE components that trigger modals
  * - Coordinates with creation/gallery stores for flow management
- * SIDE EFFECTS: Modal visibility changes, navigation flow updates
+ * - Settings state tracking for focus mode
+ * SIDE EFFECTS: Navigation flow updates, history management
  */
 
 import { create } from 'zustand'
 
 export interface NavigationState {
-  // BottomSheet states
-  bottomSheets: {
-    settings: { isOpen: boolean; snapIndex: number }
-    poseLibrary: { isOpen: boolean; snapIndex: number }
-    selfieGuide: { isOpen: boolean; snapIndex: number }
-    paywall: { isOpen: boolean; snapIndex: number }
-    shareOptions: { isOpen: boolean; snapIndex: number }
-  }
-
   // Navigation flow state
   currentFlow: 'onboarding' | 'creation' | 'gallery' | 'settings'
   navigationHistory: string[]
+  isSettingsOpen: boolean
 
   // Actions
-  openBottomSheet: (sheet: keyof NavigationState['bottomSheets'], snapIndex?: number) => void
-  closeBottomSheet: (sheet: keyof NavigationState['bottomSheets']) => void
-  closeAllBottomSheets: () => void
   setCurrentFlow: (flow: NavigationState['currentFlow']) => void
   pushToHistory: (route: string) => void
   goBack: () => string | undefined
+  openSettings: () => void
+  closeSettings: () => void
 }
 
 export const useNavigationStore = create<NavigationState>((set, get) => ({
-  bottomSheets: {
-    settings: { isOpen: false, snapIndex: 1 },
-    poseLibrary: { isOpen: false, snapIndex: 1 },
-    selfieGuide: { isOpen: false, snapIndex: 1 },
-    paywall: { isOpen: false, snapIndex: 1 },
-    shareOptions: { isOpen: false, snapIndex: 0 },
-  },
-
   currentFlow: 'creation',
   navigationHistory: [],
-
-  openBottomSheet: (sheet, snapIndex = 1) => set((state) => ({
-    bottomSheets: {
-      ...state.bottomSheets,
-      [sheet]: { isOpen: true, snapIndex }
-    }
-  })),
-
-  closeBottomSheet: (sheet) => set((state) => ({
-    bottomSheets: {
-      ...state.bottomSheets,
-      [sheet]: { ...state.bottomSheets[sheet], isOpen: false }
-    }
-  })),
-
-  closeAllBottomSheets: () => set((state) => {
-    const closedBottomSheets = { ...state.bottomSheets }
-    Object.keys(closedBottomSheets).forEach(key => {
-      closedBottomSheets[key as keyof typeof closedBottomSheets].isOpen = false
-    })
-    return { bottomSheets: closedBottomSheets }
-  }),
+  isSettingsOpen: false,
 
   setCurrentFlow: (flow) => set({ currentFlow: flow }),
 
@@ -96,5 +58,8 @@ export const useNavigationStore = create<NavigationState>((set, get) => ({
     }))
 
     return previousRoute
-  }
+  },
+
+  openSettings: () => set({ isSettingsOpen: true }),
+  closeSettings: () => set({ isSettingsOpen: false })
 }))
