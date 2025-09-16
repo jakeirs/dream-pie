@@ -52,14 +52,14 @@ export const BottomSheet = forwardRef<BottomSheetLib | BottomSheetModal, BottomS
 
     if (isModal) {
       return (
-        <BottomSheetModal ref={ref as any} {...combinedProps}>
+        <BottomSheetModal ref={ref} {...combinedProps}>
           {renderContent()}
         </BottomSheetModal>
       )
     }
 
     return (
-      <BottomSheetLib ref={ref as any} {...combinedProps}>
+      <BottomSheetLib ref={ref} {...combinedProps}>
         {renderContent()}
       </BottomSheetLib>
     )
