@@ -311,12 +311,12 @@ const CreatePage = () => {
 
 ## Common Patterns & Best Practices
 
-### 1. **Integration with Zustand Store**
+### 1. **Integration with Local State**
 ```typescript
-const { navigation } = useAppStores()
+const [isPaywallOpen, setPaywallOpen] = useState(false)
 
-// Open via store action
-const openPaywall = () => navigation.openBottomSheet('paywall')
+// Open via local state
+const openPaywall = () => setPaywallOpen(true)
 ```
 
 ### 2. **Content Components Pattern**

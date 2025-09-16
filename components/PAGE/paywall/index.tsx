@@ -1,19 +1,20 @@
 import React from 'react'
 import { View, Text, ScrollView } from 'react-native'
-import { useAppStores } from '@/stores'
+import { useState } from 'react'
 import { Button } from '@/components/ui'
 import { brandColors } from '@/shared/theme'
+import { mockSubscriptionPlans } from '@/mockData/dream'
 
 interface PaywallPageProps {
   onClose: () => void
 }
 
 export default function PaywallPage({ onClose }: PaywallPageProps) {
-  const { subscription } = useAppStores()
+  const [availablePlans] = useState(mockSubscriptionPlans)
 
   const handleUpgrade = (tier: 'pro' | 'premium') => {
-    // Upgrade subscription
-    subscription.upgradeTier(tier)
+    // In real app, this would process payment and upgrade subscription
+    console.log('Upgrading to:', tier)
     // Close modal
     onClose()
   }
@@ -29,7 +30,7 @@ export default function PaywallPage({ onClose }: PaywallPageProps) {
         </Text>
 
         <View className="space-y-4 mb-8">
-          {subscription.availablePlans.filter(plan => plan.tier !== 'free').map((plan) => (
+          {availablePlans.filter(plan => plan.tier !== 'free').map((plan) => (
             <View
               key={plan.tier}
               className={`bg-card rounded-xl p-4 ${

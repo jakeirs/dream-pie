@@ -1,13 +1,14 @@
 import React from 'react'
 import { View, Text, Switch, ScrollView } from 'react-native'
-import { useAppStores } from '@/stores'
+import { useState } from 'react'
 import { PageHeader, ICON_FAMILY_NAME } from '@/components/ui'
 import { router } from 'expo-router'
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context'
 import { brandColors } from '@/shared/theme'
+import { mockUsers } from '@/mockData/users'
 
 export default function SettingsPage() {
-  const { user } = useAppStores()
+  const [user, setUser] = useState(mockUsers[0])
 
   const handleBack = () => {
     router.back()
@@ -35,9 +36,12 @@ export default function SettingsPage() {
           <View className="flex-row justify-between items-center mb-4">
             <Text className="text-textPrimary">Auto-save results</Text>
             <Switch
-              value={user.user?.preferences.autoSaveResults}
+              value={user.preferences?.autoSaveResults ?? false}
               onValueChange={(value) =>
-                user.updatePreferences({ autoSaveResults: value })
+                setUser(prev => ({
+                  ...prev,
+                  preferences: { ...prev.preferences, autoSaveResults: value }
+                }))
               }
             />
           </View>
@@ -45,9 +49,12 @@ export default function SettingsPage() {
           <View className="flex-row justify-between items-center">
             <Text className="text-textPrimary">Push notifications</Text>
             <Switch
-              value={user.user?.preferences.allowNotifications}
+              value={user.preferences?.allowNotifications ?? false}
               onValueChange={(value) =>
-                user.updatePreferences({ allowNotifications: value })
+                setUser(prev => ({
+                  ...prev,
+                  preferences: { ...prev.preferences, allowNotifications: value }
+                }))
               }
             />
           </View>
@@ -56,7 +63,7 @@ export default function SettingsPage() {
         <View className="bg-card rounded-xl p-4">
           <Text className="text-lg font-semibold text-textPrimary mb-4">Account</Text>
           <Text className="text-textSecondary">
-            {user.user?.email}
+            {user.email}
           </Text>
                 </View>
               </View>

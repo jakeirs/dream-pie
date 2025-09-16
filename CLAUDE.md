@@ -7,45 +7,41 @@ React Native Expo app with **Reanimated 4.1.0**, **@gorhom/bottom-sheet**, **Exp
 - **Expo SDK**: 54.0.2 | **React Native**: 0.81.4
 - **React Native Reanimated**: 4.1.0 | **@gorhom/bottom-sheet**: 5.2.6
 - **Expo Router** | **NativeWind** | **babel-plugin-module-resolver**: 5.0.2
-- **Zustand**: 5.0.1 | **State Management** - Domain-based store architecture
 
-## State Management with Zustand
+## State Management
 
-**Overview**: Dream Pie uses **Zustand** for state management with a systematic domain-based architecture mirroring the mockData structure. Each domain has its own store with clear responsibilities.
+**Overview**: Dream Pie uses **React useState** and **mock data** for state management. This simple approach is perfect for demo apps and prototypes that don't require complex state persistence or cross-component coordination.
 
-**Store Architecture**:
-```
-stores/
-├── userStore.ts          # User authentication & profile
-├── subscriptionStore.ts  # Subscription plans & credits
-├── poseStore.ts         # Pose library & selection
-├── photoStore.ts        # Photo upload & management
-├── generationStore.ts   # AI generation process
-├── galleryStore.ts      # Created content gallery
-├── resultStore.ts       # Generation results display
-└── navigationStore.ts   # BottomSheet & navigation state
-```
-
-**Key Features**:
-- **No Persistence**: All data resets on app refresh (no persist middleware)
-- **Domain Separation**: Each store handles specific business logic
+**Architecture**:
+- **Local State**: Components manage their own state with `useState`
+- **Mock Data**: Static data imported from `@/mockData` directory
 - **Type Safety**: Full TypeScript integration with Dream Pie types
-- **BottomSheet Integration**: Navigation store controls all modal states
+- **Component Props**: Data sharing through props and callbacks
 
 **Usage Pattern**:
 ```typescript
-import { useAppStores } from '@/stores'
+import { useState } from 'react'
+import { mockPoses, mockSubscriptions } from '@/mockData/dream'
+import { Pose } from '@/types/dream'
 
 const MyComponent = () => {
-  const { pose, photo, subscription, navigation } = useAppStores()
+  const [selectedPose, setSelectedPose] = useState<Pose | null>(null)
+  const [subscription] = useState(mockSubscriptions[0]) // Free tier
 
-  // Access state and actions
-  const selectedPose = pose.selectedPose
-  const openPaywall = () => navigation.openBottomSheet('paywall')
+  // Simple state management
+  const handlePoseSelect = (pose: Pose) => {
+    setSelectedPose(pose)
+    onPoseSelect?.(pose)
+  }
 }
 ```
 
-**📄 Detailed Documentation**: See `_ZUSTAND.md` for complete data flow, store usage per screen, and action mappings.
+**Benefits**:
+- **Simplicity**: Easy to understand and debug
+- **Performance**: No unnecessary re-renders or store subscriptions
+- **Predictable**: Local state changes are explicit and traceable
+- **Demo-Friendly**: Perfect for showcasing UI without backend complexity
+
 
 ## Path Alias System
 

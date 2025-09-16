@@ -1,10 +1,8 @@
 import { Tabs } from 'expo-router'
 import { Icon, ICON_FAMILY_NAME } from '@/components/ui'
 import { brandColors } from '@/shared/theme'
-import { useAppStores } from '@/stores'
 
 export default function TabLayout() {
-  const { navigation } = useAppStores()
 
   return (
     <Tabs

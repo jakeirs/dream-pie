@@ -10,6 +10,7 @@ export interface UserSubscription {
   status: SubscriptionStatus
   creditsRemaining: number
   creditsTotal: number
+  creditsUsed: number
   renewsAt?: string
   canceledAt?: string
   features: SubscriptionFeatures

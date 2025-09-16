@@ -1,17 +1,21 @@
 import React, { useCallback, useRef } from 'react'
 import { View, Text, ScrollView, Image, TouchableOpacity } from 'react-native'
 import { Button, PageHeader, ICON_FAMILY_NAME, BottomSheet } from '@/components/ui'
-import { useAppStores } from '@/stores'
+import { useState } from 'react'
 import { router } from 'expo-router'
 import { brandColors } from '@/shared/theme'
 import BottomSheetLib, { BottomSheetModal, BottomSheetView } from '@gorhom/bottom-sheet'
+import { mockPoses, mockSubscriptions } from '@/mockData/dream'
+import { Pose } from '@/types/dream'
 
 // Import content components
 import PoseLibraryContent from '@/components/PAGE/pose-library'
 import PaywallContent from '@/components/PAGE/paywall'
 
 export default function CreatePage() {
-  const { pose, photo, subscription, generation } = useAppStores()
+  const [selectedPose, setSelectedPose] = useState<Pose | null>(null)
+  const [selectedPhoto, setSelectedPhoto] = useState<any>(null)
+  const [subscription] = useState(mockSubscriptions[0]) // Free tier
 
   // Local refs for modals
   const poseLibraryRef = useRef<BottomSheetLib>(null)
@@ -24,40 +28,31 @@ export default function CreatePage() {
 
   const handlePhotoChange = () => {
     // In real app, this would open camera/gallery picker
-    photo.setPhoto(require('@/assets/selfies/extend-photo.jpeg'))
+    setSelectedPhoto(require('@/assets/selfies/extend-photo.jpeg'))
   }
 
   const handleCreatePhotoshoot = async () => {
     // Check subscription limits
-    if (!subscription.canCreateMore()) {
+    if (subscription.creditsUsed >= subscription.creditsTotal) {
       paywallRef.current?.present()
       return
     }
 
     // Validate inputs
-    if (!pose.selectedPose) {
+    if (!selectedPose) {
       poseLibraryRef.current?.expand()
       return
     }
 
-    if (!photo.selectedPhoto) {
+    if (!selectedPhoto) {
       handlePhotoChange()
       return
     }
 
-    // Use credit and start generation
-    if (subscription.useCredit()) {
-      // Start the generation process
-      if (pose.selectedPose && photo.selectedPhoto) {
-        await generation.startGeneration(
-          pose.selectedPose.id,
-          pose.selectedPose.name,
-          pose.selectedPose.category,
-          photo.selectedPhoto
-        )
-        router.push('/(creation)/generation')
-      }
-    }
+    // Start the generation process (mock)
+    console.log('Starting generation with:', { pose: selectedPose, photo: selectedPhoto })
+    // In real app, navigate to generation screen
+    // router.push('/(creation)/generation')
   }
 
   const handleSettingsPress = () => {
@@ -91,15 +86,15 @@ export default function CreatePage() {
             <View>
               <Text className="text-sm font-medium text-textPrimary">Credits Remaining</Text>
               <Text className="text-xs text-textSecondary">
-                {subscription.subscription.tier === 'free' ? 'Free Plan' : 'Pro Plan'}
+                {subscription.tier === 'free' ? 'Free Plan' : 'Pro Plan'}
               </Text>
             </View>
             <View className="items-end">
               <Text className="text-2xl font-bold text-accent">
-                {subscription.getRemainingCredits()}
+                {subscription.creditsTotal - subscription.creditsUsed}
               </Text>
               <Text className="text-xs text-textSecondary">
-                of {subscription.subscription.creditsTotal}
+                of {subscription.creditsTotal}
               </Text>
             </View>
           </View>
@@ -111,7 +106,7 @@ export default function CreatePage() {
         contentContainerStyle={{ paddingBottom: 120 }}
         showsVerticalScrollIndicator={false}>
         {/* Buy Premium Button */}
-        {subscription.subscription.tier === 'free' && (
+        {subscription.tier === 'free' && (
           <View className="mb-8 px-6">
             <Button onPress={handlePaywallOpen} variant="success" className="w-full py-4">
               <Text className="text-lg font-bold text-white">
@@ -132,7 +127,7 @@ export default function CreatePage() {
               backgroundColor: brandColors.primary,
               paddingVertical: 18,
             }}
-            disabled={!pose.selectedPose || !photo.selectedPhoto}>
+            disabled={!selectedPose || !selectedPhoto}>
             <Text className="text-lg font-bold" style={{ color: brandColors.primaryForeground }}>
               Create My Photoshoot
             </Text>
@@ -166,7 +161,7 @@ export default function CreatePage() {
         snapPoints={['30%', '60%', '95%']}
         backdropAppearsIndex={1}
         index={1}>
-        <PoseLibraryContent onClose={() => poseLibraryRef.current?.close()} />
+        <PoseLibraryContent onClose={() => poseLibraryRef.current?.close()} onPoseSelect={setSelectedPose} />
       </BottomSheet>
 
       <BottomSheet ref={paywallRef} isModal={true} scrollView={true}>

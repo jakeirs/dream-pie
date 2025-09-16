@@ -1,33 +1,37 @@
-import React, { useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import { View, Text, FlatList, Image, TouchableOpacity } from 'react-native'
-import { useAppStores } from '@/stores'
 import { Button } from '@/components/ui'
 import { Pose } from '@/types/dream'
+import { mockPoses, mockSubscriptions } from '@/mockData/dream'
 
 interface PoseLibraryPageProps {
   onClose: () => void
+  onPoseSelect?: (pose: Pose) => void
 }
 
-export default function PoseLibraryPage({ onClose }: PoseLibraryPageProps) {
-  const { pose, subscription } = useAppStores()
+export default function PoseLibraryPage({ onClose, onPoseSelect }: PoseLibraryPageProps) {
+  const [poses, setPoses] = useState<Pose[]>([])
+  const [selectedPose, setSelectedPose] = useState<Pose | null>(null)
+  const [subscription] = useState(mockSubscriptions[0]) // Free tier
 
   useEffect(() => {
-    pose.loadPoses()
+    setPoses(mockPoses)
   }, [])
 
-  const handlePoseSelect = (selectedPose: Pose) => {
-    if (selectedPose.isPremium && !subscription.canAccessPremiumPoses()) {
+  const handlePoseSelect = (pose: Pose) => {
+    if (pose.isPremium && subscription.tier === 'free') {
       // TODO: Need to open paywall modal - for now just return
       return
     }
 
-    pose.selectPose(selectedPose)
+    setSelectedPose(pose)
+    onPoseSelect?.(pose)
     onClose()
   }
 
   const renderPose = ({ item }: { item: Pose }) => {
-    const isSelected = pose.selectedPose?.id === item.id
-    const needsPremium = item.isPremium && !subscription.canAccessPremiumPoses()
+    const isSelected = selectedPose?.id === item.id
+    const needsPremium = item.isPremium && subscription.tier === 'free'
 
     return (
       <TouchableOpacity
@@ -77,7 +81,7 @@ export default function PoseLibraryPage({ onClose }: PoseLibraryPageProps) {
       </View>
 
       <FlatList
-        data={pose.filteredPoses}
+        data={poses}
         renderItem={renderPose}
         numColumns={2}
         contentContainerStyle={{ padding: 16 }}
