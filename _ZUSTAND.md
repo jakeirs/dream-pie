@@ -24,6 +24,7 @@ stores/
 ### 🔗 Store Integration Pattern
 
 Each store follows the same TypeScript pattern:
+
 - Uses Dream Pie types from `@/types/dream`
 - Imports mock data from `@/mockData/dream`
 - No persistence middleware (data resets on refresh)
@@ -37,12 +38,14 @@ Each store follows the same TypeScript pattern:
 **Purpose**: Main creation flow where users select poses, upload photos, and start generation.
 
 **Stores Used**:
+
 - **poseStore** - Pose selection and library browsing
 - **photoStore** - Photo upload and selfie management
 - **subscriptionStore** - Credit checking and limits
 - **navigationStore** - Opening BottomSheets for modals
 
 **Data Flow**:
+
 ```typescript
 import { useAppStores } from '@/stores'
 
@@ -89,10 +92,67 @@ const CreateScreen = () => {
 ```
 
 **State Dependencies**:
+
 - `pose.selectedPose` - Currently selected pose from library
 - `photo.selectedPhoto` - User's uploaded photo
 - `subscription.getRemainingCredits()` - Available credits
 - `subscription.subscription.tier` - Free/Pro status for Buy Premium button
+
+---
+
+## 🎛️ BottomSheet Control with Zustand
+
+### **Pattern: Ref Registration & Global Control**
+
+The navigation store manages BottomSheet refs globally, allowing any component to control sheets across the app.
+
+**Implementation:**
+
+```typescript
+// stores/navigationStore.ts
+interface NavigationStore {
+  // Bottom Sheet Refs
+  poseLibraryRef: RefObject<BottomSheetLib | null> | null
+  paywallRef: RefObject<BottomSheetModal | null> | null
+
+  // Ref Registration
+  setPoseLibraryRef: (ref: RefObject<BottomSheetLib | null>) => void
+  setPaywallRef: (ref: RefObject<BottomSheetModal | null>) => void
+}
+```
+
+**Hook Usage Pattern:**
+
+```typescript
+// components/PAGE/index/hooks/useBottomSheets.ts
+export const useBottomSheets = () => {
+  const { navigation } = useAppStores()
+
+  // Create local refs
+  const poseLibraryRef = useRef<BottomSheetLib>(null)
+  const paywallRef = useRef<BottomSheetModal>(null)
+
+  // Register refs with Zustand store on mount ONCE
+  useEffect(() => {
+    navigation.setPoseLibraryRef(poseLibraryRef)
+    navigation.setPaywallRef(paywallRef)
+  }, []) // Empty deps - runs once only
+
+  // Control sheets via Zustand refs
+  const handlePoseLibraryClose = () => {
+    navigation.poseLibraryRef?.current?.close()
+  }
+
+  return { poseLibraryRef, handlePoseLibraryClose }
+}
+```
+
+**Benefits:**
+
+- **Global Control**: Any component can control any BottomSheet
+- **Single Source of Truth**: Refs stored centrally in Zustand
+- **Type Safety**: Full TypeScript support with proper ref types
+- **Clean Architecture**: Hook handles registration, components use actions
 
 ---
 
@@ -101,11 +161,13 @@ const CreateScreen = () => {
 **Purpose**: Display user's created photoshoots, manage favorites, and handle sharing.
 
 **Stores Used**:
+
 - **galleryStore** - Content management and organization
 - **userStore** - User preferences and settings
 - **navigationStore** - Share options and result viewing
 
 **Data Flow**:
+
 ```typescript
 const GalleryScreen = () => {
   const { gallery, user, navigation } = useAppStores()
@@ -133,6 +195,7 @@ const GalleryScreen = () => {
 ```
 
 **State Dependencies**:
+
 - `gallery.items` - Array of user's created content
 - `gallery.favorites` - Favorited creations
 - `gallery.isLoading` - Loading state for UI feedback
@@ -144,11 +207,13 @@ const GalleryScreen = () => {
 **Purpose**: Browse and select poses from categorized library.
 
 **Stores Used**:
+
 - **poseStore** - Pose data and selection
 - **subscriptionStore** - Premium pose access
 - **navigationStore** - BottomSheet state management
 
 **Data Flow**:
+
 ```typescript
 const PoseLibraryPage = () => {
   const { pose, subscription, navigation } = useAppStores()
@@ -180,6 +245,7 @@ const PoseLibraryPage = () => {
 ```
 
 **State Dependencies**:
+
 - `pose.poses` - All available poses
 - `pose.filteredPoses` - Poses filtered by category
 - `pose.selectedCategory` - Current category filter
@@ -192,11 +258,13 @@ const PoseLibraryPage = () => {
 **Purpose**: Handle subscription upgrades and payment processing.
 
 **Stores Used**:
+
 - **subscriptionStore** - Plan management and billing
 - **userStore** - User account linking
 - **navigationStore** - Modal state management
 
 **Data Flow**:
+
 ```typescript
 const PaywallPage = () => {
   const { subscription, user, navigation } = useAppStores()
@@ -227,6 +295,7 @@ const PaywallPage = () => {
 ```
 
 **State Dependencies**:
+
 - `subscription.plans` - Available subscription plans
 - `subscription.selectedPlan` - Currently selected plan
 - `subscription.isProcessing` - Payment processing state
@@ -239,11 +308,13 @@ const PaywallPage = () => {
 **Purpose**: User preferences, account management, and app settings.
 
 **Stores Used**:
+
 - **userStore** - Profile and preferences
 - **subscriptionStore** - Subscription management
 - **navigationStore** - Modal state
 
 **Data Flow**:
+
 ```typescript
 const SettingsPage = () => {
   const { user, subscription, navigation } = useAppStores()
@@ -268,6 +339,7 @@ const SettingsPage = () => {
 ```
 
 **State Dependencies**:
+
 - `user.user` - Current user profile
 - `user.preferences` - App preferences
 - `subscription.subscription` - Current subscription details
@@ -279,12 +351,14 @@ const SettingsPage = () => {
 **Purpose**: AI photo generation process with progress tracking.
 
 **Stores Used**:
+
 - **generationStore** - Generation process management
 - **poseStore** - Selected pose data
 - **photoStore** - Selected photo data
 - **resultStore** - Result handling
 
 **Data Flow**:
+
 ```typescript
 const GenerationScreen = () => {
   const { generation, pose, photo, result } = useAppStores()
@@ -296,7 +370,7 @@ const GenerationScreen = () => {
       generation.startGeneration({
         poseId: pose.selectedPose.id,
         photoUrl: photo.selectedPhoto,
-        userId: user.user.id
+        userId: user.user.id,
       }) // → Updates generation.status, generation.progress
     }
   }, [])
@@ -313,6 +387,7 @@ const GenerationScreen = () => {
 ```
 
 **State Dependencies**:
+
 - `generation.status` - 'idle' | 'processing' | 'completed' | 'error'
 - `generation.progress` - 0-100 progress percentage
 - `generation.result` - Generated creation result
@@ -325,11 +400,13 @@ const GenerationScreen = () => {
 **Purpose**: Display generated results with sharing and saving options.
 
 **Stores Used**:
+
 - **resultStore** - Result display and actions
 - **galleryStore** - Saving to user gallery
 - **navigationStore** - Share options
 
 **Data Flow**:
+
 ```typescript
 const ResultScreen = () => {
   const { result, gallery, navigation } = useAppStores()
@@ -360,6 +437,7 @@ const ResultScreen = () => {
 ```
 
 **State Dependencies**:
+
 - `result.currentResult` - Currently displayed result
 - `result.isSaved` - Whether saved to gallery
 - `result.shareUrl` - Shareable URL if available
@@ -398,6 +476,7 @@ const handlePoseSelect = (pose: Pose) => {
 ### Error Handling Pattern
 
 Each store handles its own errors:
+
 - **userStore**: Authentication errors, profile update failures
 - **subscriptionStore**: Payment failures, plan limit errors
 - **generationStore**: AI generation failures, timeout errors
@@ -405,42 +484,11 @@ Each store handles its own errors:
 
 ## 🛠️ Store Actions Reference
 
-### poseStore Actions
-- `loadPoses()` - Fetch pose library
-- `setSelectedPose(pose)` - Select pose for creation
-- `setSelectedCategory(category)` - Filter by category
-- `searchPoses(query)` - Search pose library
-
-### photoStore Actions
-- `setPhoto(photo)` - Set selected photo
-- `clearPhoto()` - Remove selected photo
-- `uploadPhoto(file)` - Upload new photo
-- `processPhoto(options)` - Apply photo processing
-
-### subscriptionStore Actions
-- `loadSubscription(userId)` - Load user subscription
-- `purchaseSubscription(planId, userId)` - Purchase new plan
-- `useCredit()` - Consume a credit
-- `canCreateMore()` - Check credit availability
-- `hasPremiumAccess()` - Check premium features
-
-### generationStore Actions
-- `startGeneration(params)` - Begin AI generation
-- `updateProgress(progress)` - Update generation progress
-- `completeGeneration(result)` - Mark generation complete
-- `reset()` - Reset generation state
-
-### galleryStore Actions
-- `loadUserGallery(userId)` - Load user's gallery
-- `addToGallery(creation)` - Add new creation
-- `removeFromGallery(id)` - Remove creation
-- `toggleFavorite(id)` - Toggle favorite status
-
 ### navigationStore Actions
-- `openBottomSheet(sheetName)` - Open specific BottomSheet
-- `closeBottomSheet(sheetName)` - Close specific BottomSheet
-- `closeAllBottomSheets()` - Close all modals
-- `setBottomSheetIndex(sheetName, index)` - Set snap point
+
+- `setPoseLibraryRef(ref)` - Register pose library BottomSheet ref
+- `setPaywallRef(ref)` - Register paywall modal ref
+- Access refs: `navigation.poseLibraryRef?.current?.expand()` - Control sheets via stored refs
 
 ## 🚀 Benefits of This Architecture
 
@@ -454,12 +502,14 @@ Each store handles its own errors:
 ## 🔧 Development Guidelines
 
 ### When to Use Which Store
+
 - **UI State**: Use `navigationStore` for BottomSheets, modals, loading states
 - **Business Logic**: Use domain stores (`poseStore`, `photoStore`, etc.)
 - **User Data**: Use `userStore` for authentication and profile
 - **App State**: Use appropriate domain store, avoid putting everything in one place
 
 ### Adding New Features
+
 1. Determine which domain the feature belongs to
 2. Add actions to existing store OR create new domain store
 3. Update types in `@/types/dream` if needed
@@ -467,7 +517,9 @@ Each store handles its own errors:
 5. Update this documentation
 
 ### Testing Strategy
+
 Each store can be tested independently:
+
 ```typescript
 import { poseStore } from '@/stores'
 

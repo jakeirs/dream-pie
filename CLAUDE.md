@@ -10,38 +10,44 @@ React Native Expo app with **Reanimated 4.1.0**, **@gorhom/bottom-sheet**, **Exp
 
 ## State Management
 
-**Overview**: Dream Pie uses **React useState** and **mock data** for state management. This simple approach is perfect for demo apps and prototypes that don't require complex state persistence or cross-component coordination.
+**Overview**: Dream Pie uses **Zustand** for global state with domain-specific stores, plus **React useState** for local component state.
 
 **Architecture**:
-- **Local State**: Components manage their own state with `useState`
+- **Zustand Stores**: Global state via `useAppStores()` hook - navigationStore for BottomSheet refs
+- **Local State**: Components use `useState` for UI-specific state
 - **Mock Data**: Static data imported from `@/mockData` directory
 - **Type Safety**: Full TypeScript integration with Dream Pie types
-- **Component Props**: Data sharing through props and callbacks
 
-**Usage Pattern**:
+**Zustand BottomSheet Control Pattern**:
 ```typescript
-// Following Import Order Standards (React 19+)
-import { useState } from 'react'
-import { mockPoses, mockSubscriptions } from '@/mockData/dream'
-import { Pose } from '@/types/dream'
+// Register BottomSheet refs globally for cross-component control
+import { useAppStores } from '@/stores'
 
-const MyComponent = () => {
-  const [selectedPose, setSelectedPose] = useState<Pose | null>(null)
-  const [subscription] = useState(mockSubscriptions[0]) // Free tier
+export const useBottomSheets = () => {
+  const { navigation } = useAppStores()
+  const poseLibraryRef = useRef<BottomSheetLib>(null)
 
-  // Simple state management
-  const handlePoseSelect = (pose: Pose) => {
-    setSelectedPose(pose)
-    onPoseSelect?.(pose)
+  // Register ref with Zustand on mount
+  useEffect(() => {
+    navigation.setPoseLibraryRef(poseLibraryRef)
+  }, [])
+
+  // Control via Zustand refs from anywhere
+  const handleClose = () => {
+    navigation.poseLibraryRef?.current?.close()
   }
+
+  return { poseLibraryRef, handleClose }
 }
 ```
 
 **Benefits**:
-- **Simplicity**: Easy to understand and debug
-- **Performance**: No unnecessary re-renders or store subscriptions
-- **Predictable**: Local state changes are explicit and traceable
-- **Demo-Friendly**: Perfect for showcasing UI without backend complexity
+- **Global Control**: Any component can control BottomSheets via Zustand refs
+- **Type Safety**: Full TypeScript support with proper ref types
+- **Clean Architecture**: Centralized ref management
+- **Predictable**: Clear separation between global (Zustand) and local (useState) state
+
+**See**: `_ZUSTAND.md` for complete store architecture documentation
 
 
 ## Path Alias System
