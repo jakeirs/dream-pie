@@ -20,18 +20,20 @@
  */
 
 import { Creation, CreationStatus } from '@/types/dream'
+import { mockSubscriptionPlans } from './subscriptions'
+import { appAssets } from '@/shared/assets/assets'
 
 export const mockCreations: Creation[] = [
   {
     id: 'creation_1',
     userId: 'user_1',
-    originalPhoto: require('@/assets/selfies/extend-photo.jpeg'),
+    originalPhoto: appAssets.selfies.extendPhoto,
     selectedPose: {
       id: 'pose_1',
       name: 'Professional Portrait',
       category: 'professional',
     },
-    resultImage: require('@/assets/gallery/img.jpeg'),
+    resultImage: appAssets.gallery.img,
     status: 'completed',
     generatedAt: '2024-01-10T14:22:00Z',
     processingTime: 45,
@@ -39,13 +41,13 @@ export const mockCreations: Creation[] = [
   {
     id: 'creation_2',
     userId: 'user_1',
-    originalPhoto: require('@/assets/selfies/extend-photo.jpeg'),
+    originalPhoto: appAssets.selfies.extendPhoto,
     selectedPose: {
       id: 'pose_2',
       name: 'Elegant Dress',
       category: 'fashion',
     },
-    resultImage: require('@/assets/gallery/JSON-instruction.jpeg'),
+    resultImage: appAssets.gallery.jsonInstruction,
     status: 'completed',
     generatedAt: '2024-01-09T16:30:00Z',
     processingTime: 52,
@@ -53,13 +55,13 @@ export const mockCreations: Creation[] = [
   {
     id: 'creation_3',
     userId: 'user_1',
-    originalPhoto: require('@/assets/selfies/extend-photo.jpeg'),
+    originalPhoto: appAssets.selfies.extendPhoto,
     selectedPose: {
       id: 'pose_3',
       name: 'Casual Confidence',
       category: 'casual',
     },
-    resultImage: require('@/assets/gallery/img.jpeg'),
+    resultImage: appAssets.gallery.img,
     status: 'completed',
     generatedAt: '2024-01-08T11:15:00Z',
     processingTime: 38,
@@ -67,64 +69,20 @@ export const mockCreations: Creation[] = [
   {
     id: 'creation_4',
     userId: 'user_1',
-    originalPhoto: require('@/assets/selfies/extend-photo.jpeg'),
+    originalPhoto: appAssets.selfies.extendPhoto,
     selectedPose: {
       id: 'pose_4',
       name: 'Travel Ready',
       category: 'travel',
     },
-    resultImage: require('@/assets/gallery/JSON-instruction.jpeg'),
+    resultImage: appAssets.gallery.jsonInstruction,
     status: 'processing',
     generatedAt: '2024-01-11T09:45:00Z',
     processingTime: undefined, // Still processing
   },
 ]
 
-export const mockSubscriptionPlans = [
-  {
-    tier: 'free' as const,
-    name: 'Free',
-    description: 'Perfect for trying Dream Pie',
-    price: { monthly: 0, yearly: 0 },
-    features: {
-      maxCreationsPerMonth: 3,
-      unlimitedSaves: false,
-      watermarkFree: false,
-      premiumPoses: false,
-      priorityProcessing: false,
-      advancedEditing: false,
-    },
-  },
-  {
-    tier: 'pro' as const,
-    name: 'Pro',
-    description: 'For regular creators',
-    price: { monthly: 9.99, yearly: 99.99 },
-    popularBadge: true,
-    features: {
-      maxCreationsPerMonth: 50,
-      unlimitedSaves: true,
-      watermarkFree: true,
-      premiumPoses: true,
-      priorityProcessing: true,
-      advancedEditing: false,
-    },
-  },
-  {
-    tier: 'premium' as const,
-    name: 'Premium',
-    description: 'For professional creators',
-    price: { monthly: 19.99, yearly: 199.99 },
-    features: {
-      maxCreationsPerMonth: 999,
-      unlimitedSaves: true,
-      watermarkFree: true,
-      premiumPoses: true,
-      priorityProcessing: true,
-      advancedEditing: true,
-    },
-  },
-]
+// Note: mockSubscriptionPlans is defined in subscriptions.ts to avoid duplicate exports
 
 // Helper functions
 export const getCreationById = (id: string): Creation | undefined => {
@@ -155,7 +113,7 @@ export const mockDreamPieUser = {
   id: 'user_1',
   username: 'dream_creator',
   email: 'creator@dreampie.com',
-  avatar: require('@/assets/selfies/extend-photo.jpeg'),
+  avatar: appAssets.selfies.extendPhoto,
   subscription: {
     tier: 'free' as const,
     status: 'active' as const,

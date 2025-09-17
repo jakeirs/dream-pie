@@ -19,6 +19,7 @@
  */
 
 import { Pose, PoseCategory, PoseCategoryInfo } from '@/types/dream'
+import { appAssets } from '@/shared/assets/assets'
 
 export const mockPoses: Pose[] = [
   {
@@ -26,7 +27,7 @@ export const mockPoses: Pose[] = [
     name: 'Professional Portrait',
     description: 'Clean, confident professional headshot pose',
     category: 'professional',
-    imageUrl: '@/assets/poses/From-top.jpg',
+    imageUrl: appAssets.poses.fromTop,
     isPremium: false,
     tags: ['business', 'headshot', 'confident', 'clean'],
     createdAt: '2024-01-15T10:30:00Z',
@@ -36,7 +37,7 @@ export const mockPoses: Pose[] = [
     name: 'Elegant Dress',
     description: 'Sophisticated dress pose with graceful posture',
     category: 'fashion',
-    imageUrl: '@/assets/poses/dress.jpg',
+    imageUrl: appAssets.poses.dress,
     isPremium: true,
     tags: ['elegant', 'fashion', 'dress', 'sophisticated'],
     createdAt: '2024-01-20T14:22:00Z',
@@ -46,7 +47,7 @@ export const mockPoses: Pose[] = [
     name: 'Casual Confidence',
     description: 'Relaxed yet confident casual pose',
     category: 'casual',
-    imageUrl: '@/assets/poses/From-top.jpg',
+    imageUrl: appAssets.poses.fromTop,
     isPremium: false,
     tags: ['casual', 'relaxed', 'friendly', 'approachable'],
     createdAt: '2024-01-18T16:45:00Z',
@@ -56,7 +57,7 @@ export const mockPoses: Pose[] = [
     name: 'Travel Ready',
     description: 'Adventure-ready pose perfect for travel photos',
     category: 'travel',
-    imageUrl: '@/assets/poses/dress.jpg',
+    imageUrl: appAssets.poses.dress,
     isPremium: true,
     tags: ['adventure', 'travel', 'outdoors', 'explorer'],
     createdAt: '2024-01-25T09:20:00Z',
@@ -66,7 +67,7 @@ export const mockPoses: Pose[] = [
     name: 'Creative Expression',
     description: 'Artistic and creative pose for unique shots',
     category: 'creative',
-    imageUrl: '@/assets/poses/From-top.jpg',
+    imageUrl: appAssets.poses.fromTop,
     isPremium: true,
     tags: ['artistic', 'creative', 'unique', 'expressive'],
     createdAt: '2024-01-22T11:15:00Z',
@@ -76,7 +77,7 @@ export const mockPoses: Pose[] = [
     name: 'Fitness Power',
     description: 'Strong, athletic pose showcasing fitness',
     category: 'fitness',
-    imageUrl: '@/assets/poses/dress.jpg',
+    imageUrl: appAssets.poses.dress,
     isPremium: false,
     tags: ['fitness', 'strong', 'athletic', 'healthy'],
     createdAt: '2024-01-28T08:30:00Z',

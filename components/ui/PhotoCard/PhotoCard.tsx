@@ -1,13 +1,12 @@
 import React from 'react'
-import { View, Text, ImageBackground, TouchableOpacity } from 'react-native'
+import { View, Text, TouchableOpacity } from 'react-native'
+import { Image } from 'expo-image'
 import { LinearGradient } from 'expo-linear-gradient'
 import Animated, {
   useAnimatedStyle,
 } from 'react-native-reanimated'
 import { usePhotoCardAnimation } from './hooks/useAnimation'
 
-// Utils
-import { resolveImageSource } from '@/shared/utils/imageResolver'
 
 const PHOTO_CARD_HEIGHT = 300
 
@@ -36,8 +35,8 @@ const PhotoCard = ({
     animateCardPressOut,
   } = usePhotoCardAnimation()
 
-  // Resolve image source using the path resolver utility
-  const resolvedImageSource = resolveImageSource(imageSource)
+  // imageSource is already a require() result, use directly
+  const resolvedImageSource = imageSource
 
   const handleCardPress = () => {
     animateCardPress()
@@ -68,44 +67,47 @@ const PhotoCard = ({
       onPressOut={animateCardPressOut}
       activeOpacity={0.95}>
 
-      <ImageBackground
+      {/* Background Image */}
+      <Image
         source={resolvedImageSource}
-        className="flex-1 justify-between"
-        resizeMode="cover">
+        className="absolute inset-0 w-full h-full"
+        contentFit="cover"
+        onError={(error) => {
+          console.warn('PhotoCard image loading error:', error.message)
+        }}
+      />
 
-        {/* Title overlay in top-left */}
-        <View className="absolute left-4 top-4">
-          <Text className="text-lg font-bold text-white drop-shadow-lg">
-            {title}
+      {/* Title overlay in top-left */}
+      <View className="absolute left-4 top-4">
+        <Text className="text-lg font-bold text-white drop-shadow-lg">
+          {title}
+        </Text>
+      </View>
+
+      {/* Bottom gradient overlay for button */}
+      <LinearGradient
+        colors={['transparent', 'rgba(0,0,0,0.3)', 'rgba(0,0,0,0.6)']}
+        className="absolute bottom-0 left-0 right-0 h-32"
+      />
+
+      {/* Change button overlay - now purely visual */}
+      <Animated.View
+        style={[
+          buttonAnimatedStyle,
+          {
+            position: 'absolute',
+            bottom: 24,
+            left: 0,
+            right: 0,
+            alignItems: 'center',
+          }
+        ]}>
+        <View className="rounded-full bg-white/20 backdrop-blur-sm px-6 py-3 border border-white/30">
+          <Text className="text-center font-semibold text-white text-base">
+            Change
           </Text>
         </View>
-
-        {/* Bottom gradient overlay for button */}
-        <LinearGradient
-          colors={['transparent', 'rgba(0,0,0,0.3)', 'rgba(0,0,0,0.6)']}
-          className="absolute bottom-0 left-0 right-0 h-32"
-        />
-
-        {/* Change button overlay - now purely visual */}
-        <Animated.View
-          style={[
-            buttonAnimatedStyle,
-            {
-              position: 'absolute',
-              bottom: 24,
-              left: 0,
-              right: 0,
-              alignItems: 'center',
-            }
-          ]}>
-          <View className="rounded-full bg-white/20 backdrop-blur-sm px-6 py-3 border border-white/30">
-            <Text className="text-center font-semibold text-white text-base">
-              Change
-            </Text>
-          </View>
-        </Animated.View>
-
-      </ImageBackground>
+      </Animated.View>
     </AnimatedTouchableOpacity>
   )
 }

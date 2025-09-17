@@ -1,6 +1,7 @@
 // Following Import Order Standards (React 19+)
 // 1. React Native Core & Expo
-import { View, Text, Image, TouchableOpacity } from 'react-native'
+import { View, Text, TouchableOpacity } from 'react-native'
+import { Image } from 'expo-image'
 
 // 2. Third-party libraries (node_modules dependencies)
 import Animated, {
@@ -14,12 +15,10 @@ import { Gesture, GestureDetector } from 'react-native-gesture-handler'
 // 3. Theme imports
 import { brandColors } from '@/shared/theme'
 
-// 4. Utils
-import { resolveImageSource } from '@/shared/utils/imageResolver'
 
 interface ThumbnailProps {
   // Essential display data
-  imageUrl: string | number | { uri: string } // string (path), number (require()), or object with uri
+  imageUrl: string | number | { uri: string } // Compatible with expo-image
   title: string
   subtitle?: string
 
@@ -64,10 +63,8 @@ const Thumbnail = ({
     transform: [{ scale: scale.value }],
   }))
 
-  // Resolve image source using the path resolver utility
-  const getImageSource = () => {
-    return resolveImageSource(imageUrl)
-  }
+  // Handle image source - imageUrl is already a require() result
+  const imageSource = imageUrl
 
   const containerClasses = `overflow-hidden rounded-xl bg-card ${
     isSelected ? 'border-2' : ''
@@ -88,11 +85,13 @@ const Thumbnail = ({
 
         {/* Main Image */}
         <Image
-          source={getImageSource()}
-          className="w-full flex-1"
-          resizeMode="cover"
+          source={imageSource}
+          style={{ width: '100%', flex: 1 }}
+          contentFit="cover"
+          placeholder="L6PZfSi_.AyE_3t7t7R**0o#DgR4"
+          transition={200}
           onError={(error) => {
-            console.warn('Image loading error:', error.nativeEvent.error)
+            console.warn('Thumbnail Image loading error:', error.message)
           }}
         />
 

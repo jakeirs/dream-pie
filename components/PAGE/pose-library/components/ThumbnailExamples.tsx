@@ -8,11 +8,14 @@ import Thumbnail from '@/components/ui/Thumbnail/Thumbnail'
 // 3. Theme imports
 import { brandColors } from '@/shared/theme'
 
+// 4. Assets
+import { appAssets } from '@/shared/assets/assets'
+
 export const ThumbnailExamples = () => {
   // Example data for different thumbnail variations
-  // Use local images to match the pose data format
-  const exampleImage = require('@/assets/poses/From-top.jpg')
-  const landscapeImage = require('@/assets/poses/dress.jpg')
+  // Use shared assets for consistency
+  const exampleImage = appAssets.poses.fromTop
+  const landscapeImage = appAssets.poses.dress
 
   const handlePress = (variant: string) => {
     console.log(`Pressed ${variant} thumbnail`)

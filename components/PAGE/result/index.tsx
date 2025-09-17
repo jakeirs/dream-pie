@@ -3,6 +3,7 @@ import { View, Text, Image, ScrollView } from 'react-native'
 import Button from '@/components/ui/Button/Button'
 import { router } from 'expo-router'
 import { brandColors } from '@/shared/theme'
+import { appAssets } from '@/shared/assets/assets'
 
 export default function ResultPage() {
   const handleBackToCreate = () => {
@@ -29,7 +30,7 @@ export default function ResultPage() {
               backgroundColor: brandColors.cardSecondary,
             }}>
             <Image
-              source={require('@/assets/selfies/extend-photo.jpeg')}
+              source={appAssets.selfies.extendPhoto}
               style={{
                 width: '100%',
                 height: '100%',
