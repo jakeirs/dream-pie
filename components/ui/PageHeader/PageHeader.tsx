@@ -1,7 +1,8 @@
 import React from 'react'
 import { View, Text, TouchableOpacity } from 'react-native'
 import { useRouter } from 'expo-router'
-import { Icon, ICON_FAMILY_NAME } from '@/components/ui/icons'
+import { Icon } from '@/components/ui/icons/Icon'
+import { ICON_FAMILY_NAME } from '@/components/ui/icons/constants'
 import { brandColors } from '@/shared/theme'
 
 interface PageHeaderProps {
@@ -24,7 +25,7 @@ interface PageHeaderProps {
   borderColor?: string
 }
 
-export function PageHeader({
+function PageHeader({
   title,
   rightIcon,
   leftIcon,
@@ -89,3 +90,5 @@ export function PageHeader({
     </View>
   )
 }
+
+export default PageHeader

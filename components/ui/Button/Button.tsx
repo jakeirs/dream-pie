@@ -44,7 +44,7 @@ const textSizes = {
   small: 'text-xs',
 }
 
-export const Button = ({
+const Button = ({
   title,
   children,
   onPress,
@@ -92,3 +92,5 @@ export const Button = ({
     </AnimatedTouchableOpacity>
   )
 }
+
+export default Button

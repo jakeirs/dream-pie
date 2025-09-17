@@ -1,6 +1,6 @@
 import React from 'react'
 import { View, Text } from 'react-native'
-import { Button } from '@/components/ui'
+import Button from '@/components/ui/Button/Button'
 import { router } from 'expo-router'
 import { brandColors } from '@/shared/theme'
 

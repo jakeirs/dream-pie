@@ -1,5 +1,6 @@
 import { Tabs } from 'expo-router'
-import { Icon, ICON_FAMILY_NAME } from '@/components/ui'
+import { Icon } from '@/components/ui/icons/Icon'
+import { ICON_FAMILY_NAME } from '@/components/ui/icons/constants'
 import { brandColors } from '@/shared/theme'
 
 export default function TabLayout() {

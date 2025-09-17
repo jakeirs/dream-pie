@@ -26,7 +26,7 @@ export interface BottomSheetModalExtendedProps extends Omit<BottomSheetModalProp
 
 export type CombinedBottomSheetProps = BottomSheetProps | BottomSheetModalExtendedProps
 
-export const BottomSheet = forwardRef<BottomSheetLib, CombinedBottomSheetProps>(
+const BottomSheet = forwardRef<BottomSheetLib, CombinedBottomSheetProps>(
   ({ children, scrollView = true, index = 0, isModal = false, ...props }, ref) => {
     const defaultSnapPoints = useMemo(() => ['50%', '90%'], [])
     const defaultBackdropAppearsIndex = 0
@@ -91,3 +91,5 @@ export const BottomSheet = forwardRef<BottomSheetLib, CombinedBottomSheetProps>(
 )
 
 BottomSheet.displayName = 'BottomSheet'
+
+export default BottomSheet

@@ -43,7 +43,7 @@ const descriptionColors = {
   danger: 'text-red-600',
 }
 
-export const Card = ({
+const Card = ({
   title,
   description,
   children,
@@ -105,3 +105,5 @@ export const Card = ({
 
   return CardContent
 }
+
+export default Card

@@ -32,7 +32,7 @@ const shapes = {
   circle: 'rounded-full',
 }
 
-export const AnimatedBox = ({
+const AnimatedBox = ({
   children,
   className = '',
   size = 'md',
@@ -129,3 +129,5 @@ export const AnimatedBox = ({
     </Animated.View>
   )
 }
+
+export default AnimatedBox

@@ -1,7 +1,7 @@
 import React from 'react'
 import { View, Text, ScrollView } from 'react-native'
 import { useState } from 'react'
-import { Button } from '@/components/ui'
+import Button from '@/components/ui/Button/Button'
 import { brandColors } from '@/shared/theme'
 import { mockSubscriptionPlans } from '@/mockData/dream'
 

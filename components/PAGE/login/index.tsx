@@ -1,6 +1,7 @@
 import React, { useRef } from 'react'
 import { View, Text } from 'react-native'
-import { Button, BottomSheet } from '@/components/ui'
+import Button from '@/components/ui/Button/Button'
+import BottomSheet from '@/components/ui/BottomSheet/BottomSheet'
 import { router } from 'expo-router'
 import { brandColors } from '@/shared/theme'
 import { BottomSheetModal } from '@gorhom/bottom-sheet'

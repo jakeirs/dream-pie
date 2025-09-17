@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { View, Text, FlatList, Image, TouchableOpacity } from 'react-native'
-import { Button } from '@/components/ui'
+import Button from '@/components/ui/Button/Button'
 import { Pose } from '@/types/dream'
 import { mockPoses, mockSubscriptions } from '@/mockData/dream'
 

@@ -1,5 +1,7 @@
 import { View } from 'react-native'
-import { PageHeader, ICON_FAMILY_NAME, BottomSheet } from '@/components/ui'
+import PageHeader from '@/components/ui/PageHeader/PageHeader'
+import { ICON_FAMILY_NAME } from '@/components/ui/icons/constants'
+import BottomSheet from '@/components/ui/BottomSheet/BottomSheet'
 import { router } from 'expo-router'
 
 // components
