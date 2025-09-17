@@ -20,6 +20,7 @@ React Native Expo app with **Reanimated 4.1.0**, **@gorhom/bottom-sheet**, **Exp
 
 **Usage Pattern**:
 ```typescript
+// Following Import Order Standards (React 19+)
 import { useState } from 'react'
 import { mockPoses, mockSubscriptions } from '@/mockData/dream'
 import { Pose } from '@/types/dream'
@@ -99,6 +100,47 @@ npm start -- --reset-cache --clear
 # Check TypeScript
 npx tsc --noEmit
 ```
+
+## Import Order Standards (React 19+)
+
+**🚨 CRITICAL:** No React import needed since React 19+. Follow this exact order:
+
+```typescript
+// 1. React Native Core & Expo
+import { View, Text, StyleSheet } from 'react-native'
+import { router, useLocalSearchParams } from 'expo-router'
+
+// 2. Third-party libraries (node_modules dependencies)
+import Animated from 'react-native-reanimated'
+import { Gesture, GestureDetector } from 'react-native-gesture-handler'
+
+// 3. PAGE components (other pages)
+import PoseLibraryContent from '@/components/PAGE/pose-library'
+import ExplorePage from '@/components/PAGE/explore'
+
+// 4. Same tree components (local to current page)
+import { Top } from './components/Top'
+import { Bottom } from './components/Bottom/Bottom'
+
+// 5. UI components (@/components/ui)
+import PageHeader from '@/components/ui/PageHeader/PageHeader'
+import Button from '@/components/ui/Button/Button'
+
+// 6. Hooks
+import { useBottomSheets } from './hooks/useBottomSheets'
+import { useAnimationControls } from '@/hooks'
+
+// 7. Constants, Types, Mock Data
+import { ICON_FAMILY_NAME } from '@/components/ui/icons/constants'
+import { User } from '@/types'
+import { mockUsers } from '@/mockData'
+```
+
+**Import Order Rules:**
+- **NO React import** required (React 19+ automatic)
+- **Group related imports** with descriptive comments
+- **Use path aliases** consistently (@/components, @/types, etc.)
+- **Maintain separation** between each tier with blank lines
 
 ### 🚀 **React Native Reanimated 4.x Gesture API**
 
@@ -189,7 +231,6 @@ return <PanGestureHandler onGestureEvent={gestureHandler}>{content}</PanGestureH
 #### **📝 Real Implementation Example: Interactive Card**
 ```typescript
 // components/ui/Card/Card.tsx - Production Implementation
-import React from 'react';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -318,7 +359,6 @@ export default function IndexScreen() {
 **❌ Incorrect Example:**
 ```typescript
 // app/(tabs)/index.tsx - DON'T DO THIS
-import React from 'react';
 import { View, Text } from 'react-native';
 // ... lots of component logic here
 ```
@@ -351,14 +391,14 @@ components/PAGE/[pageName]/
 **Example Implementation:**
 ```typescript
 // components/PAGE/index/index.tsx
-import React from 'react';
+import { View } from 'react-native';
 import { useAnimationControls } from './hooks';
 import { AnimationControls } from './components';
 import { IndexPageProps } from './types';
 
 export default function IndexPage({ className = '' }: IndexPageProps) {
   const animations = useAnimationControls();
-  
+
   return (
     <View className={`flex-1 ${className}`}>
       <AnimationControls animations={animations} />
@@ -495,16 +535,7 @@ The project includes dedicated path aliases for the mock data system:
 | `@/types` | `./types` | TypeScript interfaces |
 | `@/mockData` | `./mockData` | Mock data files |
 
-**Usage Examples:**
-```typescript
-// ✅ Correct imports
-import { User, Post } from '@/types';
-import { mockUsers, mockPosts } from '@/mockData';
-
-// ✅ Specific imports
-import { mockPostsWithAuthors } from '@/mockData/content';
-import { UserActivity } from '@/types/users';
-```
+**Note:** Import examples follow the standardized Import Order Standards (see above).
 
 ### **📝 Mock Data Guidelines for AI Agents**
 
@@ -882,27 +913,13 @@ npm run web          # Web browser
 - Use `#FFFFFF` (use `brandColors.card`)
 - Use `#000000` for text (use `brandColors.textPrimary`)
 
-### **Import Examples:**
-
-**✅ CORRECT UI Component Imports:**
-```typescript
-import Button from '@/components/ui/Button/Button';
-import Card from '@/components/ui/Card/Card';
-import PageHeader from '@/components/ui/PageHeader/PageHeader';
-```
-
-**✅ CORRECT Page Component Imports:**
-```typescript
-import IndexPage from '@/components/PAGE/index/index';
-import ExplorePage from '@/components/PAGE/explore/index';
-```
-
-**❌ INCORRECT (Old Pattern):**
-```typescript
-// Don't use index files for UI components
-import { Button, Card } from '@/components/ui';
-import Button from '@/components/ui/Button';
-```
+### **Import Standards:**
+- **NO React import** required (React 19+ automatic)
+- **Follow 7-tier import order** (see Import Order Standards)
+- **Use path aliases consistently**
+- **Group related imports with comments**
+- **Direct component imports:** `@/components/ui/Button/Button`
+- **Critical:** Index folder needs explicit `/index` path
 
 
 ## Quick Reference
