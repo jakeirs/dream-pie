@@ -14,9 +14,12 @@ import { Gesture, GestureDetector } from 'react-native-gesture-handler'
 // 3. Theme imports
 import { brandColors } from '@/shared/theme'
 
+// 4. Utils
+import { resolveImageSource } from '@/shared/utils/imageResolver'
+
 interface ThumbnailProps {
   // Essential display data
-  imageUrl: string | number | { uri: string } // string (URL), number (require()), or object with uri
+  imageUrl: string | number | { uri: string } // string (path), number (require()), or object with uri
   title: string
   subtitle?: string
 
@@ -61,19 +64,9 @@ const Thumbnail = ({
     transform: [{ scale: scale.value }],
   }))
 
-  // Handle different image source types
+  // Resolve image source using the path resolver utility
   const getImageSource = () => {
-    if (typeof imageUrl === 'string') {
-      return { uri: imageUrl }
-    } else if (typeof imageUrl === 'number') {
-      return imageUrl // Local require() image
-    } else if (imageUrl && typeof imageUrl === 'object' && imageUrl.uri) {
-      return imageUrl // Already formatted object
-    } else {
-      // Fallback to a default or return null
-      console.warn('Invalid image URL provided:', imageUrl)
-      return { uri: 'https://via.placeholder.com/400x600/cccccc/ffffff?text=No+Image' }
-    }
+    return resolveImageSource(imageUrl)
   }
 
   const containerClasses = `overflow-hidden rounded-xl bg-card ${

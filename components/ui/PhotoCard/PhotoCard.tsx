@@ -1,54 +1,20 @@
 import React from 'react'
-import { View, Text, ImageBackground, TouchableOpacity, ImageSourcePropType } from 'react-native'
+import { View, Text, ImageBackground, TouchableOpacity } from 'react-native'
 import { LinearGradient } from 'expo-linear-gradient'
 import Animated, {
   useAnimatedStyle,
 } from 'react-native-reanimated'
 import { usePhotoCardAnimation } from './hooks/useAnimation'
 
-// Types
-import { ImageUrl } from '@/types/dream'
+// Utils
+import { resolveImageSource } from '@/shared/utils/imageResolver'
 
 const PHOTO_CARD_HEIGHT = 300
-
-// Helper function to convert different image source types to ImageBackground compatible source
-const getImageSource = (imageSource: ImageSourcePropType | string | ImageUrl | undefined): ImageSourcePropType => {
-  if (!imageSource) {
-    return require('@/assets/selfies/extend-photo.jpeg')
-  }
-
-  // If it's already a require() result (number), return as is
-  if (typeof imageSource === 'number') {
-    return imageSource
-  }
-
-  // If it's a string URI, convert to uri object
-  if (typeof imageSource === 'string') {
-    return { uri: imageSource }
-  }
-
-  // Handle object types - check if it's not null and is actually an object
-  if (typeof imageSource === 'object' && imageSource !== null) {
-    // Check if it's our custom ImageUrl format with nested uri
-    if ('uri' in imageSource && 'height' in imageSource && 'width' in imageSource) {
-      const imageUrlObj = imageSource as ImageUrl
-      return { uri: imageUrlObj.uri }
-    }
-
-    // If it's already a valid ImageSourcePropType with uri, return as is
-    if ('uri' in imageSource || 'testUri' in imageSource) {
-      return imageSource as ImageSourcePropType
-    }
-  }
-
-  // Fallback to default
-  return require('@/assets/selfies/extend-photo.jpeg')
-}
 
 const AnimatedTouchableOpacity = Animated.createAnimatedComponent(TouchableOpacity)
 
 interface PhotoCardProps {
-  imageSource?: ImageSourcePropType | string | ImageUrl
+  imageSource?: any
   onChangePress?: () => void
   onClickCard?: () => void
   title?: string
@@ -70,8 +36,8 @@ const PhotoCard = ({
     animateCardPressOut,
   } = usePhotoCardAnimation()
 
-  // Convert image source to proper format
-  const resolvedImageSource = getImageSource(imageSource)
+  // Resolve image source using the path resolver utility
+  const resolvedImageSource = resolveImageSource(imageSource)
 
   const handleCardPress = () => {
     animateCardPress()

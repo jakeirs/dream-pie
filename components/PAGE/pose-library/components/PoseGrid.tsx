@@ -10,25 +10,27 @@ import { Pose } from '@/types/dream'
 import { PoseGridProps } from '../types'
 
 export const PoseGrid = ({ poses, selectedPose, onPoseSelect, subscription }: PoseGridProps) => {
-  const renderPose = (item: Pose) => {
-    const isSelected = selectedPose?.id === item.id
-    const needsPremium = item.isPremium && subscription.tier === 'free'
+  return (
+    <View className="flex-row flex-wrap p-4">
+      {poses.map((pose) => {
+        const isSelected = selectedPose?.id === pose.id
+        const needsPremium = pose.isPremium && subscription.tier === 'free'
 
-    return (
-      <View key={item.id} className="w-1/3 p-2">
-        <Thumbnail
-          imageUrl={item.imageUrl}
-          title={item.name}
-          subtitle={item.category.charAt(0).toUpperCase() + item.category.slice(1)}
-          isSelected={isSelected}
-          isPremium={item.isPremium}
-          isLocked={needsPremium}
-          onPress={() => onPoseSelect(item)}
-          aspectRatio={0.75}
-        />
-      </View>
-    )
-  }
-
-  return <View className="flex-row flex-wrap p-4">{poses.map((pose) => renderPose(pose))}</View>
+        return (
+          <View key={pose.id} className="w-1/3 p-2">
+            <Thumbnail
+              imageUrl={pose.imageUrl}
+              title={pose.name}
+              subtitle={pose.category.charAt(0).toUpperCase() + pose.category.slice(1)}
+              isSelected={isSelected}
+              isPremium={pose.isPremium}
+              isLocked={needsPremium}
+              onPress={() => onPoseSelect(pose)}
+              aspectRatio={0.75}
+            />
+          </View>
+        )
+      })}
+    </View>
+  )
 }

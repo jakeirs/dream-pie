@@ -29,14 +29,14 @@ const PhotoCardGrid = ({}: PhotoCardGridProps) => {
         <PhotoCard
           title="Your Selfie"
           onClickCard={handleSelfiePress}
-          imageSource={require('@/assets/selfies/extend-photo.jpeg')} // Default random selfie photo
+          imageSource="@/assets/selfies/extend-photo.jpeg" // Default selfie photo using path
         />
       </View>
       <View className="flex-1">
         <PhotoCard
           title="Your Pose"
           onClickCard={handlePosePress}
-          imageSource={selectedPose?.imageUrl} // Dynamic pose image from Zustand
+          imageSource={selectedPose?.imageUrl} // Dynamic pose image path from Zustand
         />
       </View>
     </View>
