@@ -1,65 +1,34 @@
-import React, { useCallback, useRef } from 'react'
-import { View, Text, ScrollView, Image, TouchableOpacity } from 'react-native'
+import { View, Text, ScrollView } from 'react-native'
 import { Button, PageHeader, ICON_FAMILY_NAME, BottomSheet } from '@/components/ui'
 import { useState } from 'react'
 import { router } from 'expo-router'
 import { brandColors } from '@/shared/theme'
-import BottomSheetLib, { BottomSheetModal, BottomSheetView } from '@gorhom/bottom-sheet'
-import { mockPoses, mockSubscriptions } from '@/mockData/dream'
-import { Pose } from '@/types/dream'
+import { mockSubscriptions } from '@/mockData/dream'
+import { useBottomSheets } from './useBottomSheets'
 
 // Import content components
 import PoseLibraryContent from '@/components/PAGE/pose-library'
 import PaywallContent from '@/components/PAGE/paywall'
 
 export default function CreatePage() {
-  const [selectedPose, setSelectedPose] = useState<Pose | null>(null)
-  const [selectedPhoto, setSelectedPhoto] = useState<any>(null)
   const [subscription] = useState(mockSubscriptions[0]) // Free tier
 
-  // Local refs for modals
-  const poseLibraryRef = useRef<BottomSheetLib>(null)
-  const paywallRef = useRef<BottomSheetModal>(null)
+  // Bottom Sheet management
+  const {
+    poseLibraryRef,
+    paywallRef,
+    handlePoseLibraryOpen,
+    handlePoseLibraryClose,
+    handlePaywallOpen,
+    handlePaywallClose,
+  } = useBottomSheets()
 
   const handlePoseChange = () => {
-    // poseLibraryRef.current?.present()
-    poseLibraryRef.current?.expand()
-  }
-
-  const handlePhotoChange = () => {
-    // In real app, this would open camera/gallery picker
-    setSelectedPhoto(require('@/assets/selfies/extend-photo.jpeg'))
-  }
-
-  const handleCreatePhotoshoot = async () => {
-    // Check subscription limits
-    if (subscription.creditsUsed >= subscription.creditsTotal) {
-      paywallRef.current?.present()
-      return
-    }
-
-    // Validate inputs
-    if (!selectedPose) {
-      poseLibraryRef.current?.expand()
-      return
-    }
-
-    if (!selectedPhoto) {
-      handlePhotoChange()
-      return
-    }
-
-    // Start the generation process (mock)
-    console.log('Starting generation with:', { pose: selectedPose, photo: selectedPhoto })
-    // In real app, navigate to generation screen
-    // router.push('/(creation)/generation')
+    handlePoseLibraryOpen()
   }
 
   const handleSettingsPress = () => {
     router.push('/settings')
-  }
-  const handlePaywallOpen = () => {
-    paywallRef.current?.present()
   }
 
   return (
@@ -93,9 +62,7 @@ export default function CreatePage() {
               <Text className="text-2xl font-bold text-accent">
                 {subscription.creditsTotal - subscription.creditsUsed}
               </Text>
-              <Text className="text-xs text-textSecondary">
-                of {subscription.creditsTotal}
-              </Text>
+              <Text className="text-xs text-textSecondary">of {subscription.creditsTotal}</Text>
             </View>
           </View>
         </View>
@@ -114,9 +81,7 @@ export default function CreatePage() {
               backgroundColor: brandColors.success,
               paddingVertical: 24,
             }}>
-            <Text
-              className="text-xl font-bold"
-              style={{ color: brandColors.primaryForeground }}>
+            <Text className="text-xl font-bold" style={{ color: brandColors.primaryForeground }}>
               🎨 Generate Photo →
             </Text>
           </Button>
@@ -133,24 +98,6 @@ export default function CreatePage() {
           </View>
         )}
       </ScrollView>
-
-      {/* Fixed Create Button */}
-      <View className="right-0 border-t border-borderLight bg-background">
-        <View className="px-6 py-6">
-          <Button
-            onPress={handleCreatePhotoshoot}
-            className="w-full"
-            style={{
-              backgroundColor: brandColors.primary,
-              paddingVertical: 18,
-            }}
-            disabled={!selectedPose || !selectedPhoto}>
-            <Text className="text-lg font-bold" style={{ color: brandColors.primaryForeground }}>
-              Create My Photoshoot
-            </Text>
-          </Button>
-        </View>
-      </View>
 
       {/* Pose Library Button */}
       <View className="border-t border-borderLight bg-background">
@@ -178,11 +125,11 @@ export default function CreatePage() {
         snapPoints={['30%', '60%', '95%']}
         backdropAppearsIndex={1}
         index={1}>
-        <PoseLibraryContent onClose={() => poseLibraryRef.current?.close()} onPoseSelect={setSelectedPose} />
+        <PoseLibraryContent onClose={handlePoseLibraryClose} />
       </BottomSheet>
 
       <BottomSheet ref={paywallRef} isModal={true} scrollView={true}>
-        <PaywallContent onClose={() => paywallRef.current?.dismiss()} />
+        <PaywallContent onClose={handlePaywallClose} />
       </BottomSheet>
     </View>
   )

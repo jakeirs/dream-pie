@@ -6,10 +6,9 @@ import { mockPoses, mockSubscriptions } from '@/mockData/dream'
 
 interface PoseLibraryPageProps {
   onClose: () => void
-  onPoseSelect?: (pose: Pose) => void
 }
 
-export default function PoseLibraryPage({ onClose, onPoseSelect }: PoseLibraryPageProps) {
+export default function PoseLibraryPage({ onClose }: PoseLibraryPageProps) {
   const [poses, setPoses] = useState<Pose[]>([])
   const [selectedPose, setSelectedPose] = useState<Pose | null>(null)
   const [subscription] = useState(mockSubscriptions[0]) // Free tier
@@ -25,7 +24,6 @@ export default function PoseLibraryPage({ onClose, onPoseSelect }: PoseLibraryPa
     }
 
     setSelectedPose(pose)
-    onPoseSelect?.(pose)
     onClose()
   }
 
@@ -35,20 +33,15 @@ export default function PoseLibraryPage({ onClose, onPoseSelect }: PoseLibraryPa
 
     return (
       <TouchableOpacity
-        className={`flex-1 m-2 bg-card rounded-xl overflow-hidden ${
+        className={`m-2 flex-1 overflow-hidden rounded-xl bg-card ${
           isSelected ? 'border-2 border-primary' : ''
         }`}
         onPress={() => handlePoseSelect(item)}
         style={{ aspectRatio: 0.75 }}>
-
-        <Image
-          source={item.imageUrl}
-          className="w-full flex-1"
-          resizeMode="cover"
-        />
+        <Image source={item.imageUrl} className="w-full flex-1" resizeMode="cover" />
 
         {item.isPremium && (
-          <View className="absolute top-2 right-2 bg-warning px-2 py-1 rounded">
+          <View className="absolute right-2 top-2 rounded bg-warning px-2 py-1">
             <Text className="text-xs font-bold text-white">👑 PRO</Text>
           </View>
         )}
@@ -63,8 +56,8 @@ export default function PoseLibraryPage({ onClose, onPoseSelect }: PoseLibraryPa
         </View>
 
         {needsPremium && (
-          <View className="absolute inset-0 bg-black/50 items-center justify-center">
-            <Text className="text-white font-bold">Upgrade to Pro</Text>
+          <View className="absolute inset-0 items-center justify-center bg-black/50">
+            <Text className="font-bold text-white">Upgrade to Pro</Text>
           </View>
         )}
       </TouchableOpacity>
@@ -73,7 +66,7 @@ export default function PoseLibraryPage({ onClose, onPoseSelect }: PoseLibraryPa
 
   return (
     <View className="flex-1 bg-background">
-      <View className="flex-row justify-between items-center p-6 border-b border-borderLight">
+      <View className="flex-row items-center justify-between border-b border-borderLight p-6">
         <Text className="text-xl font-bold text-textPrimary">Choose a Pose</Text>
         <Button variant="secondary" size="small" onPress={onClose}>
           <Text>Done</Text>
