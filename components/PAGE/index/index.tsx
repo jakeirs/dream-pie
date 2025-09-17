@@ -1,11 +1,11 @@
-import { View, Text } from 'react-native'
-import { Button, PageHeader, ICON_FAMILY_NAME, BottomSheet } from '@/components/ui'
+import { View } from 'react-native'
+import { PageHeader, ICON_FAMILY_NAME, BottomSheet } from '@/components/ui'
 import { router } from 'expo-router'
-import { brandColors } from '@/shared/theme'
 
-// Import content components
+// components
+import { Top } from './components/Top'
+import { Bottom } from './components/Bottom/Bottom'
 import PoseLibraryContent from '@/components/PAGE/pose-library'
-
 // hooks
 import { useBottomSheets } from './hooks/useBottomSheets'
 
@@ -31,46 +31,8 @@ export default function CreatePage() {
           onPress: handleSettingsPress,
         }}
       />
-      {/* Main Header */}
-      <View className="px-6 pb-8 pt-8">
-        <Text className="mb-4 text-center text-3xl font-bold text-textPrimary">
-          Let's create something new!
-        </Text>
-      </View>
-
-      <View className="flex-1">
-        {/* Generate Photo Button */}
-        <View className="mb-8 px-6">
-          <Button
-            onPress={() => router.push('/(creation)/generation')}
-            className="w-full"
-            style={{
-              backgroundColor: brandColors.success,
-              paddingVertical: 24,
-            }}>
-            <Text className="text-xl font-bold" style={{ color: brandColors.primaryForeground }}>
-              🎨 Generate Photo →
-            </Text>
-          </Button>
-        </View>
-      </View>
-
-      {/* Pose Library Button */}
-      <View className="border-t border-borderLight bg-background">
-        <View className="px-6 py-6">
-          <Button
-            onPress={handlePoseChange}
-            className="w-full"
-            style={{
-              backgroundColor: brandColors.warning,
-              paddingVertical: 18,
-            }}>
-            <Text className="text-lg font-bold" style={{ color: brandColors.primaryForeground }}>
-              Choose Pose
-            </Text>
-          </Button>
-        </View>
-      </View>
+      <Top />
+      <Bottom onPoseChange={handlePoseChange} />
 
       {/* Bottom Sheet Modals */}
       <BottomSheet
