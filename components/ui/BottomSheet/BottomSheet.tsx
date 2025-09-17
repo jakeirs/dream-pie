@@ -22,26 +22,26 @@ export interface BottomSheetModalExtendedProps extends Omit<BottomSheetModalProp
   children: React.ReactNode
   scrollView?: boolean
   isModal: true
+  backdropAppearsIndex?: number
 }
 
 export type CombinedBottomSheetProps = BottomSheetProps | BottomSheetModalExtendedProps
 
 const BottomSheet = forwardRef<BottomSheetLib, CombinedBottomSheetProps>(
-  ({ children, scrollView = true, index = 0, isModal = false, ...props }, ref) => {
+  ({ children, scrollView = true, index = 0, isModal = false, backdropAppearsIndex = 0, ...props }, ref) => {
     const defaultSnapPoints = useMemo(() => ['50%', '90%'], [])
-    const defaultBackdropAppearsIndex = 0
 
     const renderBackdrop = useCallback(
       (backdropProps: any) => (
         <BottomSheetBackdrop
           {...backdropProps}
-          appearsOnIndex={defaultBackdropAppearsIndex + 1}
-          disappearsOnIndex={defaultBackdropAppearsIndex}
+          appearsOnIndex={backdropAppearsIndex + 1}
+          disappearsOnIndex={backdropAppearsIndex}
           opacity={0.7}
-          pressBehavior="collapse"
+          pressBehavior="close"
         />
       ),
-      []
+      [backdropAppearsIndex]
     )
 
     const renderContent = () =>

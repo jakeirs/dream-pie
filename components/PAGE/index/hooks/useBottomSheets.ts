@@ -1,36 +1,27 @@
-import { useRef } from 'react'
+import { useRef, useEffect } from 'react'
 import BottomSheetLib, { BottomSheetModal } from '@gorhom/bottom-sheet'
+import { useAppStores } from '@/stores'
 
 export const useBottomSheets = () => {
-  // Refs for different BottomSheet instances
+  // Get Zustand store
+  const { navigation } = useAppStores()
+
+  // Create refs
   const poseLibraryRef = useRef<BottomSheetLib>(null)
   const paywallRef = useRef<BottomSheetModal>(null)
 
-  // Handler functions for BottomSheet controls
-  const handlePoseLibraryOpen = () => {
-    poseLibraryRef.current?.expand()
-  }
+  // Register refs with Zustand store on mount ONCE
+  useEffect(() => {
+    navigation.setPoseLibraryRef(poseLibraryRef)
+    navigation.setPaywallRef(paywallRef)
+  }, []) // ✅
 
   const handlePoseLibraryClose = () => {
-    poseLibraryRef.current?.close()
-  }
-
-  const handlePaywallOpen = () => {
-    paywallRef.current?.present()
-  }
-
-  const handlePaywallClose = () => {
-    paywallRef.current?.dismiss()
+    navigation.poseLibraryRef?.current?.close()
   }
 
   return {
-    // Refs
     poseLibraryRef,
-    paywallRef,
-    // Handlers
-    handlePoseLibraryOpen,
     handlePoseLibraryClose,
-    handlePaywallOpen,
-    handlePaywallClose,
   }
 }

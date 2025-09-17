@@ -14,11 +14,7 @@ import { ICON_FAMILY_NAME } from '@/components/ui/icons/constants'
 
 export default function CreatePage() {
   // Bottom Sheet management
-  const { poseLibraryRef, handlePoseLibraryOpen, handlePoseLibraryClose } = useBottomSheets()
-
-  const handlePoseChange = () => {
-    handlePoseLibraryOpen()
-  }
+  const { poseLibraryRef, handlePoseLibraryClose } = useBottomSheets()
 
   const handleSettingsPress = () => {
     router.push('/settings')
@@ -37,10 +33,9 @@ export default function CreatePage() {
 
       {/* Original Components */}
       <View className="flex-1">
-        <Top onPosePress={handlePoseLibraryOpen} />
-        <Bottom onPoseChange={handlePoseChange} />
+        <Top />
+        <Bottom />
       </View>
-
 
       {/* Original Bottom Sheet */}
       <BottomSheet
@@ -49,7 +44,7 @@ export default function CreatePage() {
         enablePanDownToClose={true}
         scrollView={true}
         snapPoints={['30%', '60%', '95%']}
-        backdropAppearsIndex={1}
+        backdropAppearsIndex={0}
         index={-1}>
         <PoseLibraryContent onClose={handlePoseLibraryClose} />
       </BottomSheet>

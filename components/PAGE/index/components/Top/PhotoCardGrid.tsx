@@ -4,37 +4,28 @@ import { View } from 'react-native'
 
 // 2. UI components (@/components/ui)
 import PhotoCard from '@/components/ui/PhotoCard/PhotoCard'
+import { useAppStores } from '@/stores'
 
-interface PhotoCardGridProps {
-  onPosePress?: () => void
-}
+interface PhotoCardGridProps {}
 
-const PhotoCardGrid = ({ onPosePress }: PhotoCardGridProps) => {
+const PhotoCardGrid = ({}: PhotoCardGridProps) => {
+  const { navigation } = useAppStores()
+
   const handleSelfiePress = () => {
     console.log('Selfie card pressed')
   }
 
   const handlePosePress = () => {
-    if (onPosePress) {
-      onPosePress()
-    } else {
-      console.log('Pose card pressed - no handler provided')
-    }
+    navigation.poseLibraryRef?.current?.snapToIndex(1)
   }
 
   return (
     <View className="flex-row gap-2 px-2">
       <View className="flex-1">
-        <PhotoCard
-          title="Your Selfie"
-          onClickCard={handleSelfiePress}
-        />
+        <PhotoCard title="Your Selfie" onClickCard={handleSelfiePress} />
       </View>
       <View className="flex-1">
-        <PhotoCard
-          title="Your Pose"
-          onClickCard={handlePosePress}
-        />
+        <PhotoCard title="Your Pose" onClickCard={handlePosePress} />
       </View>
     </View>
   )
