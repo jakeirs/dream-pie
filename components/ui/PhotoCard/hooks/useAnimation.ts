@@ -1,5 +1,5 @@
-import { useSharedValue } from 'react-native-reanimated'
-import { withSpring, withSequence, withTiming } from 'react-native-reanimated'
+import { useSharedValue , withSpring, withSequence, withTiming } from 'react-native-reanimated'
+
 
 export const usePhotoCardAnimation = () => {
   const cardScale = useSharedValue(1)

@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test'
 
 test('Test root URL and React 19 fix', async ({ page }) => {
-  const consoleMessages: Array<{type: string, text: string}> = []
+  const consoleMessages: {type: string, text: string}[] = []
 
   // Capture ALL console messages
   page.on('console', msg => {

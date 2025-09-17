@@ -1,6 +1,6 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { View, Text, Switch, ScrollView } from 'react-native'
-import { useState } from 'react'
+
 import PageHeader from '@/components/ui/PageHeader/PageHeader'
 import { ICON_FAMILY_NAME } from '@/components/ui/icons/constants'
 import { router } from 'expo-router'

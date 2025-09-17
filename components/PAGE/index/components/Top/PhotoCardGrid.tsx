@@ -6,13 +6,14 @@ import { View } from 'react-native'
 import PhotoCard from '@/components/ui/PhotoCard/PhotoCard'
 
 // 3. Stores with inline selector for performance
-import { useStore, useNavigationStore } from '@/stores'
+import { useStore, useNavigationStore, usePoseStore } from '@/stores'
 
 interface PhotoCardGridProps {}
 
 const PhotoCardGrid = ({}: PhotoCardGridProps) => {
-  // ✅ Optimized: Only subscribe to poseLibraryRef changes
+  // ✅ Optimized: Only subscribe to specific store properties to avoid unnecessary re-renders
   const poseLibraryRef = useStore(useNavigationStore, (state) => state.poseLibraryRef)
+  const selectedPose = useStore(usePoseStore, (state) => state.selectedPose)
 
   const handleSelfiePress = () => {
     console.log('Selfie card pressed')
@@ -25,10 +26,18 @@ const PhotoCardGrid = ({}: PhotoCardGridProps) => {
   return (
     <View className="flex-row gap-2 px-2">
       <View className="flex-1">
-        <PhotoCard title="Your Selfie" onClickCard={handleSelfiePress} />
+        <PhotoCard
+          title="Your Selfie"
+          onClickCard={handleSelfiePress}
+          imageSource={require('@/assets/selfies/extend-photo.jpeg')} // Default random selfie photo
+        />
       </View>
       <View className="flex-1">
-        <PhotoCard title="Your Pose" onClickCard={handlePosePress} />
+        <PhotoCard
+          title="Your Pose"
+          onClickCard={handlePosePress}
+          imageSource={selectedPose?.imageUrl} // Dynamic pose image from Zustand
+        />
       </View>
     </View>
   )

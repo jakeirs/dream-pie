@@ -5,12 +5,18 @@
  * Used for pose selection, library, and AI generation
  */
 
+export interface ImageUrl {
+  height: number
+  width: number
+  uri: string
+}
+
 export interface Pose {
   id: string
   name: string
   description: string
   category: PoseCategory
-  imageUrl: string | number // Support both URL strings and require() numbers
+  imageUrl: string | number | ImageUrl // Support URL strings, require() numbers, and complex image objects
   isPremium: boolean
   tags: string[]
   createdAt: string
