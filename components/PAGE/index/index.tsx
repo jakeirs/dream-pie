@@ -38,11 +38,11 @@ export default function CreatePage() {
       <BottomSheet
         ref={poseLibraryRef}
         isModal={false}
-        enablePanDownToClose={false}
+        enablePanDownToClose={true}
         scrollView={false}
         snapPoints={['30%', '60%', '95%']}
         backdropAppearsIndex={1}
-        index={1}>
+        index={-1}>
         <PoseLibraryContent onClose={handlePoseLibraryClose} />
       </BottomSheet>
     </View>

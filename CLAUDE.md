@@ -67,8 +67,9 @@ import ExplorePage from '@/components/PAGE/explore';
 // ❌ FAILS: Metro can't resolve this
 import IndexPage from '@/components/PAGE/index';
 
-// ✅ Standard imports
-import { Button, Card } from '@/components/ui';
+// ✅ Direct component imports - No index files needed
+import Button from '@/components/ui/Button/Button';
+import Card from '@/components/ui/Card/Card';
 import { User, Post } from '@/types';
 import { mockUsers } from '@/mockData';
 ```
@@ -265,15 +266,13 @@ my-expo-app/
 ├── components/                    # 🏗️ Component Architecture
 │   ├── ui/                        # 🎨 Reusable UI Components
 │   │   ├── Button/
-│   │   │   ├── Button.tsx         # Animated button with variants
-│   │   │   └── index.tsx          # Export file
+│   │   │   └── Button.tsx         # Component implementation with default export
 │   │   ├── Card/
-│   │   │   ├── Card.tsx           # Interactive card component
-│   │   │   └── index.tsx          # Export file
+│   │   │   └── Card.tsx           # Component implementation with default export
 │   │   ├── AnimatedBox/
-│   │   │   ├── AnimatedBox.tsx    # Reusable animated container
-│   │   │   └── index.tsx          # Export file
-│   │   └── index.tsx              # Main UI component exports
+│   │   │   └── AnimatedBox.tsx    # Component implementation with default export
+│   │   └── BottomSheet/
+│   │       └── BottomSheet.tsx    # Component implementation with default export
 │   │
 │   └── PAGE/                      # 🎯 Page Components (Mirror Routing Structure)
 │       ├── index/                 # Corresponds to app/(tabs)/index.tsx
@@ -370,18 +369,19 @@ export default function IndexPage({ className = '' }: IndexPageProps) {
 
 #### **4. UI Component Organization**
 - **Location**: `components/ui/`
-- **Structure**: Each component in its own folder with TypeScript file and index export
+- **Structure**: Each component in its own folder with TypeScript file and default export
 - **Purpose**: Reusable components shared across multiple pages
 
 ```
 components/ui/
 ├── Button/
-│   ├── Button.tsx         # Component implementation
-│   └── index.tsx          # Export: export { Button } from './Button';
+│   └── Button.tsx         # Component implementation with default export
 ├── Card/
-│   ├── Card.tsx
-│   └── index.tsx
-└── index.tsx             # Main exports: export * from './Button';
+│   └── Card.tsx           # Component implementation with default export
+├── AnimatedBox/
+│   └── AnimatedBox.tsx    # Component implementation with default export
+└── BottomSheet/
+    └── BottomSheet.tsx    # Component implementation with default export
 ```
 
 ### **🚀 Expo Router Best Practices**
@@ -428,9 +428,8 @@ export default function IndexScreen() {
 
 #### **Creating New UI Components**
 1. **Create Folder**: `components/ui/[ComponentName]/`
-2. **Implement Component**: Create `[ComponentName].tsx` with TypeScript
-3. **Add Exports**: Create `index.tsx` export file
-4. **Update Main Export**: Add to `components/ui/index.tsx`
+2. **Create Component File**: `[ComponentName].tsx` with default export
+3. **No index files needed** - Import directly from component file
 
 ## 📊 **Mock Data Architecture**
 
@@ -634,7 +633,8 @@ import { mockUsers } from '@/mockData';
 
 **Standard Implementation**:
 ```typescript
-import { PageHeader, ICON_FAMILY_NAME } from '@/components/ui'
+import PageHeader from '@/components/ui/PageHeader/PageHeader'
+import { ICON_FAMILY_NAME } from '@/components/ui/Icon/Icon'
 import { router } from 'expo-router'
 
 // In page component
@@ -676,7 +676,7 @@ const handleSettingsPress = () => {
 
 **Import Pattern**:
 ```typescript
-import { BottomSheet } from '@/components/ui'
+import BottomSheet from '@/components/ui/BottomSheet/BottomSheet'
 import BottomSheetLib, { BottomSheetModal } from '@gorhom/bottom-sheet'
 
 // Refs for different modes
@@ -729,7 +729,9 @@ modalRef.current?.dismiss()       // Hide modal
 
 **Import Pattern**:
 ```typescript
-import { Icon, IconButton, ICON_FAMILY_NAME } from '@/components/ui';
+import Icon from '@/components/ui/Icon/Icon';
+import IconButton from '@/components/ui/IconButton/IconButton';
+import { ICON_FAMILY_NAME } from '@/components/ui/Icon/Icon';
 ```
 
 **Basic Usage**:
@@ -842,10 +844,22 @@ npm run web          # Web browser
 
 ## Development Rules
 
+### **UI Component Rules:**
+- **No index.tsx files** in `components/ui/` folders
+- **Direct imports** from component files: `@/components/ui/Button/Button`
+- **Default exports** required in all UI component files
+- Component file name must match folder name
+
+### **Page Component Rules (UNCHANGED):**
+- Each `app/` route file contains **ONLY ONE COMPONENT IMPORT**
+- Pattern: `app/(tabs)/[route].tsx` → `import PageComponent from '@/components/PAGE/[route]/index'`
+- `components/PAGE/` folder structure must **exactly mirror** the `app/` routing structure
+- **Critical**: Index folder needs explicit `/index` in import path
+
 **✅ DO:**
 - Keep `app/` routes minimal (single import only)
 - Mirror `app/` structure exactly in `components/PAGE/`
-- Use absolute imports with aliases: `@/components/ui`
+- Use direct UI component imports: `@/components/ui/Button/Button`
 - **CRITICAL:** Index folder needs explicit path: `@/components/PAGE/index/index`
 - Use `Gesture.Pan()` + `GestureDetector` (Reanimated 4.x)
 - Use `onUpdate()` instead of `onActive()`
@@ -858,6 +872,7 @@ npm run web          # Web browser
 **❌ DON'T:**
 - Put business logic in `app/` route files
 - Use relative imports
+- **NEVER:** Use index files for UI components (old pattern)
 - **NEVER:** `@/components/PAGE/index` (fails Metro resolution)
 - **NEVER:** `useAnimatedGestureHandler` (removed in 4.x)
 - **NEVER:** Import gestures from `react-native-reanimated`
@@ -866,6 +881,28 @@ npm run web          # Web browser
 - Hardcode color hex values
 - Use `#FFFFFF` (use `brandColors.card`)
 - Use `#000000` for text (use `brandColors.textPrimary`)
+
+### **Import Examples:**
+
+**✅ CORRECT UI Component Imports:**
+```typescript
+import Button from '@/components/ui/Button/Button';
+import Card from '@/components/ui/Card/Card';
+import PageHeader from '@/components/ui/PageHeader/PageHeader';
+```
+
+**✅ CORRECT Page Component Imports:**
+```typescript
+import IndexPage from '@/components/PAGE/index/index';
+import ExplorePage from '@/components/PAGE/explore/index';
+```
+
+**❌ INCORRECT (Old Pattern):**
+```typescript
+// Don't use index files for UI components
+import { Button, Card } from '@/components/ui';
+import Button from '@/components/ui/Button';
+```
 
 
 ## Quick Reference
