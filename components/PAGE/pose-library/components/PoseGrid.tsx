@@ -23,7 +23,7 @@ export const PoseGrid = ({ poses, selectedPose, onPoseSelect, subscription }: Po
 
   return (
     <View className="flex-row flex-wrap p-4">
-      {poses.map((pose) => {
+      {poses.map((pose, index) => {
         // Safety check for individual pose objects
         if (!pose || !pose.id) {
           return null
@@ -33,12 +33,11 @@ export const PoseGrid = ({ poses, selectedPose, onPoseSelect, subscription }: Po
 
         return (
           <View key={pose.id} className="w-1/3 p-2">
-            <TouchableOpacity
-              onPress={() => onPoseSelect(pose)}
-              activeOpacity={0.8}
-            >
-              <View className={`overflow-hidden rounded-xl bg-surface shadow-sm ${isSelected ? 'border-2 border-primary' : ''}`}>
+            <TouchableOpacity onPress={() => onPoseSelect(pose)} activeOpacity={0.8}>
+              <View
+                className={`bg-surface overflow-hidden rounded-xl shadow-sm ${isSelected ? 'border-2 border-primary' : ''}`}>
                 <CustomImage
+                  index={index}
                   source={pose.imageUrl}
                   width="100%"
                   height={120}
@@ -57,15 +56,13 @@ export const PoseGrid = ({ poses, selectedPose, onPoseSelect, subscription }: Po
                   <Text
                     className="text-sm font-medium"
                     style={{ color: brandColors.textPrimary }}
-                    numberOfLines={1}
-                  >
+                    numberOfLines={1}>
                     {pose.name}
                   </Text>
                   <Text
                     className="text-xs"
                     style={{ color: brandColors.textSecondary }}
-                    numberOfLines={1}
-                  >
+                    numberOfLines={1}>
                     {pose.category.charAt(0).toUpperCase() + pose.category.slice(1)}
                   </Text>
                 </View>

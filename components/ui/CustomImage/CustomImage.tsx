@@ -4,6 +4,7 @@ import { Image, ImageProps } from 'expo-image'
 interface CustomImageProps extends Omit<ImageProps, 'source'> {
   source: string | number | { uri: string }
   width?: number | string
+  index?: number
   height?: number | string
   borderRadius?: number
   containerStyle?: ViewStyle
@@ -15,6 +16,7 @@ interface CustomImageProps extends Omit<ImageProps, 'source'> {
 
 export default function CustomImage({
   source,
+  index,
   width = 100,
   height = 100,
   borderRadius = 0,
@@ -32,6 +34,9 @@ export default function CustomImage({
     height,
     borderRadius,
   }
+if (index === 2) {
+  console.log('source: CustomImage index 2:', source, height, width)
+}
 
   return (
     <View style={[{ borderRadius }, containerStyle]}>
