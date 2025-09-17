@@ -17,9 +17,7 @@ export const PoseHeader = ({ onClose }: PoseHeaderProps) => {
     <View
       className="flex-row items-center justify-between p-6"
       style={{ borderBottomWidth: 1, borderBottomColor: brandColors.borderLight }}>
-      <Text
-        className="text-xl font-bold"
-        style={{ color: brandColors.textPrimary }}>
+      <Text className="text-xl font-bold" style={{ color: brandColors.textLight }}>
         Choose a Pose
       </Text>
       <Button variant="secondary" size="small" onPress={onClose}>

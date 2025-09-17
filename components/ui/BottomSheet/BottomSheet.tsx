@@ -57,8 +57,8 @@ const BottomSheet = forwardRef<BottomSheetLib, CombinedBottomSheetProps>(
         snapPoints: ['100%'],
         index: 0,
         enableDynamicSizing: false,
-        handleIndicatorStyle: { backgroundColor: brandColors.textMuted },
-        backgroundStyle: { backgroundColor: brandColors.card },
+        handleIndicatorStyle: { backgroundColor: brandColors.textLight },
+        backgroundStyle: { backgroundColor: brandColors.primaryForeground },
         backdropComponent: renderBackdrop,
       }
 
@@ -75,8 +75,8 @@ const BottomSheet = forwardRef<BottomSheetLib, CombinedBottomSheetProps>(
       snapPoints: props.snapPoints || defaultSnapPoints,
       index: index,
       enablePanDownToClose: props.enablePanDownToClose ?? true,
-      handleIndicatorStyle: { backgroundColor: brandColors.textMuted },
-      backgroundStyle: { backgroundColor: brandColors.card },
+      handleIndicatorStyle: { backgroundColor: brandColors.textLight },
+      backgroundStyle: { backgroundColor: brandColors.primaryForeground },
       backdropComponent: renderBackdrop,
     }
 

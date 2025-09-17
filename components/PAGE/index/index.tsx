@@ -42,7 +42,7 @@ export default function CreatePage() {
         ref={poseLibraryRef}
         isModal={false}
         enablePanDownToClose={true}
-        scrollView={false}
+        scrollView={true}
         snapPoints={['30%', '60%', '95%']}
         backdropAppearsIndex={1}
         index={-1}>

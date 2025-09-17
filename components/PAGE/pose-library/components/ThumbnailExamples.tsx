@@ -1,6 +1,6 @@
 // Following Import Order Standards (React 19+)
 // 1. React Native Core & Expo
-import { View, Text, ScrollView } from 'react-native'
+import { View, Text } from 'react-native'
 
 // 2. UI components (@/components/ui)
 import Thumbnail from '@/components/ui/Thumbnail/Thumbnail'
@@ -18,147 +18,126 @@ export const ThumbnailExamples = () => {
     console.log(`Pressed ${variant} thumbnail`)
   }
 
+  const examples = [
+    {
+      title: 'Standard',
+      thumbnail: (
+        <Thumbnail
+          imageUrl={exampleImage}
+          title="Standard Pose"
+          subtitle="Casual"
+          onPress={() => handlePress('standard')}
+          aspectRatio={0.75}
+        />
+      ),
+    },
+    {
+      title: 'Selected',
+      thumbnail: (
+        <Thumbnail
+          imageUrl={exampleImage}
+          title="Selected Pose"
+          subtitle="Professional"
+          isSelected={true}
+          onPress={() => handlePress('selected')}
+          aspectRatio={0.75}
+        />
+      ),
+    },
+    {
+      title: 'Premium',
+      thumbnail: (
+        <Thumbnail
+          imageUrl={exampleImage}
+          title="Premium Pose"
+          subtitle="Fashion"
+          isPremium={true}
+          onPress={() => handlePress('premium')}
+          aspectRatio={0.75}
+        />
+      ),
+    },
+    {
+      title: 'Locked',
+      thumbnail: (
+        <Thumbnail
+          imageUrl={exampleImage}
+          title="Locked Pose"
+          subtitle="Creative"
+          isPremium={true}
+          isLocked={true}
+          onPress={() => handlePress('locked')}
+          aspectRatio={0.75}
+        />
+      ),
+    },
+    {
+      title: 'Wide (16:9)',
+      thumbnail: (
+        <Thumbnail
+          imageUrl={landscapeImage}
+          title="Landscape"
+          subtitle="Travel"
+          aspectRatio={16 / 9}
+          onPress={() => handlePress('wide')}
+        />
+      ),
+      isWide: true,
+    },
+    {
+      title: 'Square (1:1)',
+      thumbnail: (
+        <Thumbnail
+          imageUrl={exampleImage}
+          title="Square"
+          subtitle="Fitness"
+          aspectRatio={1}
+          onPress={() => handlePress('square')}
+        />
+      ),
+    },
+    {
+      title: 'No Subtitle',
+      thumbnail: (
+        <Thumbnail
+          imageUrl={exampleImage}
+          title="Simple Pose"
+          onPress={() => handlePress('no-subtitle')}
+          aspectRatio={0.75}
+        />
+      ),
+    },
+    {
+      title: 'Custom Style',
+      thumbnail: (
+        <Thumbnail
+          imageUrl={exampleImage}
+          title="Styled Pose"
+          subtitle="Custom"
+          onPress={() => handlePress('custom')}
+          aspectRatio={0.75}
+          className="border-2 border-opacity-20 shadow-lg"
+        />
+      ),
+    },
+  ]
+
   return (
     <View className="p-4">
-      <Text
-        className="text-lg font-bold mb-4"
-        style={{ color: brandColors.textPrimary }}>
+      <Text className="mb-4 text-lg font-bold" style={{ color: brandColors.textLight }}>
         Thumbnail Variations
       </Text>
 
-      <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-        {/* Standard Thumbnail */}
-        <View className="mr-4 w-32">
-          <Text
-            className="text-sm font-medium mb-2"
-            style={{ color: brandColors.textSecondary }}>
-            Standard
-          </Text>
-          <Thumbnail
-            imageUrl={exampleImage}
-            title="Standard Pose"
-            subtitle="Casual"
-            onPress={() => handlePress('standard')}
-            aspectRatio={0.75}
-          />
-        </View>
-
-        {/* Selected Thumbnail */}
-        <View className="mr-4 w-32">
-          <Text
-            className="text-sm font-medium mb-2"
-            style={{ color: brandColors.textSecondary }}>
-            Selected
-          </Text>
-          <Thumbnail
-            imageUrl={exampleImage}
-            title="Selected Pose"
-            subtitle="Professional"
-            isSelected={true}
-            onPress={() => handlePress('selected')}
-            aspectRatio={0.75}
-          />
-        </View>
-
-        {/* Premium Thumbnail */}
-        <View className="mr-4 w-32">
-          <Text
-            className="text-sm font-medium mb-2"
-            style={{ color: brandColors.textSecondary }}>
-            Premium
-          </Text>
-          <Thumbnail
-            imageUrl={exampleImage}
-            title="Premium Pose"
-            subtitle="Fashion"
-            isPremium={true}
-            onPress={() => handlePress('premium')}
-            aspectRatio={0.75}
-          />
-        </View>
-
-        {/* Locked Premium Thumbnail */}
-        <View className="mr-4 w-32">
-          <Text
-            className="text-sm font-medium mb-2"
-            style={{ color: brandColors.textSecondary }}>
-            Locked
-          </Text>
-          <Thumbnail
-            imageUrl={exampleImage}
-            title="Locked Pose"
-            subtitle="Creative"
-            isPremium={true}
-            isLocked={true}
-            onPress={() => handlePress('locked')}
-            aspectRatio={0.75}
-          />
-        </View>
-
-        {/* Wide Aspect Ratio */}
-        <View className="mr-4 w-40">
-          <Text
-            className="text-sm font-medium mb-2"
-            style={{ color: brandColors.textSecondary }}>
-            Wide (16:9)
-          </Text>
-          <Thumbnail
-            imageUrl={landscapeImage}
-            title="Landscape"
-            subtitle="Travel"
-            aspectRatio={16/9}
-            onPress={() => handlePress('wide')}
-          />
-        </View>
-
-        {/* Square Aspect Ratio */}
-        <View className="mr-4 w-32">
-          <Text
-            className="text-sm font-medium mb-2"
-            style={{ color: brandColors.textSecondary }}>
-            Square (1:1)
-          </Text>
-          <Thumbnail
-            imageUrl={exampleImage}
-            title="Square"
-            subtitle="Fitness"
-            aspectRatio={1}
-            onPress={() => handlePress('square')}
-          />
-        </View>
-
-        {/* Without Subtitle */}
-        <View className="mr-4 w-32">
-          <Text
-            className="text-sm font-medium mb-2"
-            style={{ color: brandColors.textSecondary }}>
-            No Subtitle
-          </Text>
-          <Thumbnail
-            imageUrl={exampleImage}
-            title="Simple Pose"
-            onPress={() => handlePress('no-subtitle')}
-            aspectRatio={0.75}
-          />
-        </View>
-
-        {/* Custom Class Names */}
-        <View className="mr-4 w-32">
-          <Text
-            className="text-sm font-medium mb-2"
-            style={{ color: brandColors.textSecondary }}>
-            Custom Style
-          </Text>
-          <Thumbnail
-            imageUrl={exampleImage}
-            title="Styled Pose"
-            subtitle="Custom"
-            onPress={() => handlePress('custom')}
-            aspectRatio={0.75}
-            className="shadow-lg border-2 border-opacity-20"
-          />
-        </View>
-      </ScrollView>
+      <View className="-mx-2 flex-row flex-wrap">
+        {examples.map((example, index) => (
+          <View key={index} className={`mb-4 px-2 ${example.isWide ? 'w-2/5' : 'w-1/3'}`}>
+            <Text className="mb-2 text-sm font-medium" style={{ color: brandColors.textSecondary }}>
+              {example.title}
+            </Text>
+            {example.thumbnail}
+          </View>
+        ))}
+      </View>
     </View>
   )
 }
