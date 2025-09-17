@@ -204,52 +204,64 @@ const GalleryScreen = () => {
 
 ### 🎨 Pose Library BottomSheet (`components/PAGE/pose-library/index.tsx`)
 
-**Purpose**: Browse and select poses from categorized library.
+**Purpose**: Browse and select poses from library using minimal Zustand state.
 
 **Stores Used**:
 
-- **poseStore** - Pose data and selection
-- **subscriptionStore** - Premium pose access
-- **navigationStore** - BottomSheet state management
+- **poseStore** - Simple pose data and selection (poses, selectedPose only)
+- **navigationStore** - BottomSheet refs management
 
-**Data Flow**:
+**Simplified Implementation** (clean Zustand replacement for useState):
 
 ```typescript
-const PoseLibraryPage = () => {
-  const { pose, subscription, navigation } = useAppStores()
+// stores/poseStore.ts - Minimal interface
+interface PoseStore {
+  poses: Pose[]
+  setPoses: (poses: Pose[]) => void
+  selectedPose: Pose | null
+  setSelectedPose: (pose: Pose | null) => void
+  reset: () => void
+}
 
-  // WHEN: BottomSheet opens
-  // WHAT: Load available poses
+// components/PAGE/pose-library/hooks.ts
+export const usePoseLibrary = (onClose: () => void) => {
+  const { pose } = useAppStores()
+  const subscription = mockSubscriptions[0] // Mock data
+
+  // Load poses from mockData on mount
   useEffect(() => {
-    pose.loadPoses() // → Updates pose.poses array
+    if (pose.poses.length === 0) {
+      pose.setPoses(mockPoses) // → Direct mock data loading
+    }
   }, [])
 
-  // WHEN: User selects a pose
-  // WHAT: Check premium access, set selection, close modal
   const handlePoseSelect = (selectedPose: Pose) => {
-    if (selectedPose.isPremium && !subscription.hasPremiumAccess()) {
-      navigation.openBottomSheet('paywall') // → Switch to paywall
-      return
-    }
-
-    pose.setSelectedPose(selectedPose) // → Updates pose.selectedPose
-    navigation.closeBottomSheet('poseLibrary') // → Close current modal
+    pose.setSelectedPose(selectedPose) // → Simple selection
+    onClose() // → Close via prop callback
   }
 
-  // WHEN: User filters by category
-  // WHAT: Update filtered poses
-  const handleCategoryChange = (category: PoseCategory) => {
-    pose.setSelectedCategory(category) // → Updates pose.filteredPoses
+  return {
+    poses: pose.poses,           // Direct poses array
+    selectedPose: pose.selectedPose,  // Direct selection
+    subscription,                // Mock subscription
+    handlePoseSelect,           // Simple selection handler
   }
 }
 ```
 
+**Key Simplifications**:
+
+- ✅ **Only essential state**: `poses`, `setPoses`, `selectedPose`, `setSelectedPose`, `reset`
+- ✅ **No complex filtering** - just direct mockPoses loading
+- ✅ **No categories, search, loading states** - minimal useState replacement
+- ✅ **No async loading simulation** - direct data setting
+- ✅ **No computed getters** - simple state properties
+- ✅ **No subscription checks** - uses mockPoses directly
+
 **State Dependencies**:
 
-- `pose.poses` - All available poses
-- `pose.filteredPoses` - Poses filtered by category
-- `pose.selectedCategory` - Current category filter
-- `pose.selectedPose` - Currently selected pose
+- `pose.poses` - Array of poses loaded from mockPoses
+- `pose.selectedPose` - Currently selected pose (null if none)
 
 ---
 
@@ -489,6 +501,27 @@ Each store handles its own errors:
 - `setPoseLibraryRef(ref)` - Register pose library BottomSheet ref
 - `setPaywallRef(ref)` - Register paywall modal ref
 - Access refs: `navigation.poseLibraryRef?.current?.expand()` - Control sheets via stored refs
+
+### poseStore Actions (Simplified)
+
+**Essential State Management:**
+- `setPoses(poses)` - Set poses array (usually from mockPoses)
+- `setSelectedPose(pose)` - Set currently selected pose
+- `reset()` - Reset both poses and selectedPose to initial state
+
+**Usage Pattern:**
+```typescript
+const { pose } = useAppStores()
+
+// Load data
+pose.setPoses(mockPoses)
+
+// Select pose
+pose.setSelectedPose(selectedPose)
+
+// Reset everything
+pose.reset()
+```
 
 ## 🚀 Benefits of This Architecture
 

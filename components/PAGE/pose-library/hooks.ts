@@ -1,31 +1,45 @@
 // Following Import Order Standards (React 19+)
-import { useState, useEffect } from 'react'
-import { Pose } from '@/types/dream'
+import { useEffect } from 'react'
+
+// Zustand stores
+import { useAppStores } from '@/stores'
+
+// Mock data
 import { mockPoses, mockSubscriptions } from '@/mockData/dream'
 
-export const usePoseLibrary = (onClose: () => void) => {
-  const [poses, setPoses] = useState<Pose[]>([])
-  const [selectedPose, setSelectedPose] = useState<Pose | null>(null)
-  const [subscription] = useState(mockSubscriptions[0]) // Free tier
+// Types
+import { Pose } from '@/types/dream'
 
+export const usePoseLibrary = (onClose: () => void) => {
+  // Zustand stores
+  const { pose } = useAppStores()
+
+  // Mock subscription (for now, no subscription checking as requested)
+  const subscription = mockSubscriptions[0] // Free tier
+
+  // Load poses on mount
   useEffect(() => {
-    setPoses(mockPoses)
+    if (pose.poses.length === 0) {
+      pose.setPoses(mockPoses)
+    }
   }, [])
 
-  const handlePoseSelect = (pose: Pose) => {
-    if (pose.isPremium && subscription.tier === 'free') {
-      // TODO: Need to open paywall modal - for now just return
-      return
-    }
+  // Handle pose selection with Zustand
+  const handlePoseSelect = (selectedPose: Pose) => {
+    // Set selected pose in store
+    pose.setSelectedPose(selectedPose)
 
-    setSelectedPose(pose)
+    // Close pose library
     onClose()
   }
 
   return {
-    poses,
-    selectedPose,
+    // Pose data from Zustand store
+    poses: pose.poses,
+    selectedPose: pose.selectedPose,
     subscription,
+
+    // Actions
     handlePoseSelect,
   }
 }

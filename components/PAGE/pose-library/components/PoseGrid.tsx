@@ -15,7 +15,7 @@ export const PoseGrid = ({ poses, selectedPose, onPoseSelect, subscription }: Po
     const needsPremium = item.isPremium && subscription.tier === 'free'
 
     return (
-      <View key={item.id} className="w-1/2 p-2">
+      <View key={item.id} className="w-1/3 p-2">
         <Thumbnail
           imageUrl={item.imageUrl}
           title={item.name}
@@ -30,9 +30,5 @@ export const PoseGrid = ({ poses, selectedPose, onPoseSelect, subscription }: Po
     )
   }
 
-  return (
-    <View className="flex-row flex-wrap p-4">
-      {poses.map((pose) => renderPose(pose))}
-    </View>
-  )
+  return <View className="flex-row flex-wrap p-4">{poses.map((pose) => renderPose(pose))}</View>
 }

@@ -3,8 +3,9 @@
 import { View } from 'react-native'
 
 // 2. Same tree components (local to current page)
-import { PoseGrid, PoseHeader, ThumbnailExamples } from './components'
-
+import { PoseHeader } from './components/PoseHeader'
+import { PoseGrid } from './components/PoseGrid'
+import { ThumbnailExamples } from './components/ThumbnailExamples'
 // 3. Hooks
 import { usePoseLibrary } from './hooks'
 
@@ -17,13 +18,13 @@ export default function PoseLibraryPage({ onClose }: PoseLibraryPageProps) {
   return (
     <View className="flex-1 bg-background">
       <PoseHeader onClose={onClose} />
-      <ThumbnailExamples />
       <PoseGrid
         poses={poses}
         selectedPose={selectedPose}
         onPoseSelect={handlePoseSelect}
         subscription={subscription}
       />
+      <ThumbnailExamples />
     </View>
   )
 }
