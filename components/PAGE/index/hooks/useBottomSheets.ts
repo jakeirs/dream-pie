@@ -1,10 +1,12 @@
 import { useRef, useEffect } from 'react'
 import BottomSheetLib, { BottomSheetModal } from '@gorhom/bottom-sheet'
-import { useAppStores } from '@/stores'
+import { useStore, useNavigationStore } from '@/stores'
 
 export const useBottomSheets = () => {
-  // Get Zustand store
-  const { navigation } = useAppStores()
+  // ✅ Optimized: Get only the actions and ref we need
+  const setPoseLibraryRef = useStore(useNavigationStore, (state) => state.setPoseLibraryRef)
+  const setPaywallRef = useStore(useNavigationStore, (state) => state.setPaywallRef)
+  const poseLibraryRefFromStore = useStore(useNavigationStore, (state) => state.poseLibraryRef)
 
   // Create refs
   const poseLibraryRef = useRef<BottomSheetLib>(null)
@@ -12,12 +14,12 @@ export const useBottomSheets = () => {
 
   // Register refs with Zustand store on mount ONCE
   useEffect(() => {
-    navigation.setPoseLibraryRef(poseLibraryRef)
-    navigation.setPaywallRef(paywallRef)
-  }, []) // ✅
+    setPoseLibraryRef(poseLibraryRef)
+    setPaywallRef(paywallRef)
+  }, [setPoseLibraryRef, setPaywallRef])
 
   const handlePoseLibraryClose = () => {
-    navigation.poseLibraryRef?.current?.close()
+    poseLibraryRefFromStore?.current?.close()
   }
 
   return {

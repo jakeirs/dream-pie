@@ -223,40 +223,55 @@ interface PoseStore {
   reset: () => void
 }
 
-// components/PAGE/pose-library/hooks.ts
+// components/PAGE/pose-library/hooks.ts - OPTIMIZED VERSION
 export const usePoseLibrary = (onClose: () => void) => {
-  const { pose } = useAppStores()
+  // ✅ Performance optimized: Only subscribe to specific properties
+  const poses = useStore(usePoseStore, (state) => state.poses)
+  const selectedPose = useStore(usePoseStore, (state) => state.selectedPose)
+  const setPoses = useStore(usePoseStore, (state) => state.setPoses)
+  const setSelectedPose = useStore(usePoseStore, (state) => state.setSelectedPose)
+
   const subscription = mockSubscriptions[0] // Mock data
 
   // Load poses from mockData on mount
   useEffect(() => {
-    if (pose.poses.length === 0) {
-      pose.setPoses(mockPoses) // → Direct mock data loading
+    if (poses.length === 0) {
+      setPoses(mockPoses) // → Direct mock data loading
     }
-  }, [])
+  }, [poses.length, setPoses])
 
-  const handlePoseSelect = (selectedPose: Pose) => {
-    pose.setSelectedPose(selectedPose) // → Simple selection
+  const handlePoseSelect = (selectedPoseItem: Pose) => {
+    setSelectedPose(selectedPoseItem) // → Simple selection
     onClose() // → Close via prop callback
   }
 
   return {
-    poses: pose.poses,           // Direct poses array
-    selectedPose: pose.selectedPose,  // Direct selection
-    subscription,                // Mock subscription
-    handlePoseSelect,           // Simple selection handler
+    poses,              // Only re-renders when poses change
+    selectedPose,       // Only re-renders when selectedPose changes
+    subscription,       // Mock subscription
+    handlePoseSelect,   // Simple selection handler
   }
 }
 ```
 
-**Key Simplifications**:
+**Key Optimizations**:
 
-- ✅ **Only essential state**: `poses`, `setPoses`, `selectedPose`, `setSelectedPose`, `reset`
-- ✅ **No complex filtering** - just direct mockPoses loading
-- ✅ **No categories, search, loading states** - minimal useState replacement
-- ✅ **No async loading simulation** - direct data setting
-- ✅ **No computed getters** - simple state properties
-- ✅ **No subscription checks** - uses mockPoses directly
+- ✅ **Inline selectors**: `useStore(usePoseStore, (state) => state.poses)` for granular subscriptions
+- ✅ **Performance focused**: Components only re-render when specific data changes
+- ✅ **Simple architecture**: Minimal state with maximum performance
+- ✅ **Type safe**: Full TypeScript inference on selectors
+- ✅ **No unnecessary re-renders**: Each property has its own subscription
+
+**Performance Comparison:**
+
+```typescript
+// ❌ Less Optimal: Re-renders when ANY store property changes
+const { pose } = useAppStores()
+
+// ✅ Optimized: Re-renders only when specific properties change
+const poses = useStore(usePoseStore, (state) => state.poses)
+const selectedPose = useStore(usePoseStore, (state) => state.selectedPose)
+```
 
 **State Dependencies**:
 

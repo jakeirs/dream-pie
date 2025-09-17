@@ -15,6 +15,9 @@ export const useAppStores = () => ({
   pose: usePoseStore(),
 })
 
-// Export individual stores for direct access if needed
+// Export individual stores for direct access and inline selectors
 export { useNavigationStore } from './navigationStore'
 export { usePoseStore } from './poseStore'
+
+// Re-export useStore from zustand for inline selectors
+export { useStore } from 'zustand'

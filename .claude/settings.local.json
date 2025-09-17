@@ -2,7 +2,8 @@
   "permissions": {
     "allow": [
       "Read(//d/ASSETS/CHARM_PIE/APP/**)",
-      "WebFetch(domain:gorhom.dev)"
+      "WebFetch(domain:gorhom.dev)",
+      "WebFetch(domain:zustand.docs.pmnd.rs)"
     ],
     "deny": [],
     "ask": []

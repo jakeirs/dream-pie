@@ -4,19 +4,22 @@ import { View } from 'react-native'
 
 // 2. UI components (@/components/ui)
 import PhotoCard from '@/components/ui/PhotoCard/PhotoCard'
-import { useAppStores } from '@/stores'
+
+// 3. Stores with inline selector for performance
+import { useStore, useNavigationStore } from '@/stores'
 
 interface PhotoCardGridProps {}
 
 const PhotoCardGrid = ({}: PhotoCardGridProps) => {
-  const { navigation } = useAppStores()
+  // ✅ Optimized: Only subscribe to poseLibraryRef changes
+  const poseLibraryRef = useStore(useNavigationStore, (state) => state.poseLibraryRef)
 
   const handleSelfiePress = () => {
     console.log('Selfie card pressed')
   }
 
   const handlePosePress = () => {
-    navigation.poseLibraryRef?.current?.snapToIndex(1)
+    poseLibraryRef?.current?.snapToIndex(1)
   }
 
   return (
