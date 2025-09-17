@@ -17,50 +17,6 @@ export function Top({}: TopProps) {
         Let&apos;s create something new!
       </Text>
 
-      {/* CustomImage Gallery Demo */}
-      <View className="mb-8 px-4">
-        <Text className="mb-4 text-center text-lg font-semibold text-textPrimary">
-          Sample Gallery
-        </Text>
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          className="mb-4"
-          contentContainerStyle={{ paddingHorizontal: 8 }}
-        >
-          <View className="flex-row space-x-4">
-            <CustomImage
-              source={appAssets.poses.dress}
-              width={120}
-              height={160}
-              borderRadius={12}
-              containerStyle={{ marginRight: 8 }}
-            />
-            <CustomImage
-              source={appAssets.poses.fromTop}
-              width={120}
-              height={160}
-              borderRadius={12}
-              containerStyle={{ marginRight: 8 }}
-            />
-            <CustomImage
-              source={appAssets.gallery.img}
-              width={120}
-              height={160}
-              borderRadius={12}
-              containerStyle={{ marginRight: 8 }}
-            />
-            <CustomImage
-              source={appAssets.icon}
-              width={80}
-              height={80}
-              borderRadius={40}
-              containerStyle={{ marginRight: 8, alignSelf: 'center' }}
-            />
-          </View>
-        </ScrollView>
-      </View>
-
       <PhotoCardGrid />
     </View>
   )

@@ -8,6 +8,10 @@ import PhotoCard from '@/components/ui/PhotoCard/PhotoCard'
 // 3. Stores with inline selector for performance
 import { useStore, useNavigationStore, usePoseStore } from '@/stores'
 
+// 4. Assets
+import { appAssets } from '@/shared/assets/assets'
+import CustomImage from '@/components/ui/CustomImage/CustomImage'
+
 interface PhotoCardGridProps {}
 
 const PhotoCardGrid = ({}: PhotoCardGridProps) => {
@@ -29,14 +33,14 @@ const PhotoCardGrid = ({}: PhotoCardGridProps) => {
         <PhotoCard
           title="Your Selfie"
           onClickCard={handleSelfiePress}
-          imageSource="@/assets/selfies/extend-photo.jpeg" // Default selfie photo using path
+          imageSource={appAssets.selfies.extendPhoto} // Default selfie photo using appAssets
         />
       </View>
       <View className="flex-1">
         <PhotoCard
           title="Your Pose"
           onClickCard={handlePosePress}
-          imageSource={selectedPose?.imageUrl} // Dynamic pose image path from Zustand
+          imageSource={selectedPose?.imageUrl ?? appAssets.selfies.extendPhoto} // Dynamic pose image path from Zustand
         />
       </View>
     </View>

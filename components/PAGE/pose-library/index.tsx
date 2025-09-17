@@ -5,7 +5,6 @@ import { View } from 'react-native'
 // 2. Same tree components (local to current page)
 import { PoseHeader } from './components/PoseHeader'
 import { PoseGrid } from './components/PoseGrid'
-import { ThumbnailExamples } from './components/ThumbnailExamples'
 // 3. Hooks
 import { usePoseLibrary } from './hooks'
 
@@ -14,6 +13,8 @@ import { PoseLibraryPageProps } from './types'
 
 export default function PoseLibraryPage({ onClose }: PoseLibraryPageProps) {
   const { poses, selectedPose, subscription, handlePoseSelect } = usePoseLibrary(onClose)
+
+  console.log('PoseLibraryPage SelectedPose', selectedPose)
 
   return (
     <View className="flex-1 bg-background">
@@ -24,7 +25,6 @@ export default function PoseLibraryPage({ onClose }: PoseLibraryPageProps) {
         onPoseSelect={handlePoseSelect}
         subscription={subscription}
       />
-      <ThumbnailExamples />
     </View>
   )
 }
