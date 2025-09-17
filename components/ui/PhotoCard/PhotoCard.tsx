@@ -6,17 +6,23 @@ import Animated, {
 } from 'react-native-reanimated'
 import { usePhotoCardAnimation } from './hooks/useAnimation'
 
+const PHOTO_CARD_HEIGHT = 300
+
 const AnimatedTouchableOpacity = Animated.createAnimatedComponent(TouchableOpacity)
 
 interface PhotoCardProps {
   imageSource?: any
   onChangePress?: () => void
+  onClickCard?: () => void
+  title?: string
   className?: string
 }
 
 const PhotoCard = ({
   imageSource = require('@/assets/selfies/extend-photo.jpeg'),
   onChangePress,
+  onClickCard,
+  title = 'YOUR PHOTO',
   className = ''
 }: PhotoCardProps) => {
   const {
@@ -29,6 +35,7 @@ const PhotoCard = ({
 
   const handleCardPress = () => {
     animateCardPress()
+    onClickCard?.()
     onChangePress?.()
   }
 
@@ -42,8 +49,14 @@ const PhotoCard = ({
 
   return (
     <AnimatedTouchableOpacity
-      style={cardAnimatedStyle}
-      className={`relative aspect-[3/4] w-full overflow-hidden rounded-2xl shadow-lg ${className}`}
+      style={[
+        cardAnimatedStyle,
+        {
+          width: '100%',
+          height: PHOTO_CARD_HEIGHT,
+        }
+      ]}
+      className={`relative overflow-hidden rounded-2xl shadow-lg ${className}`}
       onPress={handleCardPress}
       onPressIn={animateCardPressIn}
       onPressOut={animateCardPressOut}
@@ -57,7 +70,7 @@ const PhotoCard = ({
         {/* Title overlay in top-left */}
         <View className="absolute left-4 top-4">
           <Text className="text-lg font-bold text-white drop-shadow-lg">
-            YOUR PHOTO
+            {title}
           </Text>
         </View>
 

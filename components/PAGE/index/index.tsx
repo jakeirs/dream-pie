@@ -1,15 +1,16 @@
 import { View } from 'react-native'
-import PageHeader from '@/components/ui/PageHeader/PageHeader'
-import { ICON_FAMILY_NAME } from '@/components/ui/icons/constants'
-import BottomSheet from '@/components/ui/BottomSheet/BottomSheet'
 import { router } from 'expo-router'
-
 // components
+import PoseLibraryContent from '@/components/PAGE/pose-library'
 import { Top } from './components/Top'
 import { Bottom } from './components/Bottom/Bottom'
-import PoseLibraryContent from '@/components/PAGE/pose-library'
+//ui
+import PageHeader from '@/components/ui/PageHeader/PageHeader'
+import BottomSheet from '@/components/ui/BottomSheet/BottomSheet'
 // hooks
 import { useBottomSheets } from './hooks/useBottomSheets'
+//constants
+import { ICON_FAMILY_NAME } from '@/components/ui/icons/constants'
 
 export default function CreatePage() {
   // Bottom Sheet management
