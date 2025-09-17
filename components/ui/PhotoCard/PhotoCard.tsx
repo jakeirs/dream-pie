@@ -69,11 +69,21 @@ const PhotoCard = ({
 
         {/* Change button overlay - now purely visual */}
         <Animated.View
-          style={buttonAnimatedStyle}
-          className="absolute bottom-6 left-1/2 -translate-x-1/2 rounded-full bg-white/20 backdrop-blur-sm px-6 py-3 border border-white/30">
-          <Text className="text-center font-semibold text-white text-base">
-            Change
-          </Text>
+          style={[
+            buttonAnimatedStyle,
+            {
+              position: 'absolute',
+              bottom: 24,
+              left: 0,
+              right: 0,
+              alignItems: 'center',
+            }
+          ]}>
+          <View className="rounded-full bg-white/20 backdrop-blur-sm px-6 py-3 border border-white/30">
+            <Text className="text-center font-semibold text-white text-base">
+              Change
+            </Text>
+          </View>
         </Animated.View>
 
       </ImageBackground>
