@@ -10,7 +10,7 @@ export interface Pose {
   name: string
   description: string
   category: PoseCategory
-  imageUrl: string
+  imageUrl: string | number // Support both URL strings and require() numbers
   isPremium: boolean
   tags: string[]
   createdAt: string
