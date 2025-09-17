@@ -124,7 +124,7 @@ export const ThumbnailExamples = () => {
 
   return (
     <View className="p-4">
-      <Text className="mb-4 text-lg font-bold" style={{ color: brandColors.textLight }}>
+      <Text className="mb-4 text-lg font-bold" style={{ color: brandColors.textPrimary }}>
         Thumbnail Variations
       </Text>
 

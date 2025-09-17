@@ -1,14 +1,25 @@
-import React from 'react'
+// Following Import Order Standards (React 19+)
+// 1. React Native Core & Expo
 import { View } from 'react-native'
+
+// 2. UI components (@/components/ui)
 import PhotoCard from '@/components/ui/PhotoCard/PhotoCard'
 
-const PhotoCardGrid = () => {
+interface PhotoCardGridProps {
+  onPosePress?: () => void
+}
+
+const PhotoCardGrid = ({ onPosePress }: PhotoCardGridProps) => {
   const handleSelfiePress = () => {
     console.log('Selfie card pressed')
   }
 
   const handlePosePress = () => {
-    console.log('Pose card pressed')
+    if (onPosePress) {
+      onPosePress()
+    } else {
+      console.log('Pose card pressed - no handler provided')
+    }
   }
 
   return (

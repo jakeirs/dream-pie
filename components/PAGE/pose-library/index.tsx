@@ -15,7 +15,7 @@ export default function PoseLibraryPage({ onClose }: PoseLibraryPageProps) {
   const { poses, selectedPose, subscription, handlePoseSelect } = usePoseLibrary(onClose)
 
   return (
-    <View className="flex-1 bg-primaryForeground">
+    <View className="flex-1 bg-background">
       <PoseHeader onClose={onClose} />
       <ThumbnailExamples />
       <PoseGrid

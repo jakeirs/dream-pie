@@ -1,4 +1,4 @@
-import { View } from 'react-native'
+import { View, Text } from 'react-native'
 import { router } from 'expo-router'
 // components
 import PoseLibraryContent from '@/components/PAGE/pose-library'
@@ -34,10 +34,15 @@ export default function CreatePage() {
           onPress: handleSettingsPress,
         }}
       />
-      <Top />
-      <Bottom onPoseChange={handlePoseChange} />
 
-      {/* Bottom Sheet Modals */}
+      {/* Original Components */}
+      <View className="flex-1">
+        <Top onPosePress={handlePoseLibraryOpen} />
+        <Bottom onPoseChange={handlePoseChange} />
+      </View>
+
+
+      {/* Original Bottom Sheet */}
       <BottomSheet
         ref={poseLibraryRef}
         isModal={false}
