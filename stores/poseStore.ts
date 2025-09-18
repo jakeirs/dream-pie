@@ -7,8 +7,8 @@ interface PoseStore {
   setPoses: (poses: Pose[]) => void
   selectedPose: Pose | null
   setSelectedPose: (pose: Pose | null) => void
-  imageUrl: string | null
-  setImageUrl: (imageUrl: string | null) => void
+  imageUrl: Pose | null
+  setImageUrl: (imageUrl: Pose | null) => void
   reset: () => void
 }
 
@@ -16,11 +16,11 @@ export const usePoseStore = create<PoseStore>()(
   devtools(
     (set) => ({
       imageUrl: null,
-      setImageUrl: (imageUrl: string | null) => set({ imageUrl }),
+      setImageUrl: (imageUrl: Pose | null) => set({ imageUrl }),
       poses: [],
       setPoses: (poses) => set({ poses }, false, 'setPoses'),
       selectedPose: null,
-      setSelectedPose: (pose) => set({ selectedPose: pose }),
+      setSelectedPose: (pose) => set({ imageUrl: pose }), // we change now imageUrl only
       reset: () => set({ poses: [], selectedPose: null }),
     }),
     { name: 'pose-store' }

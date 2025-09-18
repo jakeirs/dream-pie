@@ -7,7 +7,6 @@ import { usePoseStore } from './poseStore'
  *
  * Usage:
  * const { navigation, pose } = useAppStores()
- * pose.setPoses(mockPoses)
  * pose.setSelectedPose(selectedPose)
  */
 export const useAppStores = () => ({

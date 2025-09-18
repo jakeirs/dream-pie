@@ -13,8 +13,8 @@ import { PoseGridProps } from '../types'
 import { usePoseStore } from '@/stores'
 import { mockPoses } from '@/mockData/dream/poses'
 
-export const PoseGrid = ({ poses, onPoseSelect }: PoseGridProps) => {
-  const { setImageUrl, setSelectedPose, selectedPose } = usePoseStore()
+export const PoseGrid = () => {
+  const { setImageUrl, setSelectedPose, selectedPose, poses, imageUrl } = usePoseStore()
 
   // Safety check for poses array
   if (!poses || poses.length === 0) {
@@ -38,7 +38,7 @@ export const PoseGrid = ({ poses, onPoseSelect }: PoseGridProps) => {
           <View key={pose.id} className="w-1/3 p-2">
             <TouchableOpacity
               onPress={() => {
-                setImageUrl(pose.imageUrl)
+                setSelectedPose(pose)
               }}
               activeOpacity={0.8}>
               <View

@@ -6,18 +6,18 @@ import { View } from 'react-native'
 import { PoseHeader } from './components/PoseHeader'
 import { PoseGrid } from './components/PoseGrid'
 // 3. Hooks
-import { usePoseLibrary } from './hooks'
+import { usePoses } from './hooks'
 
 // 4. Constants, Types, Mock Data
 import { PoseLibraryPageProps } from './types'
 
 export default function PoseLibraryPage({ onClose }: PoseLibraryPageProps) {
-  const { poses, handlePoseSelect } = usePoseLibrary(onClose)
+  const { poses } = usePoses()
 
   return (
     <View className="flex-1 bg-background">
       <PoseHeader onClose={onClose} />
-      <PoseGrid poses={poses} onPoseSelect={handlePoseSelect} />
+      <PoseGrid />
     </View>
   )
 }
