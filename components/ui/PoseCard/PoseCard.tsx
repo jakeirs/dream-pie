@@ -14,52 +14,63 @@ interface PoseCardProps {
 
 export default function PoseCard({ pose, isSelected, onSelect }: PoseCardProps) {
   const borderOpacity = useSharedValue(0)
+  const titleScale = useSharedValue(1)
   const image = useImage(pose.imageUrl)
 
   useEffect(() => {
     borderOpacity.value = withTiming(isSelected ? 1 : 0, { duration: 300 })
+    titleScale.value = withTiming(isSelected ? 1.05 : 1, { duration: 300 })
   }, [isSelected])
 
   const animatedBorderStyle = useAnimatedStyle(() => ({
-    borderWidth: borderOpacity.value * 2,
+    borderWidth: borderOpacity.value * 3,
     borderColor: brandColors.primary,
   }))
 
   return (
     <Pressable onPress={() => onSelect(pose.id)}>
       <Animated.View
-        className="mb-4 overflow-hidden rounded-xl bg-card"
+        className="overflow-hidden rounded-xl bg-card shadow-sm"
         style={animatedBorderStyle}>
-        {/* Image */}
-        {image && (
-          <Image
-            source={image}
-            style={{ width: '100%', height: 120 }}
-            className="overflow-hidden rounded-3xl"
-            contentFit="cover"
-          />
-        )}
-      
-        {/* Content */}
-        <Text className="mb-1  font-semibold text-textPrimary">{pose.name}</Text>
+        {/* Image Container */}
+        <View className="relative">
+          {image && (
+            <Image
+              source={image}
+              style={{ width: '100%', height: 160 }}
+              className="rounded-t-xl"
+              contentFit="cover"
+            />
+          )}
 
-        {/* Premium Badge */}
-        {pose.isPremium && (
-          <View className="absolute right-2 top-2">
-            <View className="rounded-full bg-yellow-100 px-2 py-1">
-              <Text className="text-xs font-medium text-yellow-800">Premium</Text>
+          {/* Premium Badge */}
+          {pose.isPremium && (
+            <View className="absolute right-3 top-3">
+              <View className="rounded-full bg-yellow-100 px-3 py-1.5 shadow-sm">
+                <Text className="text-xs font-bold text-yellow-800">Premium</Text>
+              </View>
             </View>
-          </View>
-        )}
+          )}
 
-        {/* Selection Indicator */}
-        {isSelected && (
-          <View className="absolute left-4 top-4">
-            <View className="h-6 w-6 items-center justify-center rounded-full bg-primary">
-              <Text className="text-sm font-bold text-white">✓</Text>
+          {/* Selection Indicator */}
+          {isSelected && (
+            <View className="absolute left-3 top-3">
+              <View className="h-7 w-7 items-center justify-center rounded-full bg-primary shadow-md">
+                <Text className="text-sm font-bold text-white">✓</Text>
+              </View>
             </View>
-          </View>
-        )}
+          )}
+        </View>
+
+        {/* Content Container */}
+        <View className="p-2">
+          <Animated.Text
+            numberOfLines={2}
+            ellipsizeMode="tail"
+            className="text-center font-bold text-textPrimary">
+            {pose.name}
+          </Animated.Text>
+        </View>
       </Animated.View>
     </Pressable>
   )
