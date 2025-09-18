@@ -40,17 +40,15 @@ const Thumbnail = ({
 
   // Simple border animation when selected (optional)
   useEffect(() => {
-    if (animatedBorder) {
-      if (isSelected) {
-        borderWidth.value = withTiming(3, { duration: 200 })
-      } else {
-        borderWidth.value = withTiming(0, { duration: 200 })
-      }
+    if (isSelected) {
+      borderWidth.value = withTiming(3, { duration: 200 })
+    } else {
+      borderWidth.value = withTiming(0, { duration: 200 })
     }
-  }, [isSelected, animatedBorder])
+  }, [isSelected])
 
   const borderStyle = useAnimatedStyle(() => ({
-    borderWidth: animatedBorder ? borderWidth.value : isSelected ? 3 : 0,
+    borderWidth: borderWidth.value,
     borderColor: brandColors.accent,
   }))
 
