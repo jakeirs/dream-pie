@@ -2,11 +2,6 @@
 import { View, Text, ScrollView } from 'react-native'
 // components
 import PhotoCardGrid from './Top/PhotoCardGrid'
-// ui
-import CustomImage from '@/components/ui/CustomImage/CustomImage'
-
-// assets
-import { appAssets } from '@/shared/assets/assets'
 
 interface TopProps {}
 

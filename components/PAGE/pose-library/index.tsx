@@ -11,7 +11,7 @@ import { PoseLibraryPageProps } from './types'
 
 export default function PoseLibraryPage({ onClose }: PoseLibraryPageProps) {
   return (
-    <View className="flex-1 bg-background">
+    <View className="flex-1 bg-backgroundPrimary">
       <PoseHeader onClose={onClose} />
       <PoseGrid />
     </View>
