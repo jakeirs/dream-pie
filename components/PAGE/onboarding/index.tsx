@@ -41,14 +41,6 @@ export default function OnboardingPage() {
           </Text>
         </View>
 
-        {/* Selection Status */}
-        {/* {selectedPoseId && (
-          <View className="bg-surface mb-6 rounded-xl p-4">
-            <Text className="mb-1 font-semibold text-primary">Selected: {selectedPose?.name}</Text>
-            <Text className="text-sm text-textSecondary">{selectedPose?.description}</Text>
-          </View>
-        )} */}
-
         {/* Pose Grid */}
         <View className="mb-8 gap-4">
           {mockPoses.map((pose) => (

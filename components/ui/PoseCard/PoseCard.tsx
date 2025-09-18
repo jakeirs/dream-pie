@@ -1,8 +1,10 @@
 import { Image } from 'expo-image'
-
+import { useEffect } from 'react'
 import { View, Text, Pressable } from 'react-native'
+import Animated, { useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated'
 
 import { Pose } from '@/types/dream'
+import { brandColors } from '@/shared/theme'
 
 interface PoseCardProps {
   pose: Pose
@@ -11,10 +13,22 @@ interface PoseCardProps {
 }
 
 export default function PoseCard({ pose, isSelected, onSelect }: PoseCardProps) {
+  const borderOpacity = useSharedValue(0)
+
+  useEffect(() => {
+    borderOpacity.value = withTiming(isSelected ? 1 : 0, { duration: 300 })
+  }, [isSelected])
+
+  const animatedBorderStyle = useAnimatedStyle(() => ({
+    borderWidth: borderOpacity.value * 2,
+    borderColor: brandColors.primary,
+  }))
+
   return (
     <Pressable onPress={() => onSelect(pose.id)}>
-      <View
-        className={`mb-4 rounded-xl bg-card p-4  ${isSelected ? 'border-2 border-primary' : ''}`}>
+      <Animated.View
+        className="mb-4 rounded-xl bg-card p-4"
+        style={animatedBorderStyle}>
         {/* Image */}
         <Image source={pose.imageUrl} style={{ width: '100%', height: 80 }} contentFit="cover" />
 
@@ -48,7 +62,7 @@ export default function PoseCard({ pose, isSelected, onSelect }: PoseCardProps) 
             </View>
           </View>
         )}
-      </View>
+      </Animated.View>
     </Pressable>
   )
 }
