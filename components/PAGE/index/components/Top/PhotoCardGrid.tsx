@@ -6,7 +6,7 @@ import { View } from 'react-native'
 import PhotoCard from '@/components/ui/PhotoCard/PhotoCard'
 
 // 3. Stores with inline selector for performance
-import { useStore, useNavigationStore, usePoseStore } from '@/stores'
+import { useStore, useNavigationStore, usePoseStore, useSelfieChooserStore } from '@/stores'
 
 // 4. Assets
 import { appAssets } from '@/shared/assets/assets'
@@ -18,6 +18,7 @@ const PhotoCardGrid = ({}: PhotoCardGridProps) => {
   const poseLibraryRef = useStore(useNavigationStore, (state) => state.poseLibraryRef)
   const selfieChooserRef = useStore(useNavigationStore, (state) => state.selfieChooserRef)
   const selectedPose = usePoseStore((state) => state.selectedPose)
+  const selectedSelfie = useSelfieChooserStore((state) => state.selectedSelfie)
   const handleSelfiePress = () => {
     selfieChooserRef?.current?.snapToIndex(1)
   }
@@ -32,14 +33,14 @@ const PhotoCardGrid = ({}: PhotoCardGridProps) => {
         <PhotoCard
           title="Your Selfie"
           onClickCard={handleSelfiePress}
-          imageSource={appAssets.selfies.extendPhoto} // Default selfie photo using appAssets
+          imageSource={selectedSelfie?.imageUrl ?? appAssets.selfies.extendPhoto} // Default selfie photo using appAssets
         />
       </View>
       <View className="flex-1">
         <PhotoCard
           title="Your Pose"
           onClickCard={handlePosePress}
-          imageSource={selectedPose?.imageUrl ?? appAssets.selfies.extendPhoto} // Dynamic pose image path from Zustand (now string)
+          imageSource={selectedPose?.imageUrl ?? appAssets.poses.dress} // Dynamic pose image path from Zustand (now string)
         />
       </View>
     </View>

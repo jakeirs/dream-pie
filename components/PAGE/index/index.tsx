@@ -2,7 +2,7 @@ import { View, ScrollView } from 'react-native'
 import { router } from 'expo-router'
 // components
 import PoseLibraryContent from '@/components/PAGE/pose-library-bottomsheet'
-import SelfieChooserContent from '@/components/PAGE/selfie-chooser'
+import SelfieChooserContent from '@/components/PAGE/selfie-chooser-bottomsheet'
 import { Top } from './components/Top'
 import { Bottom } from './components/Bottom/Bottom'
 //ui
