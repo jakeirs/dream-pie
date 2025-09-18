@@ -3,7 +3,8 @@
     "allow": [
       "Read(//d/ASSETS/CHARM_PIE/APP/**)",
       "WebFetch(domain:gorhom.dev)",
-      "WebFetch(domain:zustand.docs.pmnd.rs)"
+      "WebFetch(domain:zustand.docs.pmnd.rs)",
+      "WebSearch"
     ],
     "deny": [],
     "ask": []

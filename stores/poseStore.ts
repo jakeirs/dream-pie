@@ -1,5 +1,6 @@
 import { create } from 'zustand'
-import { Pose } from '@/types/dream'
+import { devtools } from '@csark0812/zustand-expo-devtools'
+import { Pose } from '@/types/dream/pose'
 
 interface PoseStore {
   poses: Pose[]
@@ -9,10 +10,15 @@ interface PoseStore {
   reset: () => void
 }
 
-export const usePoseStore = create<PoseStore>((set) => ({
-  poses: [],
-  setPoses: (poses) => set({ poses }),
-  selectedPose: null,
-  setSelectedPose: (pose) => set({ selectedPose: pose }),
-  reset: () => set({ poses: [], selectedPose: null }),
-}))
+export const usePoseStore = create<PoseStore>()(
+  devtools(
+    (set) => ({
+      poses: [],
+      setPoses: (poses) => set({ poses }, false, 'setPoses'),
+      selectedPose: null,
+      setSelectedPose: (pose) => set({ selectedPose: pose }, false, 'setSelectedPose'),
+      reset: () => set({ poses: [], selectedPose: null }, false, 'reset'),
+    }),
+    { name: 'pose-store' }
+  )
+)

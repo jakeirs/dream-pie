@@ -3,6 +3,7 @@ import { useEffect } from 'react'
 
 // Zustand stores with inline selectors for performance
 import { useStore, usePoseStore } from '@/stores'
+import { useShallow } from 'zustand/react/shallow'
 
 // Mock data
 import { mockPoses, mockSubscriptions } from '@/mockData/dream'
@@ -11,9 +12,16 @@ import { mockPoses, mockSubscriptions } from '@/mockData/dream'
 import { Pose } from '@/types/dream'
 
 export const usePoseLibrary = (onClose: () => void) => {
-  // ✅ Optimized: Only subscribe to specific pose store properties
-  const poses = useStore(usePoseStore, (state) => state.poses)
-  const selectedPose = useStore(usePoseStore, (state) => state.selectedPose)
+  // ✅ Optimized with useShallow: Prevent unnecessary rerenders when array reference changes
+  const { poses, selectedPose } = useStore(
+    usePoseStore,
+    useShallow((state) => ({
+      poses: state.poses,
+      selectedPose: state.selectedPose,
+    }))
+  )
+
+  // Actions don't need shallow comparison
   const setPoses = useStore(usePoseStore, (state) => state.setPoses)
   const setSelectedPose = useStore(usePoseStore, (state) => state.setSelectedPose)
 
