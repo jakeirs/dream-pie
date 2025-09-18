@@ -1,5 +1,3 @@
-// Following Import Order Standards (React 19+)
-// 1. React Native Core & Expo
 import { View, Text, TouchableOpacity } from 'react-native'
 import { Image } from 'expo-image'
 import { useEffect } from 'react'
@@ -53,13 +51,13 @@ const Thumbnail = ({
 
   const borderStyle = useAnimatedStyle(() => ({
     borderWidth: animatedBorder ? borderWidth.value : isSelected ? 3 : 0,
-    borderColor: '#3B82F6',
+    borderColor: brandColors.accent,
   }))
 
   return (
     <View className={className}>
       <TouchableOpacity onPress={onPress} activeOpacity={0.8}>
-        <Animated.View className="bg-surface overflow-hidden rounded-xl" style={[borderStyle]}>
+        <Animated.View className="overflow-hidden rounded-xl" style={[borderStyle]}>
           {/* Main Image */}
           <Image
             source={imageUrl}
