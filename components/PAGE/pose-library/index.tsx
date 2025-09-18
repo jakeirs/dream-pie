@@ -5,15 +5,11 @@ import { View } from 'react-native'
 // 2. Same tree components (local to current page)
 import { PoseHeader } from './components/PoseHeader'
 import { PoseGrid } from './components/PoseGrid'
-// 3. Hooks
-import { usePoses } from './hooks'
 
-// 4. Constants, Types, Mock Data
+// 3. Constants, Types, Mock Data
 import { PoseLibraryPageProps } from './types'
 
 export default function PoseLibraryPage({ onClose }: PoseLibraryPageProps) {
-  const { poses } = usePoses()
-
   return (
     <View className="flex-1 bg-background">
       <PoseHeader onClose={onClose} />

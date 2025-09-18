@@ -1,6 +1,7 @@
 // Following Import Order Standards (React 19+)
 // 1. React Native Core & Expo
 import { View, Text, TouchableOpacity } from 'react-native'
+import { useEffect } from 'react'
 
 // 2. UI components (@/components/ui)
 import CustomImage from '@/components/ui/CustomImage/CustomImage'
@@ -14,7 +15,14 @@ import { usePoseStore } from '@/stores'
 import { mockPoses } from '@/mockData/dream/poses'
 
 export const PoseGrid = () => {
-  const { setImageUrl, setSelectedPose, selectedPose, poses, imageUrl } = usePoseStore()
+  const { setImageUrl, setSelectedPose, selectedPose, poses, imageUrl, setPoses } = usePoseStore()
+
+  // Load poses on mount if empty
+  useEffect(() => {
+    if (poses.length === 0) {
+      setPoses(mockPoses)
+    }
+  }, [poses.length, setPoses])
 
   // Safety check for poses array
   if (!poses || poses.length === 0) {

@@ -22,8 +22,6 @@ const PhotoCardGrid = ({}: PhotoCardGridProps) => {
     console.log('Selfie card pressed')
   }
 
-  console.log('ImageUrl in PhotoCardGrid: SHOULD BE  { with imageURL}', imageUrl)
-
   const handlePosePress = () => {
     poseLibraryRef?.current?.snapToIndex(1)
   }
@@ -41,7 +39,7 @@ const PhotoCardGrid = ({}: PhotoCardGridProps) => {
         <PhotoCard
           title="Your Pose"
           onClickCard={handlePosePress}
-          imageSource={imageUrl?.imageUrl ?? appAssets.selfies.extendPhoto} // Dynamic pose image path from Zustand
+          imageSource={imageUrl ?? appAssets.selfies.extendPhoto} // Dynamic pose image path from Zustand (now string)
         />
       </View>
     </View>
