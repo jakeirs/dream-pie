@@ -27,22 +27,21 @@ export default function PoseCard({ pose, isSelected, onSelect }: PoseCardProps) 
 
   return (
     <Pressable onPress={() => onSelect(pose.id)}>
-      <Animated.View className="mb-4 rounded-xl bg-card p-4" style={animatedBorderStyle}>
+      <Animated.View
+        className="mb-4 overflow-hidden rounded-xl bg-card"
+        style={animatedBorderStyle}>
         {/* Image */}
-        {image && <Image source={image} style={{ width: '100%', height: 80 }} contentFit="cover" />}
-
+        {image && (
+          <Image
+            source={image}
+            style={{ width: '100%', height: 120 }}
+            className="overflow-hidden rounded-3xl"
+            contentFit="cover"
+          />
+        )}
+      
         {/* Content */}
-        <Text className="mb-1 text-lg font-semibold text-textPrimary">{pose.name}</Text>
-        <Text className="mb-2 text-sm text-textSecondary">{pose.description}</Text>
-
-        {/* Tags */}
-        <View className="flex-row flex-wrap gap-1">
-          {pose.tags.slice(0, 3).map((tag) => (
-            <View key={tag} className="bg-surface rounded-md px-2 py-1">
-              <Text className="text-xs text-textSecondary">{tag}</Text>
-            </View>
-          ))}
-        </View>
+        <Text className="mb-1  font-semibold text-textPrimary">{pose.name}</Text>
 
         {/* Premium Badge */}
         {pose.isPremium && (

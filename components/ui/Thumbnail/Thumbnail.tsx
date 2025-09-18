@@ -1,8 +1,9 @@
 import { View, Text, TouchableOpacity } from 'react-native'
-import { Image } from 'expo-image'
+import { Image, useImage } from 'expo-image'
+import { useEffect } from 'react'
 
 // 2. Third-party libraries
-import Animated, { useAnimatedStyle, withTiming, useDerivedValue } from 'react-native-reanimated'
+import Animated, { useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated'
 
 // 3. Theme imports
 import { brandColors } from '@/shared/theme'
@@ -13,10 +14,9 @@ interface ThumbnailProps {
   title: string
   subtitle?: string
 
-  // Selection with optional border animation
+  // Selection with border animation
   isSelected?: boolean
   onPress?: () => void
-  animatedBorder?: boolean // New prop for optional border animation
 
   // Premium badge
   isPremium?: boolean
@@ -32,29 +32,30 @@ const Thumbnail = ({
   isSelected = false,
   onPress,
   isPremium = false,
-  animatedBorder = false,
   className = '',
 }: ThumbnailProps) => {
-  // Efficient border animation using useDerivedValue - prevents memory leaks
-  const borderWidth = useDerivedValue(() => {
-    if (!animatedBorder) return 0
-    return isSelected
-      ? withTiming(3, { duration: 200 })
-      : withTiming(0, { duration: 200 })
-  }, [isSelected, animatedBorder])
+  // Use useImage hook to prevent Android crashes with rapid image loading changes
+  const image = useImage(imageUrl)
 
-  const borderStyle = useAnimatedStyle(() => ({
-    borderWidth: borderWidth.value,
-    borderColor: brandColors.accent,
-  }), [borderWidth])
+  // Border animation following PoseCard pattern
+  const borderOpacity = useSharedValue(0)
+
+  useEffect(() => {
+    borderOpacity.value = withTiming(isSelected ? 1 : 0, { duration: 300 })
+  }, [isSelected])
+
+  const animatedBorderStyle = useAnimatedStyle(() => ({
+    borderWidth: borderOpacity.value * 3,
+    borderColor: brandColors.primary,
+  }))
 
   return (
     <View className={className}>
       <TouchableOpacity onPress={onPress} activeOpacity={0.8}>
-        <Animated.View className="overflow-hidden rounded-xl" style={[borderStyle]}>
+        <Animated.View className="overflow-hidden rounded-xl" style={animatedBorderStyle}>
           {/* Main Image */}
           <Image
-            source={imageUrl}
+            source={image}
             style={{ width: '100%', height: 120 }}
             contentFit="cover"
             transition={200}

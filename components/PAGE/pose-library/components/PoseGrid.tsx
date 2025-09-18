@@ -4,7 +4,7 @@ import { View, Text } from 'react-native'
 import { useEffect } from 'react'
 
 // 2. UI components (@/components/ui)
-import Thumbnail from '@/components/ui/Thumbnail/Thumbnail'
+import PoseCard from '@/components/ui/PoseCard/PoseCard'
 
 // 3. Constants, Types, Mock Data
 import { usePoseStore } from '@/stores'
@@ -28,23 +28,21 @@ export const PoseGrid = () => {
       </View>
     )
   }
+  const handlePoseSelect = (poseId: string) => {
+    const pose = poses.find((p) => p.id === poseId)
+    if (pose) {
+      setSelectedPose(pose)
+    }
+  }
+
   return (
-    <View className="flex-row flex-wrap p-4">
-      {poses.map((pose, index) => {
+    <View className="flex-row flex-wrap gap-4 p-4">
+      {poses.map((pose) => {
         const isSelected = selectedPose?.id === pose.id
 
         return (
           <View key={pose.id} className="w-1/3 p-2">
-            <Thumbnail
-              key={pose.id}
-              imageUrl={pose.imageUrl}
-              title={pose.name}
-              subtitle={pose.category.charAt(0).toUpperCase() + pose.category.slice(1)}
-              isSelected={isSelected}
-              onPress={() => setSelectedPose(pose)}
-              isPremium={pose.isPremium}
-              animatedBorder={true}
-            />
+            <PoseCard pose={pose} isSelected={isSelected} onSelect={handlePoseSelect} />
           </View>
         )
       })}
