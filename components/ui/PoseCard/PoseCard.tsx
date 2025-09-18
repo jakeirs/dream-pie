@@ -14,12 +14,10 @@ interface PoseCardProps {
 
 export default function PoseCard({ pose, isSelected, onSelect }: PoseCardProps) {
   const borderOpacity = useSharedValue(0)
-  const titleScale = useSharedValue(1)
   const image = useImage(pose.imageUrl)
 
   useEffect(() => {
     borderOpacity.value = withTiming(isSelected ? 1 : 0, { duration: 300 })
-    titleScale.value = withTiming(isSelected ? 1.05 : 1, { duration: 300 })
   }, [isSelected])
 
   const animatedBorderStyle = useAnimatedStyle(() => ({
@@ -63,12 +61,11 @@ export default function PoseCard({ pose, isSelected, onSelect }: PoseCardProps) 
         </View>
 
         {/* Content Container */}
-        <View className="p-2 h-16 justify-center">
+        <View className="h-16 justify-center p-2">
           <Animated.Text
             numberOfLines={2}
             ellipsizeMode="tail"
-            className="text-center font-bold text-textPrimary"
-     >
+            className="text-center font-bold text-textPrimary">
             {pose.name}
           </Animated.Text>
         </View>
