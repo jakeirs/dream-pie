@@ -2,36 +2,33 @@
 // 1. React Native Core & Expo
 import { View, Text, TouchableOpacity } from 'react-native'
 import { Image } from 'expo-image'
+import { useEffect } from 'react'
 
-// 2. Third-party libraries (node_modules dependencies)
+// 2. Third-party libraries
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
-  withSpring,
-  runOnJS,
+  withTiming,
 } from 'react-native-reanimated'
-import { Gesture, GestureDetector } from 'react-native-gesture-handler'
 
 // 3. Theme imports
 import { brandColors } from '@/shared/theme'
 
-
 interface ThumbnailProps {
   // Essential display data
-  imageUrl: string | number | { uri: string } // Compatible with expo-image
+  imageUrl: string | number | { uri: string }
   title: string
   subtitle?: string
 
-  // Interaction
+  // Selection with optional border animation
   isSelected?: boolean
   onPress?: () => void
+  animatedBorder?: boolean // New prop for optional border animation
 
-  // Premium features
+  // Premium badge
   isPremium?: boolean
-  isLocked?: boolean
 
   // Layout
-  aspectRatio?: number
   className?: string
 }
 
@@ -42,70 +39,52 @@ const Thumbnail = ({
   isSelected = false,
   onPress,
   isPremium = false,
-  isLocked = false,
-  aspectRatio = 0.75,
+  animatedBorder = false,
   className = '',
 }: ThumbnailProps) => {
-  const scale = useSharedValue(1)
+  const borderWidth = useSharedValue(0)
 
-  const gesture = Gesture.Tap()
-    .onStart(() => {
-      scale.value = withSpring(0.95)
-    })
-    .onEnd(() => {
-      scale.value = withSpring(1)
-      if (onPress) {
-        runOnJS(onPress)()
+  // Simple border animation when selected (optional)
+  useEffect(() => {
+    if (animatedBorder) {
+      if (isSelected) {
+        borderWidth.value = withTiming(3, { duration: 200 })
+      } else {
+        borderWidth.value = withTiming(0, { duration: 200 })
       }
-    })
+    }
+  }, [isSelected, animatedBorder])
 
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: scale.value }],
+  const borderStyle = useAnimatedStyle(() => ({
+    borderWidth: animatedBorder ? borderWidth.value : (isSelected ? 3 : 0),
+    borderColor: '#3B82F6',
   }))
 
-  // Handle image source - imageUrl is already a require() result
-  const imageSource = imageUrl
+  return (
+    <View className={className}>
+      <TouchableOpacity onPress={onPress} activeOpacity={0.8}>
+        <Animated.View
+          className="bg-surface overflow-hidden rounded-xl"
+          style={[borderStyle]}
+        >
+          {/* Main Image */}
+          <Image
+            source={imageUrl}
+            style={{ width: '100%', height: 120 }}
+            contentFit="cover"
+            transition={200}
+          />
 
-  const containerClasses = `overflow-hidden rounded-xl bg-card ${
-    isSelected ? 'border-2' : ''
-  } ${className}`
+          {/* Premium Badge */}
+          {isPremium && (
+            <View className="absolute right-2 top-2 rounded bg-warning px-2 py-1">
+              <Text className="text-xs font-bold text-white">👑 PRO</Text>
+            </View>
+          )}
+        </Animated.View>
 
-  const containerStyle = {
-    aspectRatio,
-    borderColor: isSelected ? brandColors.primary : 'transparent',
-  }
-
-  const ThumbnailContent = (
-    <Animated.View style={[animatedStyle]} className={containerClasses}>
-      <TouchableOpacity
-        style={containerStyle}
-        onPress={onPress}
-        activeOpacity={0.95}
-        className="flex-1">
-
-        {/* Main Image */}
-        <Image
-          source={imageSource}
-          style={{ width: '100%', flex: 1 }}
-          contentFit="cover"
-          placeholder="L6PZfSi_.AyE_3t7t7R**0o#DgR4"
-          transition={200}
-          onError={(error) => {
-            console.warn('Thumbnail Image loading error:', error.message)
-          }}
-        />
-
-        {/* Premium Badge */}
-        {isPremium && (
-          <View
-            className="absolute right-2 top-2 rounded px-2 py-1"
-            style={{ backgroundColor: brandColors.warning }}>
-            <Text className="text-xs font-bold text-white">👑 PRO</Text>
-          </View>
-        )}
-
-        {/* Title and Subtitle */}
-        <View className="p-3">
+        {/* Title and Subtitle at bottom */}
+        <View className="mt-2">
           <Text
             className="text-sm font-medium"
             style={{ color: brandColors.textPrimary }}
@@ -114,27 +93,15 @@ const Thumbnail = ({
           </Text>
           {subtitle && (
             <Text
-              className="text-xs"
-              style={{ color: brandColors.textSecondary }}>
+              className="text-xs mt-1"
+              style={{ color: brandColors.textSecondary }}
+              numberOfLines={1}>
               {subtitle}
             </Text>
           )}
         </View>
-
-        {/* Premium Lock Overlay */}
-        {isLocked && (
-          <View className="absolute inset-0 items-center justify-center bg-black/50">
-            <Text className="font-bold text-white">Upgrade to Pro</Text>
-          </View>
-        )}
       </TouchableOpacity>
-    </Animated.View>
-  )
-
-  return (
-    <GestureDetector gesture={gesture}>
-      {ThumbnailContent}
-    </GestureDetector>
+    </View>
   )
 }
 

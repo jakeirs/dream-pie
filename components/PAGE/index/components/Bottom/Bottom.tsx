@@ -18,34 +18,9 @@ import { Image } from 'expo-image'
 interface BottomProps {}
 
 export function Bottom({}: BottomProps) {
-  const { setImageUrl } = usePoseStore()
-
   return (
     <>
       <View className="flex-1">
-        {/* Pose Thumbnails Section */}
-        <View className="mb-6 px-6">
-          <Text className="mb-4 text-lg font-semibold" style={{ color: brandColors.textPrimary }}>
-            Choose a Pose Style
-          </Text>
-
-          {/* Thumbnail Grid */}
-          <View className="flex-row justify-center gap-3">
-            <TouchableOpacity onPress={() => setImageUrl(mockPoses[0].imageUrl)}>
-              <Image
-                source={mockPoses[0].imageUrl}
-                style={{ width: 80, height: 100, borderRadius: 12 }}
-              />
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => setImageUrl(mockPoses[1].imageUrl)}>
-              <Image
-                source={mockPoses[1].imageUrl}
-                style={{ width: 80, height: 100, borderRadius: 12 }}
-              />
-            </TouchableOpacity>
-          </View>
-        </View>
-
         {/* Generate Photo Button */}
         <View className="mb-8 px-6">
           <Button
@@ -64,17 +39,3 @@ export function Bottom({}: BottomProps) {
     </>
   )
 }
-
-// {poses.map((pose) => (
-//   <View key={pose.id} className="flex-1">
-//     <Thumbnail
-//       imageUrl={pose.imageUrl}
-//       title={pose.name}
-//       subtitle={pose.description}
-//       isSelected={selectedPose?.id === pose.id}
-//       isPremium={pose.isPremium}
-//       aspectRatio={1.2}
-//       onPress={() => handlePoseSelect(pose.id)}
-//     />
-//   </View>
-// ))}
