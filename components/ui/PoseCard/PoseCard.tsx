@@ -29,9 +29,7 @@ export default function PoseCard({ pose, isSelected, onSelect }: PoseCardProps) 
     <Pressable onPress={() => onSelect(pose.id)}>
       <Animated.View className="mb-4 rounded-xl bg-card p-4" style={animatedBorderStyle}>
         {/* Image */}
-        {image && (
-          <Image source={image} style={{ width: '100%', height: 80 }} contentFit="cover" />
-        )}
+        {image && <Image source={image} style={{ width: '100%', height: 80 }} contentFit="cover" />}
 
         {/* Content */}
         <Text className="mb-1 text-lg font-semibold text-textPrimary">{pose.name}</Text>

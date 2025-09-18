@@ -297,6 +297,37 @@ export const Card = ({ interactive = false, onPress, children }) => {
 };
 ```
 
+### 🖼️ **expo-image Best Practices**
+
+**CRITICAL**: Use `useImage()` hook to prevent Android crashes with rapid image loading changes.
+
+#### **✅ Correct expo-image Implementation**
+```typescript
+import { Image, useImage } from 'expo-image'
+
+export default function MyComponent({ imageSource }) {
+  const image = useImage(imageSource)  // Manages loading safely
+
+  return (
+    {image && <Image source={image} style={{...}} contentFit="cover" />}
+  )
+}
+```
+
+#### **❌ Dangerous Implementation (Causes Android Crashes)**
+```typescript
+// DON'T USE - Rapid source changes crash Android
+<Image source={pose.imageUrl} style={{...}} contentFit="cover" />
+```
+
+#### **Why useImage() Prevents Crashes**
+- **Race Condition Prevention**: Manages image loading pipeline internally
+- **Memory Safety**: Auto-cleanup on component unmount
+- **Android Stability**: Handles rapid prop changes without resource conflicts
+- **Loading State**: Returns `null` until image fully loaded
+
+**Rule**: Always use `useImage()` when image sources change frequently (selections, carousels, rapid UI updates).
+
 ## 🗂️ **Professional Folder Structure**
 
 ### **Complete App Structure**
