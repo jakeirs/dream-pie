@@ -3,30 +3,16 @@ import { useEffect } from 'react'
 
 // Zustand stores with inline selectors for performance
 import { useStore, usePoseStore } from '@/stores'
-import { useShallow } from 'zustand/react/shallow'
 
 // Mock data
-import { mockPoses, mockSubscriptions } from '@/mockData/dream'
+import { mockPoses } from '@/mockData/dream'
 
 // Types
 import { Pose } from '@/types/dream'
 
 export const usePoseLibrary = (onClose: () => void) => {
   // ✅ Optimized with useShallow: Prevent unnecessary rerenders when array reference changes
-  const { poses, selectedPose } = useStore(
-    usePoseStore,
-    useShallow((state) => ({
-      poses: state.poses,
-      selectedPose: state.selectedPose,
-    }))
-  )
-
-  // Actions don't need shallow comparison
-  const setPoses = useStore(usePoseStore, (state) => state.setPoses)
-  const setSelectedPose = useStore(usePoseStore, (state) => state.setSelectedPose)
-
-  // Mock subscription (for now, no subscription checking as requested)
-  const subscription = mockSubscriptions[0] // Free tier
+  const { poses, setPoses, setSelectedPose } = useStore(usePoseStore)
 
   // Load poses on mount
   useEffect(() => {
@@ -37,7 +23,6 @@ export const usePoseLibrary = (onClose: () => void) => {
 
   // Handle pose selection with Zustand
   const handlePoseSelect = (selectedPoseItem: Pose) => {
-    // Set selected pose in store
     setSelectedPose(selectedPoseItem)
 
     // Close pose library
@@ -47,9 +32,6 @@ export const usePoseLibrary = (onClose: () => void) => {
   return {
     // Pose data from Zustand store
     poses,
-    selectedPose,
-    subscription,
-
     // Actions
     handlePoseSelect,
   }

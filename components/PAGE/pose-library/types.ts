@@ -12,7 +12,5 @@ export interface PoseLibraryState {
 
 export interface PoseGridProps {
   poses: Pose[]
-  selectedPose: Pose | null
   onPoseSelect: (pose: Pose) => void
-  subscription: any
 }

@@ -12,19 +12,12 @@ import { usePoseLibrary } from './hooks'
 import { PoseLibraryPageProps } from './types'
 
 export default function PoseLibraryPage({ onClose }: PoseLibraryPageProps) {
-  const { poses, selectedPose, subscription, handlePoseSelect } = usePoseLibrary(onClose)
-
-  console.log('PoseLibraryPage SelectedPose', selectedPose)
+  const { poses, handlePoseSelect } = usePoseLibrary(onClose)
 
   return (
     <View className="flex-1 bg-background">
       <PoseHeader onClose={onClose} />
-      <PoseGrid
-        poses={poses}
-        selectedPose={selectedPose}
-        onPoseSelect={handlePoseSelect}
-        subscription={subscription}
-      />
+      <PoseGrid poses={poses} onPoseSelect={handlePoseSelect} />
     </View>
   )
 }

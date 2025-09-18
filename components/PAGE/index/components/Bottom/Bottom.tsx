@@ -18,12 +18,7 @@ import { Image } from 'expo-image'
 interface BottomProps {}
 
 export function Bottom({}: BottomProps) {
-  const { selectedPose, setImageUrl, setSelectedPose, poses } = usePoseStore()
-
-  const handlePoseSelect = (poseId: string) => {
-    const selectedPoseData = poses.find((pose) => pose.id === poseId)
-    setSelectedPose(selectedPoseData || null)
-  }
+  const { setImageUrl } = usePoseStore()
 
   return (
     <>

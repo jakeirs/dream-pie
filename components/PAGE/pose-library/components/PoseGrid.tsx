@@ -10,8 +10,12 @@ import { brandColors } from '@/shared/theme'
 
 // 4. Constants, Types, Mock Data
 import { PoseGridProps } from '../types'
+import { usePoseStore } from '@/stores'
+import { mockPoses } from '@/mockData/dream/poses'
 
-export const PoseGrid = ({ poses, selectedPose, onPoseSelect, subscription }: PoseGridProps) => {
+export const PoseGrid = ({ poses, onPoseSelect }: PoseGridProps) => {
+  const { setImageUrl, setSelectedPose, selectedPose } = usePoseStore()
+
   // Safety check for poses array
   if (!poses || poses.length === 0) {
     return (
@@ -20,7 +24,6 @@ export const PoseGrid = ({ poses, selectedPose, onPoseSelect, subscription }: Po
       </View>
     )
   }
-
   return (
     <View className="flex-row flex-wrap p-4">
       {poses.map((pose, index) => {
@@ -33,7 +36,11 @@ export const PoseGrid = ({ poses, selectedPose, onPoseSelect, subscription }: Po
 
         return (
           <View key={pose.id} className="w-1/3 p-2">
-            <TouchableOpacity onPress={() => {}} activeOpacity={0.8}>
+            <TouchableOpacity
+              onPress={() => {
+                setImageUrl(pose.imageUrl)
+              }}
+              activeOpacity={0.8}>
               <View
                 className={`bg-surface overflow-hidden rounded-xl shadow-sm ${isSelected ? 'border-2 border-primary' : ''}`}>
                 <CustomImage
