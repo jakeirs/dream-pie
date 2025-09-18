@@ -17,9 +17,13 @@ export const usePoseStore = create<PoseStore>()(
       setPoses: (poses) => set({ poses }, false, 'setPoses'),
       selectedPose: null,
       setSelectedPose: (pose) =>
-        set({
-          selectedPose: pose,
-        }),
+        set(
+          {
+            selectedPose: pose,
+          },
+          false,
+          'setSelectedPose'
+        ),
       reset: () => set({ poses: [], selectedPose: null }),
     }),
     { name: 'pose-store' }
