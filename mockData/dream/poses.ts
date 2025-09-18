@@ -128,29 +128,3 @@ export const mockPoseCategories: PoseCategoryInfo[] = [
     color: '#AF52DE',
   },
 ]
-
-// Helper functions
-export const getPoseById = (id: string): Pose | undefined => {
-  return mockPoses.find(pose => pose.id === id)
-}
-
-export const getPosesByCategory = (category: PoseCategory): Pose[] => {
-  return mockPoses.filter(pose => pose.category === category)
-}
-
-export const getFreePoses = (): Pose[] => {
-  return mockPoses.filter(pose => !pose.isPremium)
-}
-
-export const getPremiumPoses = (): Pose[] => {
-  return mockPoses.filter(pose => pose.isPremium)
-}
-
-export const getCategoryInfo = (category: PoseCategory): PoseCategoryInfo | undefined => {
-  return mockPoseCategories.find(cat => cat.id === category)
-}
-
-// Featured/recommended poses for onboarding
-export const getFeaturedPoses = (): Pose[] => {
-  return [mockPoses[0], mockPoses[2], mockPoses[5]] // Mix of free poses
-}

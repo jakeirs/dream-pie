@@ -1,6 +1,6 @@
 // Following Import Order Standards (React 19+)
 // 1. React Native Core & Expo
-import { View, Text } from 'react-native'
+import { View, Text, TouchableOpacity } from 'react-native'
 import { router } from 'expo-router'
 
 // 5. UI components (@/components/ui)
@@ -12,11 +12,13 @@ import { usePoseStore } from '@/stores/poseStore'
 
 // 7. Constants, Types, Mock Data
 import { brandColors } from '@/shared/theme'
+import { mockPoses } from '@/mockData/dream/poses'
+import { Image } from 'expo-image'
 
 interface BottomProps {}
 
 export function Bottom({}: BottomProps) {
-  const { selectedPose, setSelectedPose, poses } = usePoseStore()
+  const { selectedPose, setImageUrl, setSelectedPose, poses } = usePoseStore()
 
   const handlePoseSelect = (poseId: string) => {
     const selectedPoseData = poses.find((pose) => pose.id === poseId)
@@ -33,20 +35,19 @@ export function Bottom({}: BottomProps) {
           </Text>
 
           {/* Thumbnail Grid */}
-          <View className="flex-row justify-between gap-3">
-            {poses.map((pose) => (
-              <View key={pose.id} className="flex-1">
-                <Thumbnail
-                  imageUrl={pose.imageUrl}
-                  title={pose.name}
-                  subtitle={pose.description}
-                  isSelected={selectedPose?.id === pose.id}
-                  isPremium={pose.isPremium}
-                  aspectRatio={1.2}
-                  onPress={() => handlePoseSelect(pose.id)}
-                />
-              </View>
-            ))}
+          <View className="flex-row justify-center gap-3">
+            <TouchableOpacity onPress={() => setImageUrl(mockPoses[0].imageUrl)}>
+              <Image
+                source={mockPoses[0].imageUrl}
+                style={{ width: 80, height: 100, borderRadius: 12 }}
+              />
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => setImageUrl(mockPoses[1].imageUrl)}>
+              <Image
+                source={mockPoses[1].imageUrl}
+                style={{ width: 80, height: 100, borderRadius: 12 }}
+              />
+            </TouchableOpacity>
           </View>
         </View>
 
@@ -68,3 +69,17 @@ export function Bottom({}: BottomProps) {
     </>
   )
 }
+
+// {poses.map((pose) => (
+//   <View key={pose.id} className="flex-1">
+//     <Thumbnail
+//       imageUrl={pose.imageUrl}
+//       title={pose.name}
+//       subtitle={pose.description}
+//       isSelected={selectedPose?.id === pose.id}
+//       isPremium={pose.isPremium}
+//       aspectRatio={1.2}
+//       onPress={() => handlePoseSelect(pose.id)}
+//     />
+//   </View>
+// ))}

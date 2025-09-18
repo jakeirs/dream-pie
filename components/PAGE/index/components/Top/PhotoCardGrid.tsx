@@ -17,8 +17,7 @@ interface PhotoCardGridProps {}
 const PhotoCardGrid = ({}: PhotoCardGridProps) => {
   // ✅ Optimized: Only subscribe to specific store properties to avoid unnecessary re-renders
   const poseLibraryRef = useStore(useNavigationStore, (state) => state.poseLibraryRef)
-  const selectedPose = useStore(usePoseStore, (state) => state.selectedPose)
-
+  const imageUrl = usePoseStore((state) => state.imageUrl)
   const handleSelfiePress = () => {
     console.log('Selfie card pressed')
   }
@@ -40,7 +39,7 @@ const PhotoCardGrid = ({}: PhotoCardGridProps) => {
         <PhotoCard
           title="Your Pose"
           onClickCard={handlePosePress}
-          imageSource={selectedPose?.imageUrl ?? appAssets.selfies.extendPhoto} // Dynamic pose image path from Zustand
+          imageSource={imageUrl ?? appAssets.selfies.extendPhoto} // Dynamic pose image path from Zustand
         />
       </View>
     </View>
