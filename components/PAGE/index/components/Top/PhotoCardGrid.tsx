@@ -16,9 +16,10 @@ interface PhotoCardGridProps {}
 const PhotoCardGrid = ({}: PhotoCardGridProps) => {
   // ✅ Optimized: Only subscribe to specific store properties to avoid unnecessary re-renders
   const poseLibraryRef = useStore(useNavigationStore, (state) => state.poseLibraryRef)
+  const selfieChooserRef = useStore(useNavigationStore, (state) => state.selfieChooserRef)
   const selectedPose = usePoseStore((state) => state.selectedPose)
   const handleSelfiePress = () => {
-    console.log('Selfie card pressed')
+    selfieChooserRef?.current?.snapToIndex(1)
   }
 
   const handlePosePress = () => {

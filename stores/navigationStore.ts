@@ -6,10 +6,12 @@ interface NavigationStore {
   // Bottom Sheet Refs
   poseLibraryRef: RefObject<BottomSheetLib | null> | null
   paywallRef: RefObject<BottomSheetModal | null> | null
+  selfieChooserRef: RefObject<BottomSheetLib | null> | null
 
   // Actions - Ref Management
   setPoseLibraryRef: (ref: RefObject<BottomSheetLib | null>) => void
   setPaywallRef: (ref: RefObject<BottomSheetModal | null>) => void
+  setSelfieChooserRef: (ref: RefObject<BottomSheetLib | null>) => void
 }
 
 export const useNavigationStore = create<NavigationStore>((set, get) => ({
@@ -18,8 +20,10 @@ export const useNavigationStore = create<NavigationStore>((set, get) => ({
   // poseLibraryRef - only available on (tabs)/index
   poseLibraryRef: null,
   paywallRef: null,
+  selfieChooserRef: null,
 
   // Ref Setters
   setPoseLibraryRef: (ref) => set({ poseLibraryRef: ref }),
   setPaywallRef: (ref) => set({ paywallRef: ref }),
+  setSelfieChooserRef: (ref) => set({ selfieChooserRef: ref }),
 }))
