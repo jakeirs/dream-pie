@@ -5,11 +5,7 @@ import { Image } from 'expo-image'
 import { useEffect } from 'react'
 
 // 2. Third-party libraries
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withTiming,
-} from 'react-native-reanimated'
+import Animated, { useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated'
 
 // 3. Theme imports
 import { brandColors } from '@/shared/theme'
@@ -56,17 +52,14 @@ const Thumbnail = ({
   }, [isSelected, animatedBorder])
 
   const borderStyle = useAnimatedStyle(() => ({
-    borderWidth: animatedBorder ? borderWidth.value : (isSelected ? 3 : 0),
+    borderWidth: animatedBorder ? borderWidth.value : isSelected ? 3 : 0,
     borderColor: '#3B82F6',
   }))
 
   return (
     <View className={className}>
       <TouchableOpacity onPress={onPress} activeOpacity={0.8}>
-        <Animated.View
-          className="bg-surface overflow-hidden rounded-xl"
-          style={[borderStyle]}
-        >
+        <Animated.View className="bg-surface overflow-hidden rounded-xl" style={[borderStyle]}>
           {/* Main Image */}
           <Image
             source={imageUrl}
@@ -87,13 +80,13 @@ const Thumbnail = ({
         <View className="mt-2">
           <Text
             className="text-sm font-medium"
-            style={{ color: brandColors.textPrimary }}
+            style={{ color: brandColors.textLight }}
             numberOfLines={1}>
             {title}
           </Text>
           {subtitle && (
             <Text
-              className="text-xs mt-1"
+              className="mt-1 text-xs"
               style={{ color: brandColors.textSecondary }}
               numberOfLines={1}>
               {subtitle}
