@@ -9,7 +9,7 @@ import { PoseGrid } from './components/PoseGrid'
 // 3. Constants, Types, Mock Data
 import { PoseLibraryPageProps } from './types'
 
-export default function PoseLibraryPage({ onClose }: PoseLibraryPageProps) {
+export default function PoseLibraryBottomSheet({ onClose }: PoseLibraryPageProps) {
   return (
     <View className="flex-1 bg-backgroundPrimary">
       <PoseHeader onClose={onClose} />

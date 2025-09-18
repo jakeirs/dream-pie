@@ -5,7 +5,7 @@ import BottomSheet from '@/components/ui/BottomSheet/BottomSheet'
 import { router } from 'expo-router'
 import { brandColors } from '@/shared/theme'
 import { BottomSheetModal } from '@gorhom/bottom-sheet'
-import PaywallContent from '@/components/PAGE/paywall'
+import PaywallContent from '@/components/PAGE/paywall-bottomsheet'
 
 export default function LoginPage() {
   const paywallRef = useRef<BottomSheetModal>(null)

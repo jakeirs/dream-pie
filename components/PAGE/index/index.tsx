@@ -1,7 +1,7 @@
 import { View, Text, ScrollView } from 'react-native'
 import { router } from 'expo-router'
 // components
-import PoseLibraryContent from '@/components/PAGE/pose-library'
+import PoseLibraryContent from '@/components/PAGE/pose-library-bottomsheet'
 import { Top } from './components/Top'
 import { Bottom } from './components/Bottom/Bottom'
 //ui
