@@ -1,9 +1,8 @@
 import { View, Text, TouchableOpacity } from 'react-native'
 import { Image } from 'expo-image'
-import { useEffect } from 'react'
 
 // 2. Third-party libraries
-import Animated, { useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated'
+import Animated, { useAnimatedStyle, withTiming, useDerivedValue } from 'react-native-reanimated'
 
 // 3. Theme imports
 import { brandColors } from '@/shared/theme'
@@ -36,21 +35,18 @@ const Thumbnail = ({
   animatedBorder = false,
   className = '',
 }: ThumbnailProps) => {
-  const borderWidth = useSharedValue(0)
-
-  // Simple border animation when selected (optional)
-  useEffect(() => {
-    if (isSelected) {
-      borderWidth.value = withTiming(3, { duration: 200 })
-    } else {
-      borderWidth.value = withTiming(0, { duration: 200 })
-    }
-  }, [isSelected])
+  // Efficient border animation using useDerivedValue - prevents memory leaks
+  const borderWidth = useDerivedValue(() => {
+    if (!animatedBorder) return 0
+    return isSelected
+      ? withTiming(3, { duration: 200 })
+      : withTiming(0, { duration: 200 })
+  }, [isSelected, animatedBorder])
 
   const borderStyle = useAnimatedStyle(() => ({
     borderWidth: borderWidth.value,
     borderColor: brandColors.accent,
-  }))
+  }), [borderWidth])
 
   return (
     <View className={className}>

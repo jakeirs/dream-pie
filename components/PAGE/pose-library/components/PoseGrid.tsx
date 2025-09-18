@@ -10,7 +10,6 @@ import Thumbnail from '@/components/ui/Thumbnail/Thumbnail'
 import { usePoseStore } from '@/stores'
 import { mockPoses } from '@/mockData/dream/poses'
 
-
 export const PoseGrid = () => {
   const { setSelectedPose, selectedPose, poses, setPoses } = usePoseStore()
 
@@ -37,6 +36,7 @@ export const PoseGrid = () => {
         return (
           <View key={pose.id} className="w-1/3 p-2">
             <Thumbnail
+              key={pose.id}
               imageUrl={pose.imageUrl}
               title={pose.name}
               subtitle={pose.category.charAt(0).toUpperCase() + pose.category.slice(1)}
