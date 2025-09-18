@@ -10,12 +10,11 @@ import CustomImage from '@/components/ui/CustomImage/CustomImage'
 import { brandColors } from '@/shared/theme'
 
 // 4. Constants, Types, Mock Data
-import { PoseGridProps } from '../types'
 import { usePoseStore } from '@/stores'
 import { mockPoses } from '@/mockData/dream/poses'
 
 export const PoseGrid = () => {
-  const { setImageUrl, setSelectedPose, selectedPose, poses, imageUrl, setPoses } = usePoseStore()
+  const { setSelectedPose, selectedPose, poses, setPoses } = usePoseStore()
 
   // Load poses on mount if empty
   useEffect(() => {
@@ -35,11 +34,6 @@ export const PoseGrid = () => {
   return (
     <View className="flex-row flex-wrap p-4">
       {poses.map((pose, index) => {
-        // Safety check for individual pose objects
-        if (!pose || !pose.id) {
-          return null
-        }
-
         const isSelected = selectedPose?.id === pose.id
 
         return (
@@ -49,15 +43,8 @@ export const PoseGrid = () => {
                 setSelectedPose(pose)
               }}
               activeOpacity={0.8}>
-              <View
-                className={`bg-surface overflow-hidden rounded-xl shadow-sm ${isSelected ? 'border-2 border-primary' : ''}`}>
-                <CustomImage
-                  index={index}
-                  source={pose.imageUrl}
-                  width="100%"
-                  height={120}
-                  borderRadius={12}
-                />
+              <View className={`bg-surface } overflow-hidden rounded-xl shadow-sm`}>
+                <CustomImage source={pose.imageUrl} width="100%" height={120} borderRadius={12} />
 
                 {/* Premium Badge */}
                 {pose.isPremium && (

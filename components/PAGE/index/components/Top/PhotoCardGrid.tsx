@@ -10,14 +10,13 @@ import { useStore, useNavigationStore, usePoseStore } from '@/stores'
 
 // 4. Assets
 import { appAssets } from '@/shared/assets/assets'
-import CustomImage from '@/components/ui/CustomImage/CustomImage'
 
 interface PhotoCardGridProps {}
 
 const PhotoCardGrid = ({}: PhotoCardGridProps) => {
   // ✅ Optimized: Only subscribe to specific store properties to avoid unnecessary re-renders
   const poseLibraryRef = useStore(useNavigationStore, (state) => state.poseLibraryRef)
-  const imageUrl = usePoseStore((state) => state.imageUrl)
+  const selectedPose = usePoseStore((state) => state.selectedPose)
   const handleSelfiePress = () => {
     console.log('Selfie card pressed')
   }
@@ -39,7 +38,7 @@ const PhotoCardGrid = ({}: PhotoCardGridProps) => {
         <PhotoCard
           title="Your Pose"
           onClickCard={handlePosePress}
-          imageSource={imageUrl ?? appAssets.selfies.extendPhoto} // Dynamic pose image path from Zustand (now string)
+          imageSource={selectedPose?.imageUrl ?? appAssets.selfies.extendPhoto} // Dynamic pose image path from Zustand (now string)
         />
       </View>
     </View>
