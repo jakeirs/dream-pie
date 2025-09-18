@@ -36,12 +36,12 @@ export const PoseGrid = () => {
   }
 
   return (
-    <View className="flex-row flex-wrap gap-1 p-2">
+    <View className="flex-row flex-wrap p-1">
       {poses.map((pose) => {
         const isSelected = selectedPose?.id === pose.id
 
         return (
-          <View key={pose.id} className="w-1/3">
+          <View key={pose.id} className="w-1/3 p-1">
             <PoseCard pose={pose} isSelected={isSelected} onSelect={handlePoseSelect} />
           </View>
         )

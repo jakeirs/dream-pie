@@ -63,11 +63,12 @@ export default function PoseCard({ pose, isSelected, onSelect }: PoseCardProps) 
         </View>
 
         {/* Content Container */}
-        <View className="p-2">
+        <View className="p-2 h-16 justify-center">
           <Animated.Text
             numberOfLines={2}
             ellipsizeMode="tail"
-            className="text-center font-bold text-textPrimary">
+            className="text-center font-bold text-textPrimary"
+     >
             {pose.name}
           </Animated.Text>
         </View>
