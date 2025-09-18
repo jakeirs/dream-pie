@@ -33,7 +33,7 @@ export const PoseGrid = ({ poses, selectedPose, onPoseSelect, subscription }: Po
 
         return (
           <View key={pose.id} className="w-1/3 p-2">
-            <TouchableOpacity onPress={() => onPoseSelect(pose)} activeOpacity={0.8}>
+            <TouchableOpacity onPress={() => {}} activeOpacity={0.8}>
               <View
                 className={`bg-surface overflow-hidden rounded-xl shadow-sm ${isSelected ? 'border-2 border-primary' : ''}`}>
                 <CustomImage

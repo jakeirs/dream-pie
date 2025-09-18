@@ -1,4 +1,4 @@
-import { View, Text } from 'react-native'
+import { View, Text, ScrollView } from 'react-native'
 import { router } from 'expo-router'
 // components
 import PoseLibraryContent from '@/components/PAGE/pose-library'
@@ -32,10 +32,10 @@ export default function CreatePage() {
       />
 
       {/* Original Components */}
-      <View className="flex-1">
+      <ScrollView className="flex-1">
         <Top />
         <Bottom />
-      </View>
+      </ScrollView>
 
       {/* Original Bottom Sheet */}
       <BottomSheet
