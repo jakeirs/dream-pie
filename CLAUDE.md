@@ -385,6 +385,30 @@ export default function MyComponent({ imageSource }) {
 
 **Rule**: Always use `useImage()` when image sources change frequently (selections, carousels, rapid UI updates).
 
+## 📁 **Expo FileSystem**
+
+**Version**: ~19.0.14 - Use latest API patterns for file operations.
+
+**Import Pattern**:
+```typescript
+import { File, Directory, Paths } from 'expo-file-system'
+// Legacy API when needed
+import * as FileSystem from 'expo-file-system'
+```
+
+**Usage**:
+```typescript
+// ✅ New API (preferred)
+const sourceFile = new File(asset.uri)
+const destinationFile = new File(Paths.document, 'filename.jpg')
+await sourceFile.copy(destinationFile)
+
+// ✅ Legacy API (for deleteAsync, etc.)
+await FileSystem.deleteAsync(fileUri)
+```
+
+**Key Methods**: `copy()`, `move()`, `delete()`, `deleteAsync()`, `Paths.document`, `Paths.cache`
+
 ## 🗂️ **Professional Folder Structure**
 
 ### **Complete App Structure**

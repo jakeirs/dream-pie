@@ -40,19 +40,14 @@ export default function CameraButton({ onPhotoSelected }: CameraButtonProps) {
         </TouchableOpacity>
       </View>
 
-      <Alert
-        visible={showAlert}
-        onClose={hideAlert}
-        title="Select Photo">
+      <Alert visible={showAlert} onClose={hideAlert} title="Select Photo">
         <View className="space-y-3">
-          <Text
-            className="text-base text-center mb-4"
-            style={{ color: brandColors.textSecondary }}>
+          <Text className="mb-8 text-center text-base" style={{ color: brandColors.textSecondary }}>
             Choose how you want to add a photo
           </Text>
 
           <TouchableOpacity
-            className="flex-row items-center justify-center py-4 px-6 rounded-xl"
+            className="mb-4 flex-row items-center justify-center rounded-xl px-6 py-4"
             style={{ backgroundColor: brandColors.primary }}
             onPress={handleCameraPress}
             disabled={isLoading}
@@ -71,7 +66,7 @@ export default function CameraButton({ onPhotoSelected }: CameraButtonProps) {
           </TouchableOpacity>
 
           <TouchableOpacity
-            className="flex-row items-center justify-center py-4 px-6 rounded-xl"
+            className="flex-row items-center justify-center rounded-xl px-6 py-4"
             style={{ backgroundColor: brandColors.accent }}
             onPress={handleGalleryPress}
             disabled={isLoading}
