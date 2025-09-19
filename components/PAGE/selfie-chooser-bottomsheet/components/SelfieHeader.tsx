@@ -30,7 +30,7 @@ export const SelfieHeader = ({ onClose }: SelfieHeaderProps) => {
     selectedToDelete,
     clearSelectedToDelete,
     selfies,
-    setSelfies
+    setSelfies,
   } = useSelfieChooserStore()
 
   const [isDeleting, setIsDeleting] = useState(false)
@@ -47,13 +47,17 @@ export const SelfieHeader = ({ onClose }: SelfieHeaderProps) => {
         setIsDeleting(true)
         try {
           // Get selfies to delete
-          const selfiesToDelete = selfies.filter(selfie => selectedToDelete.includes(selfie.id))
+          const selfiesToDelete = selfies.filter((selfie) => selectedToDelete.includes(selfie.id))
 
           // Delete files from filesystem
           for (const selfie of selfiesToDelete) {
             try {
               // Only delete if it's a user-generated selfie (has a local file path)
-              if (selfie.imageUrl && typeof selfie.imageUrl === 'string' && selfie.imageUrl.startsWith('file://')) {
+              if (
+                selfie.imageUrl &&
+                typeof selfie.imageUrl === 'string' &&
+                selfie.imageUrl.startsWith('file://')
+              ) {
                 await FileSystem.deleteAsync(selfie.imageUrl)
               }
             } catch (error) {
@@ -65,14 +69,16 @@ export const SelfieHeader = ({ onClose }: SelfieHeaderProps) => {
           try {
             const userSelfiesJson = await AsyncStorage.getItem('user_selfies')
             const userSelfies: Selfie[] = userSelfiesJson ? JSON.parse(userSelfiesJson) : []
-            const updatedUserSelfies = userSelfies.filter(selfie => !selectedToDelete.includes(selfie.id))
+            const updatedUserSelfies = userSelfies.filter(
+              (selfie) => !selectedToDelete.includes(selfie.id)
+            )
             await AsyncStorage.setItem('user_selfies', JSON.stringify(updatedUserSelfies))
           } catch (error) {
             console.warn('Failed to update AsyncStorage:', error)
           }
 
           // Update store
-          const remainingSelfies = selfies.filter(selfie => !selectedToDelete.includes(selfie.id))
+          const remainingSelfies = selfies.filter((selfie) => !selectedToDelete.includes(selfie.id))
           setSelfies(remainingSelfies)
           clearSelectedToDelete()
           setDeleteMode(false)
@@ -119,14 +125,15 @@ export const SelfieHeader = ({ onClose }: SelfieHeaderProps) => {
             alignItems: 'center',
             justifyContent: 'center',
             flexDirection: 'row',
-            gap: 6
+            gap: 6,
           }}>
-          {deleteMode && isDeleting && (
-            <Text style={{
-              color: brandColors.textLight,
-              fontSize: 12,
-              fontWeight: '600'
-            }}>
+          {deleteMode && (
+            <Text
+              style={{
+                color: brandColors.textLight,
+                fontSize: 12,
+                fontWeight: '600',
+              }}>
               deleting...
             </Text>
           )}
@@ -136,7 +143,7 @@ export const SelfieHeader = ({ onClose }: SelfieHeaderProps) => {
             size={20}
             color={deleteMode ? brandColors.errorForeground : brandColors.error}
           />
-          {selectedToDelete.length >= 0 && !isDeleting && (
+          {selectedToDelete.length >= 0 && deleteMode && (
             <View
               style={{
                 position: 'absolute',
@@ -147,13 +154,14 @@ export const SelfieHeader = ({ onClose }: SelfieHeaderProps) => {
                 width: 20,
                 height: 20,
                 alignItems: 'center',
-                justifyContent: 'center'
+                justifyContent: 'center',
               }}>
-              <Text style={{
-                color: deleteMode ? brandColors.error : brandColors.errorForeground,
-                fontSize: 12,
-                fontWeight: 'bold'
-              }}>
+              <Text
+                style={{
+                  color: deleteMode ? brandColors.error : brandColors.errorForeground,
+                  fontSize: 12,
+                  fontWeight: 'bold',
+                }}>
                 {selectedToDelete.length}
               </Text>
             </View>
@@ -170,7 +178,7 @@ export const SelfieHeader = ({ onClose }: SelfieHeaderProps) => {
               width: 40,
               height: 40,
               alignItems: 'center',
-              justifyContent: 'center'
+              justifyContent: 'center',
             }}>
             <Icon
               family={ICON_FAMILY_NAME.Feather}
