@@ -8,19 +8,15 @@ export async function POST(request: Request): Promise<Response> {
     const { message }: GeminiRequest = await request.json()
 
     if (!message || message.trim().length === 0) {
-      return Response.json(
-        { error: 'Message is required' } as GeminiResponse,
-        { status: 400 }
-      )
+      return Response.json({ error: 'Message is required' } as GeminiResponse, { status: 400 })
     }
 
     const apiKey = process.env.GOOGLE_GENERATIVE_AI_API_KEY
 
     if (!apiKey) {
-      return Response.json(
-        { error: 'Google API key not configured' } as GeminiResponse,
-        { status: 500 }
-      )
+      return Response.json({ error: 'Google API key not configured' } as GeminiResponse, {
+        status: 500,
+      })
     }
 
     const { text } = await generateText({
