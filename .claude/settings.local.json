@@ -5,7 +5,9 @@
       "WebFetch(domain:gorhom.dev)",
       "WebFetch(domain:zustand.docs.pmnd.rs)",
       "WebSearch",
-      "WebFetch(domain:docs.expo.dev)"
+      "WebFetch(domain:docs.expo.dev)",
+      "WebFetch(domain:sdk.vercel.ai)",
+      "WebFetch(domain:ai-sdk.dev)"
     ],
     "deny": [],
     "ask": []

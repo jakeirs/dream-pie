@@ -12,3 +12,6 @@ export * from './content'
 
 // Dream Pie specific types
 export * from './dream'
+
+// AI Integration types
+export * from './gemini'
