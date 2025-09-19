@@ -1,11 +1,11 @@
 // Following Import Order Standards (React 19+)
 // 1. React Native Core & Expo
-import { View, Text, TouchableOpacity } from 'react-native'
+import { View, Text } from 'react-native'
 
 // 2. UI components (@/components/ui)
 import Button from '@/components/ui/Button/Button'
-import { Icon } from '@/components/ui/icons/Icon'
-import { ICON_FAMILY_NAME } from '@/components/ui/icons/constants'
+import ButtonDelete from '@/components/ui/ButtonDelete/ButtonDelete'
+import ButtonExit from '@/components/ui/ButtonExit/ButtonExit'
 
 // 3. Hooks
 import { useSelfieHeader } from './hooks/useSelfieHeader'
@@ -34,84 +34,17 @@ export const SelfieHeader = ({ onClose }: SelfieHeaderProps) => {
 
       <View className="flex-row items-center gap-3">
         {/* Delete Button */}
-        <TouchableOpacity
+        <ButtonDelete
           onPress={handleDeletePress}
           disabled={isDeleting}
-          className="relative"
-          style={{
-            backgroundColor: deleteMode ? brandColors.error : brandColors.card,
-            borderRadius: 20,
-            borderWidth: deleteMode ? 2 : 0,
-            borderColor: deleteMode ? brandColors.errorForeground : 'transparent',
-            paddingHorizontal: deleteMode && isDeleting ? 12 : 12,
-            paddingVertical: 8,
-            minWidth: 40,
-            height: 40,
-            alignItems: 'center',
-            justifyContent: 'center',
-            flexDirection: 'row',
-            gap: 6,
-          }}>
-          {deleteMode && (
-            <Text
-              style={{
-                color: brandColors.textLight,
-                fontSize: 12,
-                fontWeight: '600',
-              }}>
-              deleting...
-            </Text>
-          )}
-          <Icon
-            family={ICON_FAMILY_NAME.Feather}
-            name="trash-2"
-            size={20}
-            color={deleteMode ? brandColors.errorForeground : brandColors.error}
-          />
-          {selectedToDelete.length >= 0 && deleteMode && (
-            <View
-              style={{
-                position: 'absolute',
-                top: -5,
-                right: -5,
-                backgroundColor: deleteMode ? brandColors.textLight : brandColors.error,
-                borderRadius: 10,
-                width: 20,
-                height: 20,
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}>
-              <Text
-                style={{
-                  color: deleteMode ? brandColors.error : brandColors.errorForeground,
-                  fontSize: 12,
-                  fontWeight: 'bold',
-                }}>
-                {selectedToDelete.length}
-              </Text>
-            </View>
-          )}
-        </TouchableOpacity>
+          deleteMode={deleteMode}
+          selectedCount={selectedToDelete.length}
+          isDeleting={isDeleting}
+        />
 
         {/* Done/Cancel Button */}
         {deleteMode ? (
-          <TouchableOpacity
-            onPress={handleCancelDelete}
-            style={{
-              backgroundColor: brandColors.card,
-              borderRadius: 20,
-              width: 40,
-              height: 40,
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}>
-            <Icon
-              family={ICON_FAMILY_NAME.Feather}
-              name="x"
-              size={20}
-              color={brandColors.textPrimary}
-            />
-          </TouchableOpacity>
+          <ButtonExit onPress={handleCancelDelete} />
         ) : (
           <Button variant="secondary" size="small" onPress={onClose}>
             <Text style={{ color: brandColors.textPrimary }}>Done</Text>

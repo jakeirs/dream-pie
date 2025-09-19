@@ -3,6 +3,7 @@ import * as FileSystem from 'expo-file-system'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 
 import { useSelfieChooserStore } from '@/stores'
+import { USER_SELFIES } from '@/stores/AsyncStorage/keys'
 import { Selfie } from '@/types/dream/selfie'
 
 export const useSelfieHeader = () => {
@@ -49,12 +50,12 @@ export const useSelfieHeader = () => {
 
           // Update AsyncStorage - remove deleted selfies from user_selfies
           try {
-            const userSelfiesJson = await AsyncStorage.getItem('user_selfies')
+            const userSelfiesJson = await AsyncStorage.getItem(USER_SELFIES)
             const userSelfies: Selfie[] = userSelfiesJson ? JSON.parse(userSelfiesJson) : []
             const updatedUserSelfies = userSelfies.filter(
               (selfie) => !selectedToDelete.includes(selfie.id)
             )
-            await AsyncStorage.setItem('user_selfies', JSON.stringify(updatedUserSelfies))
+            await AsyncStorage.setItem(USER_SELFIES, JSON.stringify(updatedUserSelfies))
           } catch (error) {
             console.warn('Failed to update AsyncStorage:', error)
           }

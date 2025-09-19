@@ -54,6 +54,43 @@ export const useBottomSheets = () => {
 
 **See**: `_ZUSTAND.md` for complete store architecture documentation
 
+## AsyncStorage (Persistent Storage)
+
+**Overview**: Use AsyncStorage only when explicitly requested for data persistence between app sessions.
+
+**Architecture**: Centralized key management in `stores/AsyncStorage/keys.ts` with detailed documentation.
+
+**Key Usage Pattern**:
+
+```typescript
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import { USER_SELFIES } from '@/stores/AsyncStorage/keys'
+
+// ✅ Use centralized keys
+const data = await AsyncStorage.getItem(USER_SELFIES)
+await AsyncStorage.setItem(USER_SELFIES, JSON.stringify(newData))
+```
+
+**Creating New Keys**:
+
+1. **Add to `stores/AsyncStorage/keys.ts`** with full documentation:
+   - WHERE USED: List all files/components using this key
+   - WHY ASYNC: Explain the persistence need
+   - DATA STRUCTURE: Document the stored format
+   - ACTIONS: CREATE/READ/UPDATE/DELETE operations
+
+2. **Import centralized keys** instead of hardcoding strings
+
+**❌ DON'T:**
+- Use hardcoded strings: `'user_data'`
+- Add AsyncStorage without explicit user request
+- Skip documentation in keys.ts
+
+**✅ DO:**
+- Import from centralized keys: `USER_SELFIES`
+- Document thoroughly in keys.ts
+- Only use when persistence is explicitly needed
+
 ## Path Alias System
 
 | Alias               | Path                | Usage                 |

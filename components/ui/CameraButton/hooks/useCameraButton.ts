@@ -4,6 +4,7 @@ import * as ImagePicker from 'expo-image-picker'
 import { File, Paths } from 'expo-file-system'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 
+import { USER_SELFIES } from '@/stores/AsyncStorage/keys'
 import { Selfie } from '@/types/dream/selfie'
 
 interface UseCameraButtonProps {
@@ -102,10 +103,10 @@ export const useCameraButton = ({ onPhotoSelected }: UseCameraButtonProps) => {
 
   const saveToAsyncStorage = async (selfie: Selfie) => {
     try {
-      const existingSelfies = await AsyncStorage.getItem('user_selfies')
+      const existingSelfies = await AsyncStorage.getItem(USER_SELFIES)
       const selfies = existingSelfies ? JSON.parse(existingSelfies) : []
       selfies.push(selfie)
-      await AsyncStorage.setItem('user_selfies', JSON.stringify(selfies))
+      await AsyncStorage.setItem(USER_SELFIES, JSON.stringify(selfies))
     } catch (error) {
       console.error('Error saving to AsyncStorage:', error)
     }

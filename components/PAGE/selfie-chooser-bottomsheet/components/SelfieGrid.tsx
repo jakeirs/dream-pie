@@ -10,6 +10,7 @@ import CameraButton from '@/components/ui/CameraButton/CameraButton'
 
 // 3. Constants, Types, Mock Data
 import { useSelfieChooserStore } from '@/stores'
+import { USER_SELFIES } from '@/stores/AsyncStorage/keys'
 import { mockSelfies } from '@/mockData/dream/selfies'
 import { Selfie } from '@/types/dream/selfie'
 
@@ -24,7 +25,7 @@ export const SelfieGrid = () => {
   const loadSelfies = async () => {
     try {
       // Load user-captured selfies from AsyncStorage
-      const userSelfiesJson = await AsyncStorage.getItem('user_selfies')
+      const userSelfiesJson = await AsyncStorage.getItem(USER_SELFIES)
       const userSelfies: Selfie[] = userSelfiesJson ? JSON.parse(userSelfiesJson) : []
 
       // Combine user selfies with mock selfies
