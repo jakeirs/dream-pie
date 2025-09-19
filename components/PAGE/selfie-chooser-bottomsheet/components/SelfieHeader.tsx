@@ -37,18 +37,24 @@ export const SelfieHeader = ({ onClose }: SelfieHeaderProps) => {
 
   const handleDeletePress = async () => {
     if (deleteMode) {
+      if (selectedToDelete.length === 0) {
+        // Exit delete mode if no selfies are selected
+        setDeleteMode(false)
+        return
+      }
       // Delete selected selfies
       if (selectedToDelete.length > 0) {
+        setIsDeleting(true)
         try {
           // Get selfies to delete
           const selfiesToDelete = selfies.filter(selfie => selectedToDelete.includes(selfie.id))
 
-          // Delete files from filesystem and update AsyncStorage
+          // Delete files from filesystem
           for (const selfie of selfiesToDelete) {
             try {
               // Only delete if it's a user-generated selfie (has a local file path)
-              if (selfie.imageUrl.startsWith('file://')) {
-                await File.deleteAsync(selfie.imageUrl)
+              if (selfie.imageUrl && typeof selfie.imageUrl === 'string' && selfie.imageUrl.startsWith('file://')) {
+                await FileSystem.deleteAsync(selfie.imageUrl)
               }
             } catch (error) {
               console.warn(`Failed to delete file ${selfie.imageUrl}:`, error)
@@ -72,6 +78,8 @@ export const SelfieHeader = ({ onClose }: SelfieHeaderProps) => {
           setDeleteMode(false)
         } catch (error) {
           console.error('Error deleting selfies:', error)
+        } finally {
+          setIsDeleting(false)
         }
       }
     } else {
@@ -97,35 +105,55 @@ export const SelfieHeader = ({ onClose }: SelfieHeaderProps) => {
         {/* Delete Button */}
         <TouchableOpacity
           onPress={handleDeletePress}
+          disabled={isDeleting}
           className="relative"
           style={{
-            backgroundColor: brandColors.card,
+            backgroundColor: deleteMode ? brandColors.error : brandColors.card,
             borderRadius: 20,
-            width: 40,
+            borderWidth: deleteMode ? 2 : 0,
+            borderColor: deleteMode ? brandColors.errorForeground : 'transparent',
+            paddingHorizontal: deleteMode && isDeleting ? 12 : 12,
+            paddingVertical: 8,
+            minWidth: 40,
             height: 40,
             alignItems: 'center',
-            justifyContent: 'center'
+            justifyContent: 'center',
+            flexDirection: 'row',
+            gap: 6
           }}>
+          {deleteMode && isDeleting && (
+            <Text style={{
+              color: brandColors.textLight,
+              fontSize: 12,
+              fontWeight: '600'
+            }}>
+              deleting...
+            </Text>
+          )}
           <Icon
             family={ICON_FAMILY_NAME.Feather}
             name="trash-2"
             size={20}
-            color={brandColors.error}
+            color={deleteMode ? brandColors.errorForeground : brandColors.error}
           />
-          {selectedToDelete.length > 0 && (
+          {selectedToDelete.length >= 0 && !isDeleting && (
             <View
               style={{
                 position: 'absolute',
                 top: -5,
                 right: -5,
-                backgroundColor: brandColors.error,
+                backgroundColor: deleteMode ? brandColors.textLight : brandColors.error,
                 borderRadius: 10,
                 width: 20,
                 height: 20,
                 alignItems: 'center',
                 justifyContent: 'center'
               }}>
-              <Text style={{ color: brandColors.errorForeground, fontSize: 12, fontWeight: 'bold' }}>
+              <Text style={{
+                color: deleteMode ? brandColors.error : brandColors.errorForeground,
+                fontSize: 12,
+                fontWeight: 'bold'
+              }}>
                 {selectedToDelete.length}
               </Text>
             </View>
