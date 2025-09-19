@@ -1,7 +1,7 @@
 import { View, TouchableOpacity, Alert } from 'react-native'
 import { useState } from 'react'
 import * as ImagePicker from 'expo-image-picker'
-import * as FileSystem from 'expo-file-system'
+import { File, Paths } from 'expo-file-system'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 
 import { Icon } from '@/components/ui/icons/Icon'
@@ -85,20 +85,22 @@ export default function CameraButton({ onPhotoSelected }: CameraButtonProps) {
       // Generate unique filename
       const timestamp = Date.now()
       const filename = `selfie_${timestamp}.jpg`
-      const fileUri = `${FileSystem.documentDirectory!}${filename}`
 
-      // Copy image to app's document directory
-      await FileSystem.copyAsync({
-        from: asset.uri,
-        to: fileUri,
-      })
+      // Create source file from asset URI
+      const sourceFile = new File(asset.uri)
+
+      // Create destination file in document directory
+      const destinationFile = new File(Paths.document, filename)
+
+      // Copy image to app's document directory using new API
+      await sourceFile.copy(destinationFile)
 
       // Create new selfie object
       const newSelfie: Selfie = {
         id: `user_${timestamp}`,
         name: 'My Photo',
         description: 'User captured photo',
-        imageUrl: fileUri,
+        imageUrl: destinationFile.uri,
         tags: ['user-photo'],
         createdAt: new Date().toISOString(),
       }
