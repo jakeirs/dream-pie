@@ -387,27 +387,25 @@ export default function MyComponent({ imageSource }) {
 
 ## 📁 **Expo FileSystem**
 
-**Version**: ~19.0.14 - Use latest API patterns for file operations.
+**Version**: ~19.0.14 - **ALWAYS use new File API**. Legacy API is deprecated.
 
 **Import Pattern**:
 ```typescript
 import { File, Directory, Paths } from 'expo-file-system'
-// Legacy API when needed
-import * as FileSystem from 'expo-file-system'
 ```
 
-**Usage**:
+**Usage Examples**:
 ```typescript
-// ✅ New API (preferred)
-const sourceFile = new File(asset.uri)
-const destinationFile = new File(Paths.document, 'filename.jpg')
-await sourceFile.copy(destinationFile)
+// ✅ Copy files
+const file = new File(sourceUri)
+await file.copy(new File(Paths.document, 'newfile.jpg'))
 
-// ✅ Legacy API (for deleteAsync, etc.)
-await FileSystem.deleteAsync(fileUri)
+// ✅ Delete files
+const file = new File(fileUri)
+await file.delete()
 ```
 
-**Key Methods**: `copy()`, `move()`, `delete()`, `deleteAsync()`, `Paths.document`, `Paths.cache`
+**❌ DON'T use legacy API:** `import * as FileSystem` or `FileSystem.deleteAsync()`
 
 ## 🗂️ **Professional Folder Structure**
 

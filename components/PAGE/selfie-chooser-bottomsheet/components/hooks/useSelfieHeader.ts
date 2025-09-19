@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import * as FileSystem from 'expo-file-system'
+import { File } from 'expo-file-system'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 
 import { useSelfieChooserStore } from '@/stores'
@@ -41,7 +41,8 @@ export const useSelfieHeader = () => {
                 typeof selfie.imageUrl === 'string' &&
                 selfie.imageUrl.startsWith('file://')
               ) {
-                await FileSystem.deleteAsync(selfie.imageUrl)
+                const file = new File(selfie.imageUrl)
+                await file.delete()
               }
             } catch (error) {
               console.warn(`Failed to delete file ${selfie.imageUrl}:`, error)
