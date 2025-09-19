@@ -23,7 +23,7 @@ export const useCameraButton = ({ onPhotoSelected }: UseCameraButtonProps) => {
     setShowAlert(false)
   }
 
-  const pickImage = async (mediaTypes: ImagePicker.MediaTypeOptions, useCamera: boolean) => {
+  const pickImage = async (mediaTypes: ImagePicker.MediaType | ImagePicker.MediaType[], useCamera: boolean) => {
     try {
       setIsLoading(true)
       hideAlert()
@@ -113,11 +113,11 @@ export const useCameraButton = ({ onPhotoSelected }: UseCameraButtonProps) => {
   }
 
   const handleCameraPress = () => {
-    pickImage(ImagePicker.MediaTypeOptions.Images, true)
+    pickImage('images', true)
   }
 
   const handleGalleryPress = () => {
-    pickImage(ImagePicker.MediaTypeOptions.Images, false)
+    pickImage('images', false)
   }
 
   return {
