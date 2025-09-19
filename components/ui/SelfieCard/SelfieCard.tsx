@@ -5,6 +5,7 @@ import Animated, { useSharedValue, useAnimatedStyle, withTiming } from 'react-na
 
 import { Selfie } from '@/types/dream/selfie'
 import { brandColors } from '@/shared/theme'
+import { useSelfieChooserStore } from '@/stores'
 
 interface SelfieCardProps {
   selfie: Selfie
@@ -13,20 +14,32 @@ interface SelfieCardProps {
 }
 
 export default function SelfieCard({ selfie, isSelected, onSelect }: SelfieCardProps) {
+  const { deleteMode, selectedToDelete, toggleSelectedToDelete } = useSelfieChooserStore()
   const borderOpacity = useSharedValue(0)
   const image = useImage(selfie.imageUrl)
 
+  const isSelectedToDelete = selectedToDelete.includes(selfie.id)
+  const showSelection = deleteMode ? isSelectedToDelete : isSelected
+
   useEffect(() => {
-    borderOpacity.value = withTiming(isSelected ? 1 : 0, { duration: 300 })
-  }, [isSelected])
+    borderOpacity.value = withTiming(showSelection ? 1 : 0, { duration: 300 })
+  }, [showSelection])
 
   const animatedBorderStyle = useAnimatedStyle(() => ({
     borderWidth: borderOpacity.value * 3,
-    borderColor: brandColors.primary,
+    borderColor: deleteMode ? brandColors.error : brandColors.primary,
   }))
 
+  const handlePress = () => {
+    if (deleteMode) {
+      toggleSelectedToDelete(selfie.id)
+    } else {
+      onSelect(selfie.id)
+    }
+  }
+
   return (
-    <Pressable onPress={() => onSelect(selfie.id)}>
+    <Pressable onPress={handlePress}>
       <Animated.View
         className="overflow-hidden rounded-xl bg-card shadow-sm"
         style={animatedBorderStyle}>
@@ -42,10 +55,12 @@ export default function SelfieCard({ selfie, isSelected, onSelect }: SelfieCardP
           )}
 
           {/* Selection Indicator */}
-          {isSelected && (
+          {showSelection && (
             <View className="absolute left-3 top-3">
-              <View className="h-7 w-7 items-center justify-center rounded-full bg-primary shadow-md">
-                <Text className="text-sm font-bold text-white">✓</Text>
+              <View
+                className="h-7 w-7 items-center justify-center rounded-full shadow-md"
+                style={{ backgroundColor: deleteMode ? brandColors.error : brandColors.primary }}>
+                <Text className="text-sm font-bold" style={{ color: brandColors.errorForeground }}>✓</Text>
               </View>
             </View>
           )}

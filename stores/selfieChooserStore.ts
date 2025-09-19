@@ -7,12 +7,17 @@ interface SelfieChooserStore {
   setSelfies: (selfies: Selfie[]) => void
   selectedSelfie: Selfie | null
   setSelectedSelfie: (selfie: Selfie | null) => void
+  deleteMode: boolean
+  setDeleteMode: (active: boolean) => void
+  selectedToDelete: string[]
+  toggleSelectedToDelete: (id: string) => void
+  clearSelectedToDelete: () => void
   reset: () => void
 }
 
 export const useSelfieChooserStore = create<SelfieChooserStore>()(
   devtools(
-    (set) => ({
+    (set, get) => ({
       selfies: [],
       setSelfies: (selfies) => set({ selfies }, false, 'setSelfies'),
       selectedSelfie: null,
@@ -24,7 +29,24 @@ export const useSelfieChooserStore = create<SelfieChooserStore>()(
           false,
           'setSelectedSelfie'
         ),
-      reset: () => set({ selfies: [], selectedSelfie: null }),
+      deleteMode: false,
+      setDeleteMode: (active) => set({ deleteMode: active }, false, 'setDeleteMode'),
+      selectedToDelete: [],
+      toggleSelectedToDelete: (id) => {
+        const current = get().selectedToDelete
+        const isSelected = current.includes(id)
+        const updated = isSelected
+          ? current.filter(selectedId => selectedId !== id)
+          : [...current, id]
+        set({ selectedToDelete: updated }, false, 'toggleSelectedToDelete')
+      },
+      clearSelectedToDelete: () => set({ selectedToDelete: [] }, false, 'clearSelectedToDelete'),
+      reset: () => set({
+        selfies: [],
+        selectedSelfie: null,
+        deleteMode: false,
+        selectedToDelete: []
+      }),
     }),
     { name: 'selfie-chooser-store' }
   )
