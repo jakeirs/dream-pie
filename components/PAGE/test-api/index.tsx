@@ -11,12 +11,23 @@ import { ICON_FAMILY_NAME } from '@/components/ui/icons/constants'
 import { brandColors } from '@/shared/theme'
 import { TestApiPageProps } from './types'
 import { useGemini } from './hooks/useGemini'
+import { useFal } from './hooks/useFal'
 
 export default function TestApiPage({ className = '' }: TestApiPageProps) {
   const { geminiState, handleMessageToGemini } = useGemini()
+  const { falState, handleImageEdit } = useFal()
 
   const handleBack = () => {
     router.back()
+  }
+
+  const handleGeneratePhoto = () => {
+    // For testing, use a publicly available image URL since FAL requires image URLs
+    const testImageUrl = 'https://storage.googleapis.com/falserverless/example_inputs/nano-banana-edit-input.png'
+    // Hardcoded prompt
+    const prompt = 'change the clothes to black jacket'
+
+    handleImageEdit(testImageUrl, prompt)
   }
 
   return (
@@ -55,6 +66,18 @@ export default function TestApiPage({ className = '' }: TestApiPageProps) {
                     {geminiState.isLoading ? '🤔 Thinking...' : '🧠 Message to Gemini'}
                   </Text>
                 </Button>
+
+                {/* FAL AI Generate Photo Button */}
+                <Button
+                  onPress={handleGeneratePhoto}
+                  variant="primary"
+                  className="w-full"
+                  disabled={falState.isLoading}
+                  style={{ paddingVertical: 24 }}>
+                  <Text className="text-xl font-bold text-white">
+                    {falState.isLoading ? '🎨 Generating...' : '📸 Generate Photo'}
+                  </Text>
+                </Button>
               </View>
 
               {/* Gemini Response - Same as Login Page */}
@@ -69,6 +92,35 @@ export default function TestApiPage({ className = '' }: TestApiPageProps) {
                         {geminiState.error || geminiState.response}
                       </Text>
                     </ScrollView>
+                  </Card>
+                </View>
+              )}
+
+              {/* FAL AI Response */}
+              {(falState.response || falState.error) && (
+                <View className="mt-8 w-full">
+                  <Card
+                    variant={falState.error ? 'danger' : 'success'}
+                    title={falState.error ? '❌ FAL AI Error' : '🎨 Generated Photo'}
+                    className="w-full">
+                    {falState.error ? (
+                      <ScrollView className="max-h-32">
+                        <Text className="text-base text-textSecondary">
+                          {falState.error}
+                        </Text>
+                      </ScrollView>
+                    ) : falState.response ? (
+                      <View className="space-y-2">
+                        <Text className="text-base text-textSecondary">
+                          {falState.response.description}
+                        </Text>
+                        {falState.response.imageUrl && (
+                          <Text className="text-sm text-textTertiary">
+                            Image URL: {falState.response.imageUrl}
+                          </Text>
+                        )}
+                      </View>
+                    ) : null}
                   </Card>
                 </View>
               )}

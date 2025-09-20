@@ -15,3 +15,4 @@ export * from './dream'
 
 // AI Integration types
 export * from './gemini'
+export * from './fal'
