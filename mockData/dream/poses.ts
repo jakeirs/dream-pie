@@ -31,7 +31,7 @@ export const mockPoses: Pose[] = [
     isPremium: false,
     tags: ['business', 'headshot', 'confident', 'clean'],
     createdAt: '2024-01-15T10:30:00Z',
-    posePrompt: 'prompt_1',
+    posePromptId: 'prompt_1',
   },
   {
     id: 'pose_2',
@@ -42,7 +42,7 @@ export const mockPoses: Pose[] = [
     isPremium: true,
     tags: ['elegant', 'fashion', 'dress', 'sophisticated'],
     createdAt: '2024-01-20T14:22:00Z',
-    posePrompt: 'prompt_2',
+    posePromptId: 'prompt_2',
   },
   {
     id: 'pose_3',
@@ -53,7 +53,7 @@ export const mockPoses: Pose[] = [
     isPremium: false,
     tags: ['casual', 'relaxed', 'friendly', 'approachable'],
     createdAt: '2024-01-18T16:45:00Z',
-    posePrompt: 'prompt_3',
+    posePromptId: 'prompt_3',
   },
   {
     id: 'pose_4',
@@ -64,7 +64,7 @@ export const mockPoses: Pose[] = [
     isPremium: true,
     tags: ['adventure', 'travel', 'outdoors', 'explorer'],
     createdAt: '2024-01-25T09:20:00Z',
-    posePrompt: 'prompt_4',
+    posePromptId: 'prompt_4',
   },
   {
     id: 'pose_5',
@@ -75,7 +75,7 @@ export const mockPoses: Pose[] = [
     isPremium: true,
     tags: ['artistic', 'creative', 'unique', 'expressive'],
     createdAt: '2024-01-22T11:15:00Z',
-    posePrompt: 'prompt_5',
+    posePromptId: 'prompt_5',
   },
   {
     id: 'pose_6',
@@ -86,7 +86,7 @@ export const mockPoses: Pose[] = [
     isPremium: false,
     tags: ['fitness', 'strong', 'athletic', 'healthy'],
     createdAt: '2024-01-28T08:30:00Z',
-    posePrompt: 'prompt_6',
+    posePromptId: 'prompt_6',
   },
 ]
 
