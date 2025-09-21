@@ -4,7 +4,7 @@ import { router } from 'expo-router'
 import PoseLibraryContent from '@/components/PAGE/pose-library-bottomsheet'
 import SelfieChooserContent from '@/components/PAGE/selfie-chooser-bottomsheet'
 import { Top } from './components/Top'
-import { Bottom } from './components/Bottom/Bottom'
+import { Bottom } from './components/Bottom'
 //ui
 import PageHeader from '@/components/ui/PageHeader/PageHeader'
 import BottomSheet from '@/components/ui/BottomSheet/BottomSheet'
@@ -15,7 +15,8 @@ import { ICON_FAMILY_NAME } from '@/components/ui/icons/constants'
 
 export default function CreatePage() {
   // Bottom Sheet management
-  const { poseLibraryRef, handlePoseLibraryClose, selfieChooserRef, handleSelfieChooserClose } = useBottomSheets()
+  const { poseLibraryRef, handlePoseLibraryClose, selfieChooserRef, handleSelfieChooserClose } =
+    useBottomSheets()
 
   const handleSettingsPress = () => {
     router.push('/settings')

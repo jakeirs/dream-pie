@@ -1,6 +1,6 @@
 import { View } from 'react-native'
 
-import GenerateButton from './GenerateButton'
+import GenerateButton from './Bottom/GenerateButton'
 
 interface BottomProps {}
 
