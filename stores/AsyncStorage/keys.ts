@@ -60,12 +60,37 @@ export const USER_SELFIES = 'user_selfies' as const
 export const USER_POSES = 'user_poses' as const
 
 /**
+ * USER_CREATIONS - Stores AI-generated creation results with file system consistency
+ *
+ * WHERE USED:
+ * - components/PAGE/gallery/hooks/useGallery.ts (READ: load user creations for gallery)
+ * - stores/creationStore.ts (CREATE/UPDATE/DELETE: manage creation lifecycle)
+ * - components/ui/StatsFiles/StatsFiles.tsx (READ: count creations for statistics)
+ *
+ * WHY ASYNC:
+ * - Persists AI-generated results between app sessions
+ * - Maintains consistency with pose/selfie file storage system
+ * - Combines with file system storage (AsyncStorage stores metadata, files stored in document directory)
+ *
+ * DATA STRUCTURE: Array<Creation> as JSON string
+ * Example: '[{"id":"creation_1726759123456","usedPose":{"id":"pose_1","name":"Professional"},"usedSelfie":{"id":"selfie_1","name":"My Photo"},"imageUrl":"file:///path/to/creation_1726759123456.jpg","generatedAt":"2024-09-19T14:12:03.456Z"}]'
+ *
+ * ACTIONS:
+ * - CREATE: Add new creation when AI generation completes successfully
+ * - READ: Load all user creations to display in gallery
+ * - UPDATE: Modify creation metadata (future: favorites, tags, ratings)
+ * - DELETE: Remove creations when user deletes them from gallery
+ */
+export const USER_CREATIONS = 'user_creations' as const
+
+/**
  * All AsyncStorage keys used in the app
  * Add new keys here as they are created
  */
 export const ASYNC_STORAGE_KEYS = {
   USER_SELFIES,
   USER_POSES,
+  USER_CREATIONS,
 } as const
 
 /**
