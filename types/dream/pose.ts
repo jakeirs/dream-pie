@@ -14,6 +14,7 @@ export interface Pose {
   isPremium: boolean
   tags: string[]
   createdAt: string
+  posePrompt?: string // Optional reference to prompt ID
 }
 
 export type PoseCategory =

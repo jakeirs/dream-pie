@@ -13,6 +13,9 @@ export * from './content'
 // Dream Pie specific types
 export * from './dream'
 
+// Prompt-related types
+export * from './prompts'
+
 // AI Integration types
 export * from './gemini'
 export * from './fal'

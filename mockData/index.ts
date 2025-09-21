@@ -12,3 +12,6 @@ export * from './content'
 
 // Dream Pie specific mock data
 export * from './dream'
+
+// Prompt-related mock data
+export * from './prompts'
