@@ -5,6 +5,7 @@
  */
 
 export * from './pose'
+export * from './selfie'
 export * from './creation'
 export * from './subscription'
 export * from './user'

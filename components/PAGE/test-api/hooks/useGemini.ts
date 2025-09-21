@@ -1,6 +1,15 @@
 import { useState } from 'react'
-import { GeminiRequest, GeminiResponse, GeminiState } from '@/types'
+import { GeminiState } from '@/types'
+import { useGemini as useSharedGemini } from '@/shared/hooks'
 
+/**
+ * Test API Gemini Hook - useState Wrapper for Shared Gemini Hook
+ *
+ * This hook wraps the shared useGemini hook with useState to maintain
+ * backward compatibility with the test-api page interface.
+ *
+ * For new implementations, use the shared hook directly with zustand stores.
+ */
 export const useGemini = () => {
   const [geminiState, setGeminiState] = useState<GeminiState>({
     response: null,
@@ -8,38 +17,29 @@ export const useGemini = () => {
     error: null,
   })
 
-  const handleMessageToGemini = async () => {
-    setGeminiState({ response: null, isLoading: true, error: null })
-
-    try {
-      const request: GeminiRequest = { message: 'Hello, who are you?' }
-
-      const response = await fetch('/api/gemini', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(request),
-      })
-
-      const data: GeminiResponse = await response.json()
-
-      if (!response.ok || data.error) {
-        throw new Error(data.error || 'Failed to get response from Gemini')
-      }
-
+  // Initialize shared hook with callbacks to update local state
+  const { handleMessageToGemini: sharedHandleMessageToGemini } = useSharedGemini({
+    onStart: () => {
+      setGeminiState({ response: null, isLoading: true, error: null })
+    },
+    onSuccess: (response) => {
       setGeminiState({
-        response: data.text,
+        response,
         isLoading: false,
         error: null,
       })
-    } catch (error) {
+    },
+    onError: (error) => {
       setGeminiState({
         response: null,
         isLoading: false,
-        error: error instanceof Error ? error.message : 'Something went wrong',
+        error,
       })
-    }
+    },
+  })
+
+  const handleMessageToGemini = () => {
+    sharedHandleMessageToGemini('Hello, who are you?')
   }
 
   return {

@@ -1,6 +1,15 @@
 import { useState } from 'react'
-import { FalRequest, FalResponse, FalState } from '@/types'
+import { FalState } from '@/types'
+import { useFal as useSharedFal } from '@/shared/hooks'
 
+/**
+ * Test API FAL Hook - useState Wrapper for Shared FAL Hook
+ *
+ * This hook wraps the shared useFal hook with useState to maintain
+ * backward compatibility with the test-api page interface.
+ *
+ * For new implementations, use the shared hook directly with zustand stores.
+ */
 export const useFal = () => {
   const [falState, setFalState] = useState<FalState>({
     response: null,
@@ -8,45 +17,29 @@ export const useFal = () => {
     error: null,
   })
 
-  const handleImageEdit = async (imageData: string, prompt: string = 'change the clothes to black jacket') => {
-    setFalState({ response: null, isLoading: true, error: null })
-
-    try {
-      const request: FalRequest = {
-        prompt: prompt,
-        imageData: imageData
-      }
-
-      const response = await fetch('/api/fal', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(request),
-      })
-
-      const data: FalResponse = await response.json()
-
-      if (!response.ok || data.error) {
-        throw new Error(data.error || 'Failed to edit image with FAL AI')
-      }
-
+  // Initialize shared hook with callbacks to update local state
+  const { handleImageEdit: sharedHandleImageEdit } = useSharedFal({
+    onStart: () => {
+      setFalState({ response: null, isLoading: true, error: null })
+    },
+    onSuccess: (response) => {
       setFalState({
-        response: data,
+        response,
         isLoading: false,
         error: null,
       })
-    } catch (error) {
+    },
+    onError: (error) => {
       setFalState({
         response: null,
         isLoading: false,
-        error: error instanceof Error ? error.message : 'Something went wrong with FAL AI',
+        error,
       })
-    }
-  }
+    },
+  })
 
   return {
     falState,
-    handleImageEdit,
+    handleImageEdit: sharedHandleImageEdit,
   }
 }
