@@ -23,28 +23,12 @@ import { appAssets } from '@/shared/assets/assets'
 
 export const mockSelfies: Selfie[] = [
   {
-    id: 'selfie_1',
-    name: 'Extended Arm Selfie',
+    id: 'selfie_12',
+    name: 'Extended Arm Selfie Siema',
     description: 'Classic selfie with extended arm position',
     imageUrl: appAssets.selfies.extendPhoto,
     tags: ['extended-arm', 'casual', 'selfie', 'example'],
     createdAt: '2024-01-15T10:30:00Z',
-  },
-  {
-    id: 'selfie_2',
-    name: 'Front Facing Portrait',
-    description: 'Direct front-facing selfie for AI processing',
-    imageUrl: appAssets.selfies.extendPhoto, // Using same asset for demo
-    tags: ['front-facing', 'portrait', 'clear', 'example'],
-    createdAt: '2024-01-16T14:22:00Z',
-  },
-  {
-    id: 'selfie_3',
-    name: 'Natural Lighting Selfie',
-    description: 'Well-lit selfie with natural lighting conditions',
-    imageUrl: appAssets.selfies.extendPhoto, // Using same asset for demo
-    tags: ['natural-light', 'outdoor', 'clear', 'example'],
-    createdAt: '2024-01-17T09:15:00Z',
   },
 ]
 
