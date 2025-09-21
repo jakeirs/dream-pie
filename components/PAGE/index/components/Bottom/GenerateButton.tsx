@@ -16,6 +16,8 @@ export default function GenerateButton({ className = '' }: GenerateButtonProps) 
     generatePhoto,
     canGenerate,
     isProcessing,
+    isConvertingImage,
+    isGenerating,
     result,
     error,
     resetGeneration,
@@ -23,12 +25,12 @@ export default function GenerateButton({ className = '' }: GenerateButtonProps) 
 
   const [showResult, setShowResult] = useState(false)
 
-  // Auto-show Alert when result or error is available
+  // Auto-show Alert when processing starts or result/error is available
   useEffect(() => {
-    if (result || error) {
+    if (isProcessing || result || error) {
       setShowResult(true)
     }
-  }, [result, error])
+  }, [isProcessing, result, error])
 
   const handleGeneratePhoto = () => {
     generatePhoto()
@@ -45,12 +47,16 @@ export default function GenerateButton({ className = '' }: GenerateButtonProps) 
   }
 
   const getButtonText = () => {
-    if (isProcessing) return '🎨 Generating...'
+    if (isConvertingImage) return '📷 Preparing image...'
+    if (isGenerating) return '🎨 Generating...'
+    if (isProcessing) return '⚙️ Processing...'
     return '🎨 Generate Photo →'
   }
 
   const getAlertTitle = () => {
-    if (isProcessing) return 'Generating Photo'
+    if (isConvertingImage) return 'Preparing Image'
+    if (isGenerating) return 'Generating Photo'
+    if (isProcessing) return 'Processing'
     if (error) return 'Generation Failed'
     if (result) return 'Photo Ready!'
     return ''
@@ -89,6 +95,8 @@ export default function GenerateButton({ className = '' }: GenerateButtonProps) 
           result={result}
           error={error}
           isProcessing={isProcessing}
+          isConvertingImage={isConvertingImage}
+          isGenerating={isGenerating}
           onRetry={handleRetry}
           onClose={handleCloseResult}
         />

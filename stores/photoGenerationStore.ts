@@ -25,8 +25,10 @@ import { devtools } from '@csark0812/zustand-expo-devtools'
 import { FalResponse, Pose, Selfie, PosePrompt } from '@/types'
 
 interface PhotoGenerationStore {
-  // Generation State
-  isProcessing: boolean
+  // Generation State - Multi-stage process
+  isProcessing: boolean // Overall processing state (true during any stage)
+  isConvertingImage: boolean // Image conversion stage
+  isGenerating: boolean // FAL API generation stage
 
   // Results
   result: FalResponse | null
@@ -41,6 +43,9 @@ interface PhotoGenerationStore {
 
   // Actions
   startGeneration: (pose: Pose, selfie: Selfie, posePrompt: PosePrompt) => void
+  startImageConversion: () => void
+  completeImageConversion: () => void
+  startFalGeneration: () => void
   setResult: (result: FalResponse) => void
   setError: (error: string) => void
   completeGeneration: () => void
@@ -52,17 +57,21 @@ export const usePhotoGenerationStore = create<PhotoGenerationStore>()(
     (set) => ({
       // Initial State
       isProcessing: false,
+      isConvertingImage: false,
+      isGenerating: false,
       result: null,
       usedPose: null,
       usedSelfie: null,
       usedPosePrompt: null,
       error: null,
 
-      // Start Generation - Store inputs and set processing state
+      // Start Generation - Store inputs and initialize processing
       startGeneration: (pose, selfie, posePrompt) =>
         set(
           {
             isProcessing: true,
+            isConvertingImage: false,
+            isGenerating: false,
             result: null,
             error: null,
             usedPose: pose,
@@ -71,6 +80,39 @@ export const usePhotoGenerationStore = create<PhotoGenerationStore>()(
           },
           false,
           'startGeneration'
+        ),
+
+      // Start Image Conversion Stage
+      startImageConversion: () =>
+        set(
+          {
+            isConvertingImage: true,
+            isGenerating: false,
+            error: null,
+          },
+          false,
+          'startImageConversion'
+        ),
+
+      // Complete Image Conversion, Move to Generation
+      completeImageConversion: () =>
+        set(
+          {
+            isConvertingImage: false,
+          },
+          false,
+          'completeImageConversion'
+        ),
+
+      // Start FAL API Generation Stage
+      startFalGeneration: () =>
+        set(
+          {
+            isConvertingImage: false,
+            isGenerating: true,
+          },
+          false,
+          'startFalGeneration'
         ),
 
       // Set Generation Result
@@ -84,22 +126,26 @@ export const usePhotoGenerationStore = create<PhotoGenerationStore>()(
           'setResult'
         ),
 
-      // Set Error
+      // Set Error (can occur in any stage)
       setError: (error) =>
         set(
           {
             error,
             result: null,
+            isConvertingImage: false,
+            isGenerating: false,
           },
           false,
           'setError'
         ),
 
-      // Complete Generation - Stop processing
+      // Complete Generation - Stop all processing
       completeGeneration: () =>
         set(
           {
             isProcessing: false,
+            isConvertingImage: false,
+            isGenerating: false,
           },
           false,
           'completeGeneration'
@@ -110,6 +156,8 @@ export const usePhotoGenerationStore = create<PhotoGenerationStore>()(
         set(
           {
             isProcessing: false,
+            isConvertingImage: false,
+            isGenerating: false,
             result: null,
             usedPose: null,
             usedSelfie: null,

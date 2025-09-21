@@ -1,5 +1,6 @@
 import { useAppStores } from '@/stores'
 import { useFal } from '@/shared/hooks'
+import { convertImageForFal } from '@/shared/utils'
 import { getPosePromptByPoseId } from '@/mockData/prompts/posePrompts'
 
 /**
@@ -7,9 +8,10 @@ import { getPosePromptByPoseId } from '@/mockData/prompts/posePrompts'
  *
  * Orchestrates the complete AI photo generation flow:
  * 1. Validates selected selfie and pose
- * 2. Retrieves pose prompt using posePromptId
- * 3. Calls FAL AI with selfie image and pose prompt
- * 4. Manages generation state through photoGeneration store
+ * 2. Converts selfie image to base64 format for FAL API
+ * 3. Retrieves pose prompt using posePromptId
+ * 4. Calls FAL AI with converted image and pose prompt
+ * 5. Manages generation state through photoGeneration store
  *
  * Usage:
  * const { generatePhoto, canGenerate } = useGeneratePhotoLogic()
@@ -21,7 +23,8 @@ export const useGeneratePhotoLogic = () => {
   // Initialize shared FAL hook with callbacks to update photoGeneration store
   const { handleImageEdit } = useFal({
     onStart: () => {
-      // Start generation is handled in generatePhoto function
+      // FAL API call started - update to generation stage
+      photoGeneration.startFalGeneration()
     },
     onSuccess: (response) => {
       photoGeneration.setResult(response)
@@ -33,7 +36,7 @@ export const useGeneratePhotoLogic = () => {
     },
   })
 
-  // Main generation function
+  // Main generation function with image conversion
   const generatePhoto = async () => {
     // Validation: Check if both selfie and pose are selected
     if (!selfieChooser.selectedSelfie) {
@@ -55,17 +58,30 @@ export const useGeneratePhotoLogic = () => {
 
     try {
       // Start generation with selected inputs
-      photoGeneration.startGeneration(
-        pose.selectedPose,
-        selfieChooser.selectedSelfie,
-        posePrompt
-      )
+      photoGeneration.startGeneration(pose.selectedPose, selfieChooser.selectedSelfie, posePrompt)
 
-      // Call FAL AI with selfie image URL and pose prompt
-      await handleImageEdit(
-        selfieChooser.selectedSelfie.imageUrl,
-        posePrompt.prompt
-      )
+      // Stage 1: Convert image to base64 format for FAL API
+      photoGeneration.startImageConversion()
+
+      let convertedImageData: string
+      try {
+        convertedImageData = await convertImageForFal(selfieChooser.selectedSelfie.imageUrl)
+        console.log('selfieChooser.selectedSelfie.imageUrl', selfieChooser.selectedSelfie.imageUrl)
+        console.log('convertedImageData', convertedImageData)
+      } catch (conversionError) {
+        const errorMessage =
+          conversionError instanceof Error
+            ? conversionError.message
+            : 'Failed to prepare image for generation'
+        photoGeneration.setError(`Image conversion failed: ${errorMessage}`)
+        return
+      }
+
+      // Stage 2: Image conversion completed, proceed to FAL API
+      photoGeneration.completeImageConversion()
+
+      // Call FAL AI with converted base64 image and pose prompt
+      await handleImageEdit(convertedImageData, posePrompt.prompt)
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Failed to generate photo'
       photoGeneration.setError(errorMessage)
@@ -75,14 +91,14 @@ export const useGeneratePhotoLogic = () => {
 
   // Helper to check if generation can proceed
   const canGenerate = Boolean(
-    selfieChooser.selectedSelfie &&
-    pose.selectedPose &&
-    !photoGeneration.isProcessing
+    selfieChooser.selectedSelfie && pose.selectedPose && !photoGeneration.isProcessing
   )
 
-  // Helper to get current generation status
+  // Helper to get current generation status with stage awareness
   const getGenerationStatus = () => {
-    if (photoGeneration.isProcessing) return 'Generating your photo...'
+    if (photoGeneration.isConvertingImage) return 'Preparing image...'
+    if (photoGeneration.isGenerating) return 'Generating your photo...'
+    if (photoGeneration.isProcessing) return 'Processing...'
     if (photoGeneration.error) return `Error: ${photoGeneration.error}`
     if (photoGeneration.result) return 'Photo generated successfully!'
     return 'Ready to generate'
@@ -98,6 +114,8 @@ export const useGeneratePhotoLogic = () => {
 
     // Direct State Access (for UI components)
     isProcessing: photoGeneration.isProcessing,
+    isConvertingImage: photoGeneration.isConvertingImage,
+    isGenerating: photoGeneration.isGenerating,
     result: photoGeneration.result,
     error: photoGeneration.error,
     usedPose: photoGeneration.usedPose,

@@ -8,40 +8,49 @@ export async function POST(request: Request): Promise<Response> {
 
     // ERRORS INPUT
     if (!prompt || prompt.trim().length === 0) {
-      return Response.json({
-        imageUrl: '',
-        description: '',
-        requestId: '',
-        contentType: '',
-        fileName: '',
-        error: 'Prompt is required'
-      } as FalResponse, { status: 400 })
+      return Response.json(
+        {
+          imageUrl: '',
+          description: '',
+          requestId: '',
+          contentType: '',
+          fileName: '',
+          error: 'Prompt is required',
+        } as FalResponse,
+        { status: 400 }
+      )
     }
 
     if (!imageData || imageData.trim().length === 0) {
-      return Response.json({
-        imageUrl: '',
-        description: '',
-        requestId: '',
-        contentType: '',
-        fileName: '',
-        error: 'Image data is required'
-      } as FalResponse, { status: 400 })
+      return Response.json(
+        {
+          imageUrl: '',
+          description: '',
+          requestId: '',
+          contentType: '',
+          fileName: '',
+          error: 'Image data is required',
+        } as FalResponse,
+        { status: 400 }
+      )
     }
 
     const apiKey = process.env.FAL_KEY
 
     if (!apiKey) {
-      return Response.json({
-        imageUrl: '',
-        description: '',
-        requestId: '',
-        contentType: '',
-        fileName: '',
-        error: 'FAL API key not configured'
-      } as FalResponse, {
-        status: 500,
-      })
+      return Response.json(
+        {
+          imageUrl: '',
+          description: '',
+          requestId: '',
+          contentType: '',
+          fileName: '',
+          error: 'FAL API key not configured',
+        } as FalResponse,
+        {
+          status: 500,
+        }
+      )
     }
 
     // Configure FAL client with API key
@@ -50,10 +59,10 @@ export async function POST(request: Request): Promise<Response> {
     })
 
     // Call FAL AI nano-banana/edit model
-    const result = await fal.subscribe('fal-ai/nano-banana/edit', {
+    const result = (await fal.subscribe('fal-ai/nano-banana/edit', {
       input: {
         prompt: prompt,
-        image_urls: [imageData], // FAL expects array of image URLs
+        image_urls: [imageData], // FAL expects array of image URLs | base64 data URIs
         num_images: 1,
         output_format: 'jpeg',
       },
@@ -66,7 +75,7 @@ export async function POST(request: Request): Promise<Response> {
           )
         }
       },
-    }) as FalRawResponse
+    })) as FalRawResponse
 
     // Extract the response data
     const { images, description } = result.data
