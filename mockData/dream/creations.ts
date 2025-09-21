@@ -29,42 +29,42 @@ export const mockCreations: Creation[] = [
     id: 'creation_1',
     usedPose: mockPoses[0], // Professional Portrait
     usedSelfie: mockSelfies[0], // Extended Arm Selfie
-    resultImage: appAssets.gallery.img,
+    imageUrl: appAssets.gallery.img,
     generatedAt: '2024-01-10T14:22:00Z',
   },
   {
     id: 'creation_2',
     usedPose: mockPoses[1], // Elegant Dress
     usedSelfie: mockSelfies[0], // Extended Arm Selfie
-    resultImage: appAssets.gallery.jsonInstruction,
+    imageUrl: appAssets.gallery.jsonInstruction,
     generatedAt: '2024-01-09T16:30:00Z',
   },
   {
     id: 'creation_3',
     usedPose: mockPoses[0], // Professional Portrait
     usedSelfie: mockSelfies[0], // Extended Arm Selfie
-    resultImage: appAssets.gallery.img,
+    imageUrl: appAssets.gallery.img,
     generatedAt: '2024-01-08T11:15:00Z',
   },
   {
     id: 'creation_4',
     usedPose: mockPoses[1], // Elegant Dress
     usedSelfie: mockSelfies[0], // Extended Arm Selfie
-    resultImage: appAssets.gallery.jsonInstruction,
+    imageUrl: appAssets.gallery.jsonInstruction,
     generatedAt: '2024-01-07T16:45:00Z',
   },
   {
     id: 'creation_5',
     usedPose: mockPoses[0], // Professional Portrait
     usedSelfie: mockSelfies[0], // Extended Arm Selfie
-    resultImage: appAssets.gallery.img,
+    imageUrl: appAssets.gallery.img,
     generatedAt: '2024-01-06T13:30:00Z',
   },
   {
     id: 'creation_6',
     usedPose: mockPoses[1], // Elegant Dress
     usedSelfie: mockSelfies[0], // Extended Arm Selfie
-    resultImage: appAssets.gallery.jsonInstruction,
+    imageUrl: appAssets.gallery.jsonInstruction,
     generatedAt: '2024-01-05T10:15:00Z',
   },
 ]

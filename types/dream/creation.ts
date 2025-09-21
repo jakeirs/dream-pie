@@ -12,6 +12,6 @@ export interface Creation {
   id: string
   usedPose: Pose
   usedSelfie: Selfie
-  resultImage: string // AI generated result
+  imageUrl: string // AI generated result
   generatedAt: string
 }

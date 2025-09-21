@@ -103,8 +103,6 @@ export const syncMockDataWithFileSystem = async <T extends ImageItem>(
     const syncedItems = await loadItemsFromAsyncStorage<T>(asyncStorageKey)
     console.log(`✅ Sync complete! ${syncedItems.length} ${itemType}s with file URIs`)
 
-    console.log(`synced${itemType}s`, JSON.stringify(syncedItems, null, 2))
-
     return syncedItems
   } catch (error) {
     console.error(`❌ Error during ${itemType} sync:`, error)

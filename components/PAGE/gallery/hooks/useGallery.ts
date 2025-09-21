@@ -53,11 +53,11 @@ export const useGallery = (): UseGallery => {
 
   // Get display data for different item types
   const getItemDisplayData = (item: GalleryContent): DisplayData => {
-    if ('resultImage' in item) {
+    if ('imageUrl' in item && 'usedPose' in item && 'usedSelfie' in item) {
       // Creation type
       const creationItem = item as Creation
       return {
-        imageUri: creationItem.resultImage,
+        imageUri: creationItem.imageUrl,
         title: `${creationItem.usedPose.name} Creation`,
         description: `Created with ${creationItem.usedPose.name} pose using ${creationItem.usedSelfie.name}`,
       }
