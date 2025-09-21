@@ -23,7 +23,6 @@
 import { create } from 'zustand'
 import { devtools } from '@csark0812/zustand-expo-devtools'
 import { Creation } from '@/types/dream'
-import { mockCreations } from '@/mockData/dream/creations'
 
 interface CreationStore {
   // State
@@ -31,7 +30,7 @@ interface CreationStore {
   isLoading: boolean
 
   // Actions
-  loadCreations: () => void
+  setCreations: (mockCreations: Creation[]) => void
   addCreation: (creation: Creation) => void
   removeCreation: (id: string) => void
   reset: () => void
@@ -44,27 +43,16 @@ export const useCreationStore = create<CreationStore>()(
       creations: [],
       isLoading: false,
 
-      // Load Creations - Initialize from mock data
-      loadCreations: () => {
+      // Set Creations - Initialize from mock data (consistent with pose/selfie pattern)
+      setCreations: (mockCreations: Creation[]) => {
         set(
           {
-            isLoading: true,
+            creations: mockCreations,
+            isLoading: false,
           },
           false,
-          'loadCreations:start'
+          'setCreations'
         )
-
-        // Simulate loading delay
-        setTimeout(() => {
-          set(
-            {
-              creations: mockCreations,
-              isLoading: false,
-            },
-            false,
-            'loadCreations:complete'
-          )
-        }, 100)
       },
 
       // Add New Creation - From successful generation

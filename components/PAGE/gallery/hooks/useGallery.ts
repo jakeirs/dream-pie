@@ -1,12 +1,10 @@
-import { useRef, useEffect, useState, RefObject } from 'react'
+import { useRef, useEffect, useState, useCallback, RefObject } from 'react'
 import { BottomSheetModal } from '@gorhom/bottom-sheet'
 
-import { useAppStores } from '@/stores'
+import { useCreationStore, usePoseStore, useSelfieChooserStore } from '@/stores'
 
-import { GalleryContent, FilterType } from '@/types/dream/gallery'
+import { GalleryContent } from '@/types/dream/gallery'
 import { Creation, Pose, Selfie } from '@/types/dream'
-import { mockPoses } from '@/mockData/dream/poses'
-import { mockSelfies } from '@/mockData/dream/selfies'
 
 export interface DisplayData {
   imageUri: string
@@ -37,19 +35,27 @@ export interface UseGallery {
 }
 
 export const useGallery = (): UseGallery => {
-  const { creation, pose, selfieChooser } = useAppStores()
+  // Use selectors for optimal performance - only subscribe to needed data
+  const creations = useCreationStore((state) => state.creations)
+  const poses = usePoseStore((state) => state.poses)
+  const selfies = useSelfieChooserStore((state) => state.selfies)
+  const isLoading = useCreationStore((state) => state.isLoading)
   const modalRef = useRef<BottomSheetModal>(null)
 
-  // Initialize stores on mount
-  const initializeStores = () => {
-    creation.loadCreations()
-    pose.setPoses(mockPoses)
-    selfieChooser.setSelfies(mockSelfies)
-  }
+  // Initialize stores on mount - only if data is not already loaded
+  const initializeStores = useCallback(() => {
+    // Data should already be loaded at app level
+    // This is kept for backward compatibility but should be minimal
+    console.log('Gallery stores already initialized:', {
+      creations: creations.length,
+      poses: poses.length,
+      selfies: selfies.length
+    })
+  }, [creations.length, poses.length, selfies.length])
 
   useEffect(() => {
     initializeStores()
-  }, [])
+  }, [initializeStores])
 
   // Get display data for different item types
   const getItemDisplayData = (item: GalleryContent): DisplayData => {
@@ -93,13 +99,13 @@ export const useGallery = (): UseGallery => {
   }
 
   return {
-    // Data
-    creations: creation.creations,
-    poses: pose.poses,
-    selfies: selfieChooser.selfies,
+    // Data (from selectors)
+    creations,
+    poses,
+    selfies,
 
-    // Loading states
-    isLoading: creation.isLoading,
+    // Loading states (from selector)
+    isLoading,
 
     // Actions
     initializeStores,

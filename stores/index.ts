@@ -12,7 +12,7 @@ import { useCreationStore } from './creationStore'
  * const { navigation, pose, selfieChooser, photoGeneration, creation } = useAppStores()
  * selfieChooser.setSelectedSelfie(selectedSelfie)
  * photoGeneration.startGeneration(pose, selfie, posePrompt)
- * creation.loadCreations()
+ * creation.setCreations(mockCreations)
  */
 export const useAppStores = () => ({
   navigation: useNavigationStore(),

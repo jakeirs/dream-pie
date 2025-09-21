@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-import { useAppStores } from '@/stores'
+import { useCreationStore, usePoseStore, useSelfieChooserStore } from '@/stores'
 
 import { FilterType, GalleryContent } from '@/types/dream/gallery'
 
@@ -18,39 +18,47 @@ export interface UseGalleryFilters {
 }
 
 export const useGalleryFilters = (): UseGalleryFilters => {
-  const { creation, pose, selfieChooser } = useAppStores()
+  // Use selectors for optimal performance - only subscribe to needed data
+  const creations = useCreationStore((state) => state.creations)
+  const poses = usePoseStore((state) => state.poses)
+  const selfies = useSelfieChooserStore((state) => state.selfies)
+
+  // Count-only selectors for filter pills (most optimal)
+  const creationsCount = useCreationStore((state) => state.creations.length)
+  const posesCount = usePoseStore((state) => state.poses.length)
+  const selfiesCount = useSelfieChooserStore((state) => state.selfies.length)
   const [activeFilter, setActiveFilter] = useState<FilterType>('creations')
 
-  // Get current items based on active filter
+  // Get current items based on active filter (using selector data)
   const getCurrentItems = (): GalleryContent[] => {
     switch (activeFilter) {
       case 'creations':
-        return creation.creations
+        return creations
       case 'poses':
-        return pose.poses
+        return poses
       case 'selfies':
-        return selfieChooser.selfies
+        return selfies
       default:
         return []
     }
   }
 
-  // Prepare filter data with counts
+  // Prepare filter data with counts (using count-only selectors)
   const filters: FilterPill[] = [
     {
       type: 'creations',
       label: 'Creations',
-      count: creation.creations.length,
+      count: creationsCount,
     },
     {
       type: 'poses',
       label: 'Poses',
-      count: pose.poses.length,
+      count: posesCount,
     },
     {
       type: 'selfies',
       label: 'Selfies',
-      count: selfieChooser.selfies.length,
+      count: selfiesCount,
     },
   ]
 
