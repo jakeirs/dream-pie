@@ -1,3 +1,7 @@
+import { ValidationError, ValidationErrorInfo } from '@fal-ai/client'
+
+// Re-export for convenience
+export { ValidationError, ValidationErrorInfo }
 /**
  * FAL AI API TYPES - Image Editing Integration
  *
@@ -18,14 +22,36 @@
 
 export interface FalRequest {
   prompt: string
-  imageData: string // base64 encoded image data
+  imageData: string // Image URL (not base64, FAL expects URLs)
 }
 
+// Raw FAL API Response Structure (for documentation and reference)
+export interface FalImageData {
+  url: string
+  content_type: string
+  file_name: string
+  file_size: number | null
+}
+
+export interface FalRawResponse {
+  data: {
+    images: FalImageData[]
+    description: string
+  }
+  requestId: string
+}
+
+// Our Simplified API Response (what our backend actually returns)
 export interface FalResponse {
   imageUrl: string
   description: string
+  requestId: string        // NEW: Track request ID from FAL
+  contentType: string      // NEW: Image content type (jpeg, png, etc.)
+  fileName: string         // NEW: Generated filename
   error?: string
 }
+
+// Import official FAL types from library
 
 export interface FalState {
   response: FalResponse | null

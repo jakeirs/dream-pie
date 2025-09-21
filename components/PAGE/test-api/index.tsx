@@ -6,6 +6,7 @@ import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context'
 import PageHeader from '@/components/ui/PageHeader/PageHeader'
 import Button from '@/components/ui/Button/Button'
 import Card from '@/components/ui/Card/Card'
+import PhotoCard from '@/components/ui/PhotoCard/PhotoCard'
 
 import { ICON_FAMILY_NAME } from '@/components/ui/icons/constants'
 import { brandColors } from '@/shared/theme'
@@ -22,12 +23,17 @@ export default function TestApiPage({ className = '' }: TestApiPageProps) {
   }
 
   const handleGeneratePhoto = () => {
-    // For testing, use a publicly available image URL since FAL requires image URLs
-    const testImageUrl = 'https://storage.googleapis.com/falserverless/example_inputs/nano-banana-edit-input.png'
-    // Hardcoded prompt
-    const prompt = 'change the clothes to black jacket'
+    try {
+      // For testing, use a publicly available image URL since FAL requires image URLs
+      const testImageUrl =
+        'https://storage.googleapis.com/falserverless/example_inputs/nano-banana-edit-input.png'
+      // Hardcoded prompt
+      const prompt = 'change the clothes to black jacket'
 
-    handleImageEdit(testImageUrl, prompt)
+      handleImageEdit(testImageUrl, prompt)
+    } catch (error) {
+      console.error('Error in handleGeneratePhoto:', error)
+    }
   }
 
   return (
@@ -97,30 +103,70 @@ export default function TestApiPage({ className = '' }: TestApiPageProps) {
               )}
 
               {/* FAL AI Response */}
-              {(falState.response || falState.error) && (
+              {falState.error && (
                 <View className="mt-8 w-full">
                   <Card
-                    variant={falState.error ? 'danger' : 'success'}
-                    title={falState.error ? '❌ FAL AI Error' : '🎨 Generated Photo'}
+                    variant="danger"
+                    title="❌ FAL AI Error"
                     className="w-full">
-                    {falState.error ? (
-                      <ScrollView className="max-h-32">
-                        <Text className="text-base text-textSecondary">
-                          {falState.error}
-                        </Text>
-                      </ScrollView>
-                    ) : falState.response ? (
-                      <View className="space-y-2">
-                        <Text className="text-base text-textSecondary">
-                          {falState.response.description}
-                        </Text>
-                        {falState.response.imageUrl && (
-                          <Text className="text-sm text-textTertiary">
-                            Image URL: {falState.response.imageUrl}
+                    <ScrollView className="max-h-32">
+                      <Text className="text-base text-textSecondary">{falState.error}</Text>
+                    </ScrollView>
+                  </Card>
+                </View>
+              )}
+
+              {/* FAL AI Success Response with PhotoCard */}
+              {falState.response && !falState.error && (
+                <View className="mt-8 w-full space-y-4">
+                  {/* Generated Image Display */}
+                  <PhotoCard
+                    imageSource={{ uri: falState.response.imageUrl }}
+                    title="🎨 Generated Photo"
+                    className="w-full"
+                    onClickCard={() => {
+                      console.log('Photo card clicked:', falState.response?.imageUrl)
+                    }}
+                  />
+
+                  {/* Metadata Card */}
+                  <Card
+                    variant="info"
+                    title="📋 Generation Details"
+                    className="w-full">
+                    <View className="space-y-2">
+                      {falState.response.description && (
+                        <View>
+                          <Text className="text-sm font-semibold text-textPrimary">Description:</Text>
+                          <Text className="text-base text-textSecondary">
+                            {falState.response.description}
                           </Text>
-                        )}
+                        </View>
+                      )}
+
+                      <View>
+                        <Text className="text-sm font-semibold text-textPrimary">Request ID:</Text>
+                        <Text className="text-sm text-textTertiary font-mono">
+                          {falState.response.requestId}
+                        </Text>
                       </View>
-                    ) : null}
+
+                      <View>
+                        <Text className="text-sm font-semibold text-textPrimary">File Details:</Text>
+                        <Text className="text-sm text-textTertiary">
+                          {falState.response.fileName} • {falState.response.contentType}
+                        </Text>
+                      </View>
+
+                      <View>
+                        <Text className="text-sm font-semibold text-textPrimary">Image URL:</Text>
+                        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                          <Text className="text-sm text-textTertiary font-mono">
+                            {falState.response.imageUrl}
+                          </Text>
+                        </ScrollView>
+                      </View>
+                    </View>
                   </Card>
                 </View>
               )}
