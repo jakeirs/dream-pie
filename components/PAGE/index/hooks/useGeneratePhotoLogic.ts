@@ -1,4 +1,4 @@
-import { useAppStores } from '@/stores'
+import { usePoseStore, useSelfieChooserStore, usePhotoGenerationStore, useStore } from '@/stores'
 import { useFal } from '@/shared/hooks'
 import { convertImageForFal } from '@/shared/utils'
 import { getPosePromptByPoseId } from '@/mockData/prompts/posePrompts'
@@ -18,7 +18,10 @@ import { getPosePromptByPoseId } from '@/mockData/prompts/posePrompts'
  * // Call generatePhoto() when user clicks "Generate Photo (real)" button
  */
 export const useGeneratePhotoLogic = () => {
-  const { pose, selfieChooser, photoGeneration } = useAppStores()
+  // Optimized selectors: Only re-render when specific properties change
+  const selectedPose = useStore(usePoseStore, (state) => state.selectedPose)
+  const selectedSelfie = useStore(useSelfieChooserStore, (state) => state.selectedSelfie)
+  const photoGeneration = usePhotoGenerationStore()
 
   // Initialize shared FAL hook with callbacks to update photoGeneration store
   const { handleImageEdit } = useFal({
@@ -26,6 +29,7 @@ export const useGeneratePhotoLogic = () => {
       // FAL API call started
     },
     onSuccess: (response) => {
+      console.log('FAL Response:', response)
       photoGeneration.setResult(response)
       photoGeneration.completeGeneration()
     },
@@ -38,18 +42,18 @@ export const useGeneratePhotoLogic = () => {
   // Main generation function with image conversion
   const generatePhoto = async () => {
     // Validation: Check if both selfie and pose are selected
-    if (!selfieChooser.selectedSelfie) {
+    if (!selectedSelfie) {
       photoGeneration.setError('Please select a selfie first')
       return
     }
 
-    if (!pose.selectedPose) {
+    if (!selectedPose) {
       photoGeneration.setError('Please select a pose first')
       return
     }
 
     // Get pose prompt using the posePromptId from the selected pose
-    const posePrompt = getPosePromptByPoseId(pose.selectedPose.id)
+    const posePrompt = getPosePromptByPoseId(selectedPose.id)
     if (!posePrompt) {
       photoGeneration.setError('Pose prompt not found for selected pose')
       return
@@ -57,13 +61,13 @@ export const useGeneratePhotoLogic = () => {
 
     try {
       // Start generation with selected inputs
-      photoGeneration.startGeneration(pose.selectedPose, selfieChooser.selectedSelfie, posePrompt)
+      photoGeneration.startGeneration(selectedPose, selectedSelfie, posePrompt)
 
       // Convert image to base64 format for FAL API
       let convertedImageData: string
       try {
-        convertedImageData = await convertImageForFal(selfieChooser.selectedSelfie.imageUrl)
-        console.log('selfieChooser.selectedSelfie.imageUrl', selfieChooser.selectedSelfie.imageUrl)
+        convertedImageData = await convertImageForFal(selectedSelfie.imageUrl)
+        console.log('selectedSelfie.imageUrl', selectedSelfie.imageUrl)
         console.log('convertedImageData', convertedImageData)
       } catch (conversionError) {
         const errorMessage =
@@ -85,7 +89,7 @@ export const useGeneratePhotoLogic = () => {
 
   // Helper to check if generation can proceed
   const canGenerate = Boolean(
-    selfieChooser.selectedSelfie && pose.selectedPose && !photoGeneration.isProcessing
+    selectedSelfie && selectedPose && !photoGeneration.isProcessing
   )
 
   // Helper to get current generation status
