@@ -1,108 +1,131 @@
 /**
- * SYNC MOCK DATA WITH FILE SYSTEM - Main synchronization logic
+ * UNIVERSAL SYNC MOCK DATA WITH FILE SYSTEM - Main synchronization logic
  *
- * This module handles the core synchronization between mockData poses
+ * This module handles the core synchronization between mockData items (poses/selfies)
  * and the device file system, ensuring AsyncStorage always mirrors mockData
  * with proper file URIs.
  *
  * PROCESS FLOW:
- * 1. Load current AsyncStorage poses
- * 2. Compare with mockData poses
- * 3. Add missing poses (copy assets to file system)
- * 4. Remove obsolete poses (delete files and storage)
- * 5. Return synced poses with file URIs
+ * 1. Load current AsyncStorage items
+ * 2. Compare with mockData items
+ * 3. Add missing items (copy assets to file system)
+ * 4. Remove obsolete items (delete files and storage)
+ * 5. Return synced items with file URIs
  *
  * CALLED BY:
  * - poseStore.setPoses() - Automatic sync when mockData is loaded
+ * - selfieStore.setSelfies() - Automatic sync when mockData is loaded
  */
 
 import { Pose } from '@/types/dream/pose'
+import { Selfie } from '@/types/dream/selfie'
+import { USER_POSES, USER_SELFIES } from '../AsyncStorage/keys'
 import {
   copyBundledAssetToFileSystem,
-  savePoseToAsyncStorage,
-  loadPosesFromAsyncStorage,
-  deletePoseFromFileSystem,
+  saveItemToAsyncStorage,
+  loadItemsFromAsyncStorage,
+  deleteItemFromFileSystem,
 } from './utils/utils'
 
-/**
- * MAIN SYNC FUNCTION: Sync mockData poses with file system
- * This is called automatically when setPoses() is invoked
- */
-export const syncMockDataWithFileSystem = async (mockPoses: Pose[]): Promise<Pose[]> => {
-  try {
-    console.log(`🔄 Starting pose sync with ${mockPoses.length} mockData poses`)
+// Define common interface for items with imageUrl
+interface ImageItem {
+  id: string
+  name: string
+  imageUrl: string
+}
 
-    // 1. Load current AsyncStorage poses
-    const storedPoses = await loadPosesFromAsyncStorage()
-    console.log(`📦 Found ${storedPoses.length} poses in AsyncStorage`)
+/**
+ * UNIVERSAL SYNC FUNCTION: Sync mockData items with file system
+ * This is called automatically when setPoses() or setSelfies() is invoked
+ */
+export const syncMockDataWithFileSystem = async <T extends ImageItem>(
+  mockItems: T[],
+  asyncStorageKey: string,
+  itemType: string
+): Promise<T[]> => {
+  try {
+    console.log(`🔄 Starting ${itemType} sync with ${mockItems.length} mockData items`)
+
+    // 1. Load current AsyncStorage items
+    const storedItems = await loadItemsFromAsyncStorage<T>(asyncStorageKey)
+    console.log(`📦 Found ${storedItems.length} ${itemType}s in AsyncStorage`)
 
     // 2. Create ID sets for comparison
-    const mockIds = new Set(mockPoses.map((p) => p.id))
-    const storedIds = new Set(storedPoses.map((p) => p.id))
+    const mockIds = new Set(mockItems.map((item) => item.id))
+    const storedIds = new Set(storedItems.map((item) => item.id))
 
-    // 3. Find poses to ADD (in mock, not in storage)
-    const posesToAdd = mockPoses.filter((p) => !storedIds.has(p.id))
-    console.log(`➕ Poses to add: ${posesToAdd.length}`)
+    // 3. Find items to ADD (in mock, not in storage)
+    const itemsToAdd = mockItems.filter((item) => !storedIds.has(item.id))
+    console.log(`➕ ${itemType}s to add: ${itemsToAdd.length}`)
 
-    // 4. Find poses to REMOVE (in storage, not in mock)
-    const posesToRemove = storedPoses.filter((p) => !mockIds.has(p.id))
-    console.log(`➖ Poses to remove: ${posesToRemove.length}`)
+    // 4. Find items to REMOVE (in storage, not in mock)
+    const itemsToRemove = storedItems.filter((item) => !mockIds.has(item.id))
+    console.log(`➖ ${itemType}s to remove: ${itemsToRemove.length}`)
 
     // 5. Process additions: copy bundled assets to file system
-    for (const mockPose of posesToAdd) {
-      console.log(`➕ Adding pose: ${mockPose.name}`)
+    for (const mockItem of itemsToAdd) {
+      console.log(`➕ Adding ${itemType}: ${mockItem.name}`)
 
       try {
         // Copy bundled asset to file system
-        const fileUri = await copyBundledAssetToFileSystem(mockPose)
+        const fileUri = await copyBundledAssetToFileSystem(mockItem, itemType)
 
-        // Create pose with file URI
-        const fsePose: Pose = {
-          ...mockPose,
+        // Create item with file URI
+        const fileSystemItem: T = {
+          ...mockItem,
           imageUrl: fileUri, // Replace bundled asset with file URI
         }
 
         // Save to AsyncStorage
-        await savePoseToAsyncStorage(fsePose)
-        console.log(`✅ Successfully added pose: ${mockPose.name}`)
+        await saveItemToAsyncStorage(fileSystemItem, asyncStorageKey)
+        console.log(`✅ Successfully added ${itemType}: ${mockItem.name}`)
       } catch (error) {
-        console.error(`❌ Failed to add pose ${mockPose.name}:`, error)
-        // Continue with next pose instead of failing entire sync
+        console.error(`❌ Failed to add ${itemType} ${mockItem.name}:`, error)
+        // Continue with next item instead of failing entire sync
         continue
       }
     }
 
     // 6. Process removals: delete files and remove from storage
-    for (const poseToRemove of posesToRemove) {
-      console.log(`➖ Removing pose: ${poseToRemove.name}`)
+    for (const itemToRemove of itemsToRemove) {
+      console.log(`➖ Removing ${itemType}: ${itemToRemove.name}`)
       try {
-        await deletePoseFromFileSystem(poseToRemove.id)
-        console.log(`✅ Successfully removed pose: ${poseToRemove.name}`)
+        await deleteItemFromFileSystem(itemToRemove.id, asyncStorageKey)
+        console.log(`✅ Successfully removed ${itemType}: ${itemToRemove.name}`)
       } catch (error) {
-        console.error(`❌ Failed to remove pose ${poseToRemove.name}:`, error)
-        // Continue with next pose instead of failing entire sync
+        console.error(`❌ Failed to remove ${itemType} ${itemToRemove.name}:`, error)
+        // Continue with next item instead of failing entire sync
         continue
       }
     }
 
-    // 7. Return synced poses (all with file URIs)
-    const syncedPoses = await loadPosesFromAsyncStorage()
-    console.log(`✅ Sync complete! ${syncedPoses.length} poses with file URIs`)
+    // 7. Return synced items (all with file URIs)
+    const syncedItems = await loadItemsFromAsyncStorage<T>(asyncStorageKey)
+    console.log(`✅ Sync complete! ${syncedItems.length} ${itemType}s with file URIs`)
 
-    console.log('syncedPoses', JSON.stringify(syncedPoses, null, 2))
+    console.log(`synced${itemType}s`, JSON.stringify(syncedItems, null, 2))
 
-    return syncedPoses
+    return syncedItems
   } catch (error) {
-    console.error('❌ Error during pose sync:', error)
+    console.error(`❌ Error during ${itemType} sync:`, error)
 
-    // Enhanced fallback: try to return existing poses if available
+    // Enhanced fallback: try to return existing items if available
     try {
-      const existingPoses = await loadPosesFromAsyncStorage()
-      console.log(`🔄 Fallback: returning ${existingPoses.length} existing poses`)
-      return existingPoses
+      const existingItems = await loadItemsFromAsyncStorage<T>(asyncStorageKey)
+      console.log(`🔄 Fallback: returning ${existingItems.length} existing ${itemType}s`)
+      return existingItems
     } catch (fallbackError) {
       console.error('❌ Fallback also failed:', fallbackError)
       return []
     }
   }
+}
+
+// Backward compatibility functions for existing code
+export const syncMockPosesWithFileSystem = async (mockPoses: Pose[]): Promise<Pose[]> => {
+  return syncMockDataWithFileSystem(mockPoses, USER_POSES, 'pose')
+}
+
+export const syncMockSelfiesWithFileSystem = async (mockSelfies: Selfie[]): Promise<Selfie[]> => {
+  return syncMockDataWithFileSystem(mockSelfies, USER_SELFIES, 'selfie')
 }

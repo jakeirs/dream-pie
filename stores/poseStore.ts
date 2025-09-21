@@ -2,6 +2,7 @@ import { create } from 'zustand'
 import { devtools } from '@csark0812/zustand-expo-devtools'
 import { Pose } from '@/types/dream/pose'
 import { syncMockDataWithFileSystem } from './fileSystem/syncMockDataWithFileSystem'
+import { USER_POSES } from './AsyncStorage/keys'
 
 interface PoseStore {
   poses: Pose[] // Poses with file URIs (synced from mockData)
@@ -21,8 +22,8 @@ export const usePoseStore = create<PoseStore>()(
         try {
           console.log('🔄 setPoses called - starting automatic sync to file system')
 
-          // Sync mockData poses to file system and get file URIs back
-          const syncedPoses = await syncMockDataWithFileSystem(mockPoses)
+          // Sync mockData poses to file system using universal function with AsyncStorage key
+          const syncedPoses = await syncMockDataWithFileSystem(mockPoses, USER_POSES, 'pose')
 
           // Update store with poses that have file URIs
           set({ poses: syncedPoses }, false, 'setPoses-synced')
