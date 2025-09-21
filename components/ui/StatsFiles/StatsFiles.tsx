@@ -4,7 +4,7 @@ import { useState } from 'react'
 import Card from '@/components/ui/Card/Card'
 import { Icon } from '@/components/ui/icons/Icon'
 import { useAppStores } from '@/stores'
-import { useFileSystemStats, getStatsForFilter } from '@/components/ui/StatsFiles/hooks/useFileSystemStats'
+import { useFileSystemStats } from '@/components/ui/StatsFiles/hooks/useFileSystemStats'
 
 import { FilterType } from '@/types/dream/gallery'
 import { ICON_FAMILY_NAME } from '@/components/ui/icons/constants'
@@ -24,14 +24,13 @@ interface StatRowProps {
 }
 
 const StatRow = ({ icon, label, fileSystem, asyncStorage, zustand, isActive }: StatRowProps) => (
-  <View className={`flex-row items-center justify-between py-2 px-3 rounded-lg ${
-    isActive ? 'bg-blue-50' : 'bg-gray-50'
-  }`}>
-    <View className="flex-row items-center flex-1">
-      <Text className="text-xl mr-2">{icon}</Text>
-      <Text className={`font-medium ${isActive ? 'text-blue-800' : 'text-gray-700'}`}>
-        {label}
-      </Text>
+  <View
+    className={`flex-row items-center justify-between rounded-lg px-3 py-2 ${
+      isActive ? 'bg-blue-50' : 'bg-gray-50'
+    }`}>
+    <View className="flex-1 flex-row items-center">
+      <Text className="mr-2 text-xl">{icon}</Text>
+      <Text className={`font-medium ${isActive ? 'text-blue-800' : 'text-gray-700'}`}>{label}</Text>
     </View>
 
     <View className="flex-row items-center gap-4">
@@ -70,9 +69,6 @@ export default function StatsFiles({ activeFilter, className = '' }: StatsFilesP
     selfies: selfieChooser.selfies.length,
     creations: creation.creations.length,
   }
-
-  // Note: activeStats could be used for future enhancements
-  // const activeStats = getStatsForFilter(stats, activeFilter)
 
   // Prepare all stats for expanded view
   const allStats = [
@@ -124,14 +120,9 @@ export default function StatsFiles({ activeFilter, className = '' }: StatsFilesP
     return (
       <Card variant="danger" className={`mb-4 ${className}`}>
         <View className="flex-row items-center justify-between">
-          <Text className="text-red-600 flex-1">Error: {stats.error}</Text>
+          <Text className="flex-1 text-red-600">Error: {stats.error}</Text>
           <Pressable onPress={handleRefresh} className="ml-2">
-            <Icon
-              family={ICON_FAMILY_NAME.Feather}
-              name="refresh-cw"
-              size={16}
-              color="#dc2626"
-            />
+            <Icon family={ICON_FAMILY_NAME.Feather} name="refresh-cw" size={16} color="#dc2626" />
           </Pressable>
         </View>
       </Card>
@@ -141,16 +132,11 @@ export default function StatsFiles({ activeFilter, className = '' }: StatsFilesP
   return (
     <Card variant="default" className={`mb-4 ${className}`}>
       {/* Header with toggle */}
-      <Pressable onPress={toggleExpanded} className="flex-row items-center justify-between mb-3">
+      <Pressable onPress={toggleExpanded} className="mb-3 flex-row items-center justify-between">
         <Text className="text-lg font-semibold text-gray-800">📊 File Statistics</Text>
         <View className="flex-row items-center gap-2">
           <Pressable onPress={handleRefresh}>
-            <Icon
-              family={ICON_FAMILY_NAME.Feather}
-              name="refresh-cw"
-              size={16}
-              color="#6b7280"
-            />
+            <Icon family={ICON_FAMILY_NAME.Feather} name="refresh-cw" size={16} color="#6b7280" />
           </Pressable>
           <Icon
             family={ICON_FAMILY_NAME.Feather}
@@ -162,7 +148,7 @@ export default function StatsFiles({ activeFilter, className = '' }: StatsFilesP
       </Pressable>
 
       {/* Legend */}
-      <View className="flex-row justify-end mb-3 gap-4">
+      <View className="mb-3 flex-row justify-end gap-4">
         <View className="items-center">
           <Text className="text-xs font-semibold text-gray-500">FS</Text>
           <Text className="text-xs text-gray-400">FileSystem</Text>
@@ -181,7 +167,7 @@ export default function StatsFiles({ activeFilter, className = '' }: StatsFilesP
         // Expanded: Show all categories
         <View className="gap-2">
           <View className="mb-3">
-            <Text className="text-sm font-medium text-gray-600 mb-2">All Categories:</Text>
+            <Text className="mb-2 text-sm font-medium text-gray-600">All Categories:</Text>
             {allStats.map((stat) => (
               <StatRow
                 key={stat.type}
@@ -196,12 +182,14 @@ export default function StatsFiles({ activeFilter, className = '' }: StatsFilesP
           </View>
 
           {/* Total Summary */}
-          <View className="border-t border-gray-200 pt-3 mt-2">
+          <View className="mt-2 border-t border-gray-200 pt-3">
             <StatRow
               icon="📁"
               label="Total FileSystem"
               fileSystem={stats.fileSystem.total}
-              asyncStorage={stats.asyncStorage.poses + stats.asyncStorage.selfies + stats.asyncStorage.creations}
+              asyncStorage={
+                stats.asyncStorage.poses + stats.asyncStorage.selfies + stats.asyncStorage.creations
+              }
               zustand={zustandCounts.poses + zustandCounts.selfies + zustandCounts.creations}
             />
             {stats.fileSystem.others > 0 && (
@@ -221,11 +209,11 @@ export default function StatsFiles({ activeFilter, className = '' }: StatsFilesP
         // Collapsed: Show only active filter details + summary
         <View className="gap-2">
           <View className="mb-3">
-            <Text className="text-sm font-medium text-gray-600 mb-2">
+            <Text className="mb-2 text-sm font-medium text-gray-600">
               Current Filter ({activeFilter}):
             </Text>
             {allStats
-              .filter(stat => stat.type === activeFilter)
+              .filter((stat) => stat.type === activeFilter)
               .map((stat) => (
                 <StatRow
                   key={stat.type}
@@ -240,7 +228,7 @@ export default function StatsFiles({ activeFilter, className = '' }: StatsFilesP
           </View>
 
           {/* Quick Summary */}
-          <View className="flex-row justify-between items-center bg-gray-50 p-3 rounded-lg">
+          <View className="flex-row items-center justify-between rounded-lg bg-gray-50 p-3">
             <Text className="text-sm text-gray-600">
               Total: {zustandCounts.poses + zustandCounts.selfies + zustandCounts.creations} items
             </Text>
