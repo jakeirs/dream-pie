@@ -1,100 +1,152 @@
-import React, { useRef, useState } from 'react'
-import { View, Text, FlatList, TouchableOpacity, Image, Dimensions } from 'react-native'
+import { View, Text, FlatList, TouchableOpacity, Dimensions } from 'react-native'
+import { useRef, useState, useEffect } from 'react'
+import { router } from 'expo-router'
+import { BottomSheetModal } from '@gorhom/bottom-sheet'
+import { Image, useImage } from 'expo-image'
+
 import BottomSheet from '@/components/ui/BottomSheet/BottomSheet'
 import PageHeader from '@/components/ui/PageHeader/PageHeader'
-import { ICON_FAMILY_NAME } from '@/components/ui/icons/constants'
-import { brandColors } from '@/shared/theme'
-import { BottomSheetModal } from '@gorhom/bottom-sheet'
-import { router } from 'expo-router'
+import FilterPills from '@/components/ui/FilterPills/FilterPills'
 import GalleryCardModal from '@/components/PAGE/gallery-card-modal'
 
-// Mock gallery data
-const mockGalleryItems = [
-  {
-    id: '1',
-    imageUri: 'https://picsum.photos/300/400?random=1',
-    title: 'Dream Portrait #1',
-    description: 'A beautiful portrait with magical background enhancement.',
-  },
-  {
-    id: '2',
-    imageUri: 'https://picsum.photos/300/400?random=2',
-    title: 'Fantasy Scene #2',
-    description: 'Professional photo with stunning lighting effects.',
-  },
-  {
-    id: '3',
-    imageUri: 'https://picsum.photos/300/400?random=3',
-    title: 'AI Enhanced #3',
-    description: 'Creative composition with dream-like atmosphere.',
-  },
-  {
-    id: '4',
-    imageUri: 'https://picsum.photos/300/400?random=4',
-    title: 'Artistic Shot #4',
-    description: 'Modern portrait with perfect color grading.',
-  },
-  {
-    id: '5',
-    imageUri: 'https://picsum.photos/300/400?random=5',
-    title: 'Creative Vision #5',
-    description: 'Unique perspective with professional editing.',
-  },
-  {
-    id: '6',
-    imageUri: 'https://picsum.photos/300/400?random=6',
-    title: 'Masterpiece #6',
-    description: 'Outstanding result with AI-powered enhancement.',
-  },
-]
+import { useAppStores } from '@/stores'
 
-interface GalleryItem {
-  id: string
-  imageUri: string
-  title: string
-  description: string
-}
+import { ICON_FAMILY_NAME } from '@/components/ui/icons/constants'
+import { brandColors } from '@/shared/theme'
+import { FilterType, GalleryContent } from '@/types/dream/gallery'
+import { Creation, Pose, Selfie } from '@/types/dream'
+import { mockPoses } from '@/mockData/dream/poses'
+import { mockSelfies } from '@/mockData/dream/selfies'
 
 export default function GalleryPage() {
+  const { creation, pose, selfieChooser } = useAppStores()
   const modalRef = useRef<BottomSheetModal>(null)
-  const [selectedItem, setSelectedItem] = useState<GalleryItem | null>(null)
+  const [selectedItem, setSelectedItem] = useState<GalleryContent | null>(null)
+  const [activeFilter, setActiveFilter] = useState<FilterType>('creations')
 
   const screenWidth = Dimensions.get('window').width
   const cardWidth = (screenWidth - 48) / 2 // 2 columns with padding
+
+  // Initialize stores on mount
+  useEffect(() => {
+    creation.loadCreations()
+    pose.setPoses(mockPoses)
+    selfieChooser.setSelfies(mockSelfies)
+  }, [])
+
+  // Get current items based on active filter
+  const getCurrentItems = (): GalleryContent[] => {
+    switch (activeFilter) {
+      case 'creations':
+        return creation.creations
+      case 'poses':
+        return pose.poses
+      case 'selfies':
+        return selfieChooser.selfies
+      default:
+        return []
+    }
+  }
+
+  // Prepare filter data with counts
+  const filters = [
+    {
+      type: 'creations' as FilterType,
+      label: 'Creations',
+      count: creation.creations.length,
+    },
+    {
+      type: 'poses' as FilterType,
+      label: 'Poses',
+      count: pose.poses.length,
+    },
+    {
+      type: 'selfies' as FilterType,
+      label: 'Selfies',
+      count: selfieChooser.selfies.length,
+    },
+  ]
+
+  const currentItems = getCurrentItems()
 
   const handleSettingsPress = () => {
     router.push('/settings')
   }
 
-  const handleCardPress = (item: GalleryItem) => {
+  const handleCardPress = (item: GalleryContent) => {
     setSelectedItem(item)
     modalRef.current?.present()
   }
 
-  const renderGalleryItem = ({ item }: { item: GalleryItem }) => (
-    <TouchableOpacity
-      onPress={() => handleCardPress(item)}
-      className="mb-4"
-      style={{ width: cardWidth }}>
-      <View className="overflow-hidden rounded-xl bg-cardSecondary">
-        <Image
-          source={{ uri: item.imageUri }}
-          style={{
-            width: '100%',
-            height: 220,
-            resizeMode: 'cover',
-          }}
-        />
-        <View className="p-3">
-          <Text className="font-bold text-textPrimary" numberOfLines={1}>
-            {item.title}
-          </Text>
-          <Text className="text-xs text-textSecondary" numberOfLines={2}>
-            {item.description}
-          </Text>
+  const handleFilterChange = (filter: FilterType) => {
+    setActiveFilter(filter)
+  }
+
+  // Get display data for different item types
+  const getItemDisplayData = (item: GalleryContent) => {
+    if ('resultImage' in item) {
+      // Creation type
+      const creation = item as Creation
+      return {
+        imageUri: creation.resultImage,
+        title: `${creation.usedPose.name} Creation`,
+        description: `Created with ${creation.usedPose.name} pose using ${creation.usedSelfie.name}`,
+      }
+    } else if ('category' in item && 'isPremium' in item) {
+      // Pose type
+      const pose = item as Pose
+      return {
+        imageUri: pose.imageUrl,
+        title: pose.name,
+        description: pose.description,
+      }
+    } else {
+      // Selfie type
+      const selfie = item as Selfie
+      return {
+        imageUri: selfie.imageUrl,
+        title: selfie.name,
+        description: selfie.description,
+      }
+    }
+  }
+
+  // Gallery Item Component with useImage hook
+  const GalleryItemComponent = ({ item, onPress }: { item: GalleryContent, onPress: () => void }) => {
+    const displayData = getItemDisplayData(item)
+    const image = useImage(displayData.imageUri)
+
+    return (
+      <TouchableOpacity
+        onPress={onPress}
+        className="mb-4"
+        style={{ width: cardWidth }}>
+        <View className="overflow-hidden rounded-xl bg-cardSecondary">
+          {image && (
+            <Image
+              source={image}
+              style={{
+                width: '100%',
+                height: 220,
+              }}
+              contentFit="cover"
+            />
+          )}
+          <View className="p-3">
+            <Text className="font-bold text-textPrimary" numberOfLines={1}>
+              {displayData.title}
+            </Text>
+            <Text className="text-xs text-textSecondary" numberOfLines={2}>
+              {displayData.description}
+            </Text>
+          </View>
         </View>
-      </View>
-    </TouchableOpacity>
+      </TouchableOpacity>
+    )
+  }
+
+  const renderGalleryItem = ({ item }: { item: GalleryContent }) => (
+    <GalleryItemComponent item={item} onPress={() => handleCardPress(item)} />
   )
 
   return (
@@ -107,19 +159,29 @@ export default function GalleryPage() {
           onPress: handleSettingsPress,
         }}
       />
-      {/* Empty state or content */}
-      {mockGalleryItems.length === 0 ? (
+
+      {/* Filter Pills */}
+      <FilterPills
+        filters={filters}
+        activeFilter={activeFilter}
+        onFilterChange={handleFilterChange}
+      />
+
+      {/* Content */}
+      {currentItems.length === 0 ? (
         <View className="flex-1 items-center justify-center px-6">
           <Text className="mb-4 text-center text-2xl font-bold text-textPrimary">
-            Your Gallery is Empty
+            No {filters.find(f => f.type === activeFilter)?.label} Yet
           </Text>
           <Text className="text-center text-textSecondary">
-            Create your first photo to see it here!
+            {activeFilter === 'creations' && 'Create your first photo to see it here!'}
+            {activeFilter === 'poses' && 'Browse poses to add to your collection!'}
+            {activeFilter === 'selfies' && 'Add selfies to use in your creations!'}
           </Text>
         </View>
       ) : (
         <FlatList
-          data={mockGalleryItems}
+          data={currentItems}
           renderItem={renderGalleryItem}
           numColumns={2}
           columnWrapperStyle={{ justifyContent: 'space-between' }}
@@ -128,6 +190,7 @@ export default function GalleryPage() {
             paddingBottom: 32,
           }}
           showsVerticalScrollIndicator={false}
+          key={activeFilter} // Force re-render when filter changes
         />
       )}
 
@@ -135,9 +198,9 @@ export default function GalleryPage() {
       <BottomSheet ref={modalRef} isModal={true} scrollView={true}>
         {selectedItem && (
           <GalleryCardModal
-            imageUri={selectedItem.imageUri}
-            title={selectedItem.title}
-            description={selectedItem.description}
+            imageUri={getItemDisplayData(selectedItem).imageUri}
+            title={getItemDisplayData(selectedItem).title}
+            description={getItemDisplayData(selectedItem).description}
             onClose={() => modalRef.current?.dismiss()}
           />
         )}

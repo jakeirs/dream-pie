@@ -1,6 +1,8 @@
-import React from 'react'
-import { View, Text, Image } from 'react-native'
+import { View, Text } from 'react-native'
+import { Image, useImage } from 'expo-image'
+
 import Button from '@/components/ui/Button/Button'
+
 import { brandColors } from '@/shared/theme'
 
 interface GalleryCardModalProps {
@@ -11,6 +13,8 @@ interface GalleryCardModalProps {
 }
 
 export default function GalleryCardModal({ imageUri, title, description, onClose }: GalleryCardModalProps) {
+  const image = useImage(imageUri)
+
   return (
     <View className="flex-1 px-6 py-4">
       {/* Header */}
@@ -20,15 +24,17 @@ export default function GalleryCardModal({ imageUri, title, description, onClose
 
       {/* Image */}
       <View className="mb-6 items-center">
-        <Image
-          source={{ uri: imageUri }}
-          style={{
-            width: 280,
-            height: 350,
-            borderRadius: 16,
-            resizeMode: 'cover',
-          }}
-        />
+        {image && (
+          <Image
+            source={image}
+            style={{
+              width: 280,
+              height: 350,
+              borderRadius: 16,
+            }}
+            contentFit="cover"
+          />
+        )}
       </View>
 
       {/* Description */}
