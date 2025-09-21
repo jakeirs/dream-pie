@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import { devtools } from '@csark0812/zustand-expo-devtools'
 import { Pose } from '@/types/dream/pose'
-import { syncMockDataWithFileSystem } from './poseStore/syncUtils'
+import { syncMockDataWithFileSystem } from './fileSystem/syncMockDataWithFileSystem'
 
 interface PoseStore {
   poses: Pose[] // Poses with file URIs (synced from mockData)
