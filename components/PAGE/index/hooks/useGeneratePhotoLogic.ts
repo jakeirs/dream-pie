@@ -23,8 +23,7 @@ export const useGeneratePhotoLogic = () => {
   // Initialize shared FAL hook with callbacks to update photoGeneration store
   const { handleImageEdit } = useFal({
     onStart: () => {
-      // FAL API call started - update to generation stage
-      photoGeneration.startFalGeneration()
+      // FAL API call started
     },
     onSuccess: (response) => {
       photoGeneration.setResult(response)
@@ -60,9 +59,7 @@ export const useGeneratePhotoLogic = () => {
       // Start generation with selected inputs
       photoGeneration.startGeneration(pose.selectedPose, selfieChooser.selectedSelfie, posePrompt)
 
-      // Stage 1: Convert image to base64 format for FAL API
-      photoGeneration.startImageConversion()
-
+      // Convert image to base64 format for FAL API
       let convertedImageData: string
       try {
         convertedImageData = await convertImageForFal(selfieChooser.selectedSelfie.imageUrl)
@@ -76,9 +73,6 @@ export const useGeneratePhotoLogic = () => {
         photoGeneration.setError(`Image conversion failed: ${errorMessage}`)
         return
       }
-
-      // Stage 2: Image conversion completed, proceed to FAL API
-      photoGeneration.completeImageConversion()
 
       // Call FAL AI with converted base64 image and pose prompt
       await handleImageEdit(convertedImageData, posePrompt.prompt)
@@ -94,11 +88,9 @@ export const useGeneratePhotoLogic = () => {
     selfieChooser.selectedSelfie && pose.selectedPose && !photoGeneration.isProcessing
   )
 
-  // Helper to get current generation status with stage awareness
+  // Helper to get current generation status
   const getGenerationStatus = () => {
-    if (photoGeneration.isConvertingImage) return 'Preparing image...'
-    if (photoGeneration.isGenerating) return 'Generating your photo...'
-    if (photoGeneration.isProcessing) return 'Processing...'
+    if (photoGeneration.isProcessing) return 'Generating your photo...'
     if (photoGeneration.error) return `Error: ${photoGeneration.error}`
     if (photoGeneration.result) return 'Photo generated successfully!'
     return 'Ready to generate'
@@ -114,8 +106,6 @@ export const useGeneratePhotoLogic = () => {
 
     // Direct State Access (for UI components)
     isProcessing: photoGeneration.isProcessing,
-    isConvertingImage: photoGeneration.isConvertingImage,
-    isGenerating: photoGeneration.isGenerating,
     result: photoGeneration.result,
     error: photoGeneration.error,
     usedPose: photoGeneration.usedPose,

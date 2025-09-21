@@ -9,8 +9,6 @@ interface ResultProps {
   result?: FalResponse | null
   error?: string | null
   isProcessing?: boolean
-  isConvertingImage?: boolean
-  isGenerating?: boolean
   onRetry?: () => void
   onClose?: () => void
 }
@@ -19,58 +17,21 @@ export default function Result({
   result,
   error,
   isProcessing = false,
-  isConvertingImage = false,
-  isGenerating = false,
   onRetry,
   onClose
 }: ResultProps) {
-  // Multi-stage Processing State
-  if (isProcessing || isConvertingImage || isGenerating) {
-    // Image Conversion Stage
-    if (isConvertingImage) {
-      return (
-        <View className="items-center py-6">
-          <View
-            className="mb-4 h-16 w-16 items-center justify-center rounded-full"
-            style={{ backgroundColor: brandColors.accent }}>
-            <Text className="text-2xl">📷</Text>
-          </View>
-          <Text className="mb-2 text-xl font-bold text-textPrimary">Preparing Image</Text>
-          <Text className="text-center text-textSecondary">
-            Converting your selfie for AI processing...
-          </Text>
-        </View>
-      )
-    }
-
-    // AI Generation Stage
-    if (isGenerating) {
-      return (
-        <View className="items-center py-6">
-          <View
-            className="mb-4 h-16 w-16 items-center justify-center rounded-full"
-            style={{ backgroundColor: brandColors.primary }}>
-            <Text className="text-2xl">🎨</Text>
-          </View>
-          <Text className="mb-2 text-xl font-bold text-textPrimary">Generating Photo</Text>
-          <Text className="text-center text-textSecondary">
-            Your AI photo is being created...
-          </Text>
-        </View>
-      )
-    }
-
-    // Fallback Processing State
+  // Processing State
+  if (isProcessing) {
     return (
       <View className="items-center py-6">
         <View
           className="mb-4 h-16 w-16 items-center justify-center rounded-full"
           style={{ backgroundColor: brandColors.primary }}>
-          <Text className="text-2xl">⚙️</Text>
+          <Text className="text-2xl">🎨</Text>
         </View>
-        <Text className="mb-2 text-xl font-bold text-textPrimary">Processing</Text>
+        <Text className="mb-2 text-xl font-bold text-textPrimary">Generating Photo</Text>
         <Text className="text-center text-textSecondary">
-          Please wait while we process your request...
+          Your AI photo is being created...
         </Text>
       </View>
     )
