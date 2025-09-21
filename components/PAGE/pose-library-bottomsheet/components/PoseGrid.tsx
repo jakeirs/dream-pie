@@ -13,11 +13,16 @@ import { mockPoses } from '@/mockData/dream/poses'
 export const PoseGrid = () => {
   const { setSelectedPose, selectedPose, poses, setPoses } = usePoseStore()
 
-  // Load poses on mount if empty
+  // Load poses on mount if empty - now async to handle file system sync
   useEffect(() => {
-    if (poses.length === 0) {
-      setPoses(mockPoses)
+    const loadPoses = async () => {
+      if (poses.length === 0) {
+        console.log('🔄 PoseGrid: Loading poses from mockData and syncing to file system')
+        await setPoses(mockPoses)
+      }
     }
+
+    loadPoses()
   }, [poses.length, setPoses])
 
   // Safety check for poses array

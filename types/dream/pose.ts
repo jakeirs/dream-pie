@@ -10,7 +10,7 @@ export interface Pose {
   name: string
   description: string
   category: PoseCategory
-  imageUrl: string // Will now be a simple string path
+  imageUrl: string // File URI string (converted from bundled assets automatically)
   isPremium: boolean
   tags: string[]
   createdAt: string
