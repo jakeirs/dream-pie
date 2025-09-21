@@ -25,9 +25,7 @@ export const useGeneratePhotoLogic = () => {
 
   // Initialize shared FAL hook with callbacks to update photoGeneration store
   const { handleImageEdit } = useFal({
-    onStart: () => {
-      // FAL API call started
-    },
+    onStart: () => {},
     onSuccess: (response) => {
       console.log('FAL Response:', response)
       photoGeneration.setResult(response)
@@ -63,6 +61,10 @@ export const useGeneratePhotoLogic = () => {
       // Start generation with selected inputs
       photoGeneration.startGeneration(selectedPose, selectedSelfie, posePrompt)
 
+      // Create AbortController for cancellation support
+      const abortController = new AbortController()
+      photoGeneration.setAbortController(abortController)
+
       // Convert image to base64 format for FAL API
       let convertedImageData: string
       try {
@@ -79,7 +81,7 @@ export const useGeneratePhotoLogic = () => {
       }
 
       // Call FAL AI with converted base64 image and pose prompt
-      await handleImageEdit(convertedImageData, posePrompt.prompt)
+      await handleImageEdit(convertedImageData, posePrompt.prompt, abortController.signal)
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Failed to generate photo'
       photoGeneration.setError(errorMessage)
@@ -88,21 +90,26 @@ export const useGeneratePhotoLogic = () => {
   }
 
   // Helper to check if generation can proceed
-  const canGenerate = Boolean(
-    selectedSelfie && selectedPose && !photoGeneration.isProcessing
-  )
+  const canGenerate = Boolean(selectedSelfie && selectedPose && !photoGeneration.isProcessing)
 
   // Helper to get current generation status
   const getGenerationStatus = () => {
+    if (photoGeneration.isCancelling) return 'Cancelling generation...'
     if (photoGeneration.isProcessing) return 'Generating your photo...'
     if (photoGeneration.error) return `Error: ${photoGeneration.error}`
     if (photoGeneration.result) return 'Photo generated successfully!'
     return 'Ready to generate'
   }
 
+  // Stop generation function
+  const stopGeneration = () => {
+    photoGeneration.cancelGeneration()
+  }
+
   return {
     // Main Actions
     generatePhoto,
+    stopGeneration,
 
     // State Helpers
     canGenerate,
@@ -110,6 +117,7 @@ export const useGeneratePhotoLogic = () => {
 
     // Direct State Access (for UI components)
     isProcessing: photoGeneration.isProcessing,
+    isCancelling: photoGeneration.isCancelling,
     result: photoGeneration.result,
     error: photoGeneration.error,
     usedPose: photoGeneration.usedPose,

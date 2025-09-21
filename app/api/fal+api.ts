@@ -1,4 +1,4 @@
-import { fal } from '@fal-ai/client'
+import { fal,  } from '@fal-ai/client'
 
 import { FalRequest, FalResponse, FalRawResponse, ValidationError } from '@/types'
 
@@ -58,7 +58,7 @@ export async function POST(request: Request): Promise<Response> {
       credentials: apiKey,
     })
 
-    // Call FAL AI nano-banana/edit model
+    // Call FAL AI nano-banana/edit model with AbortSignal support
     const result = (await fal.subscribe('fal-ai/nano-banana/edit', {
       input: {
         prompt: prompt,
@@ -67,6 +67,7 @@ export async function POST(request: Request): Promise<Response> {
         output_format: 'jpeg',
       },
       logs: true,
+      abortSignal: request.signal, // Pass AbortSignal for server-side cancellation
       onQueueUpdate: (update: any) => {
         if (update.status === 'IN_PROGRESS') {
           console.log(
@@ -110,13 +111,18 @@ export async function POST(request: Request): Promise<Response> {
     let errorMessage = 'Failed to generate image with FAL AI'
 
     if (error instanceof Error) {
-      // If it's a FAL validation error, extract only the messages for UI
-      const validationError = error as ValidationError
-      if (validationError.body?.detail) {
-        const messages = validationError.body.detail.map((d) => d.msg)
-        errorMessage = messages.join('. ')
+      // Handle abort error specifically
+      if (error.name === 'AbortError') {
+        errorMessage = 'Generation cancelled by user'
       } else {
-        errorMessage = error.message
+        // If it's a FAL validation error, extract only the messages for UI
+        const validationError = error as ValidationError
+        if (validationError.body?.detail) {
+          const messages = validationError.body.detail.map((d) => d.msg)
+          errorMessage = messages.join('. ')
+        } else {
+          errorMessage = error.message
+        }
       }
     }
 

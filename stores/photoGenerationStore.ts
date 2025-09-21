@@ -27,6 +27,10 @@ import { FalResponse, Pose, Selfie, PosePrompt } from '@/types'
 interface PhotoGenerationStore {
   // Generation State
   isProcessing: boolean
+  isCancelling: boolean
+
+  // Cancellation Support
+  abortController: AbortController | null
 
   // Results
   result: FalResponse | null
@@ -45,6 +49,8 @@ interface PhotoGenerationStore {
   setError: (error: string) => void
   completeGeneration: () => void
   reset: () => void
+  setAbortController: (controller: AbortController | null) => void
+  cancelGeneration: () => void
 }
 
 export const usePhotoGenerationStore = create<PhotoGenerationStore>()(
@@ -52,6 +58,8 @@ export const usePhotoGenerationStore = create<PhotoGenerationStore>()(
     (set) => ({
       // Initial State
       isProcessing: false,
+      isCancelling: false,
+      abortController: null,
       result: null,
       usedPose: null,
       usedSelfie: null,
@@ -100,9 +108,38 @@ export const usePhotoGenerationStore = create<PhotoGenerationStore>()(
         set(
           {
             isProcessing: false,
+            isCancelling: false,
+            abortController: null,
           },
           false,
           'completeGeneration'
+        ),
+
+      // Set Abort Controller - Store reference for cancellation
+      setAbortController: (controller) =>
+        set(
+          {
+            abortController: controller,
+          },
+          false,
+          'setAbortController'
+        ),
+
+      // Cancel Generation - Abort request and update state
+      cancelGeneration: () =>
+        set(
+          (state) => {
+            // Abort the request if controller exists
+            if (state.abortController) {
+              state.abortController.abort()
+            }
+            return {
+              isCancelling: true,
+              abortController: null,
+            }
+          },
+          false,
+          'cancelGeneration'
         ),
 
       // Reset - Clear all state
@@ -110,6 +147,8 @@ export const usePhotoGenerationStore = create<PhotoGenerationStore>()(
         set(
           {
             isProcessing: false,
+            isCancelling: false,
+            abortController: null,
             result: null,
             usedPose: null,
             usedSelfie: null,
