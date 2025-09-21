@@ -54,6 +54,8 @@ export default function GalleryContent({
         paddingBottom: 32,
       }}
       showsVerticalScrollIndicator={false}
+      scrollEnabled={false}
+      nestedScrollEnabled={true}
     />
   )
 }

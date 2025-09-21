@@ -23,7 +23,10 @@ export const useCameraButton = ({ onPhotoSelected }: UseCameraButtonProps) => {
     setShowAlert(false)
   }
 
-  const pickImage = async (mediaTypes: ImagePicker.MediaType | ImagePicker.MediaType[], useCamera: boolean) => {
+  const pickImage = async (
+    mediaTypes: ImagePicker.MediaType | ImagePicker.MediaType[],
+    useCamera: boolean
+  ) => {
     try {
       setIsLoading(true)
       hideAlert()

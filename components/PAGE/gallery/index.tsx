@@ -1,4 +1,4 @@
-import { View } from 'react-native'
+import { View, ScrollView } from 'react-native'
 import { router } from 'expo-router'
 
 import BottomSheet from '@/components/ui/BottomSheet/BottomSheet'
@@ -32,21 +32,26 @@ export default function GalleryPage() {
         }}
       />
 
-      {/* Filter Section */}
-      <Top
-        filters={filters.filters}
-        activeFilter={filters.activeFilter}
-        onFilterChange={filters.setActiveFilter}
-      />
+      <ScrollView
+        className="flex-1"
+        showsVerticalScrollIndicator={true}
+        contentContainerStyle={{ flexGrow: 1 }}>
+        {/* Filter Section */}
+        <Top
+          filters={filters.filters}
+          activeFilter={filters.activeFilter}
+          onFilterChange={filters.setActiveFilter}
+        />
 
-      {/* Content Section */}
-      <Bottom
-        currentItems={filters.currentItems}
-        activeFilter={filters.activeFilter}
-        isLoading={gallery.isLoading}
-        onCardPress={gallery.handleCardPress}
-        getItemDisplayData={gallery.getItemDisplayData}
-      />
+        {/* Content Section */}
+        <Bottom
+          currentItems={filters.currentItems}
+          activeFilter={filters.activeFilter}
+          isLoading={gallery.isLoading}
+          onCardPress={gallery.handleCardPress}
+          getItemDisplayData={gallery.getItemDisplayData}
+        />
+      </ScrollView>
 
       {/* Gallery Card Modal */}
       <BottomSheet ref={gallery.modalRef} isModal={true} scrollView={true}>
