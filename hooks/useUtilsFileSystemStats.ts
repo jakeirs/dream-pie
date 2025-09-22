@@ -1,5 +1,6 @@
-import { Directory, Paths } from 'expo-file-system'
+import { Directory, Paths, File } from 'expo-file-system'
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import { USER_SELFIES } from '@/stores/AsyncStorage/keys'
 
 /**
  * Utility functions for file system and AsyncStorage operations
@@ -63,9 +64,50 @@ export const useUtilsFileSystemStats = () => {
     }
   }
 
+  /**
+   * Remove all selfie files from FileSystem and AsyncStorage
+   */
+  const removeAllSelfies = async (): Promise<{ success: boolean; deleted: number; error?: string }> => {
+    try {
+      let deletedCount = 0
+
+      // 1. Remove selfie files from FileSystem
+      const documentDir = new Directory(Paths.document)
+      const exists = await documentDir.exists
+
+      if (exists) {
+        const files = await documentDir.list()
+        const selfieFiles = files.filter(file => file.name.match(/^selfie_.*\.jpg$/))
+
+        for (const file of selfieFiles) {
+          try {
+            const fileObj = new File(file.uri)
+            await fileObj.delete()
+            deletedCount++
+          } catch (fileError) {
+            console.warn(`Failed to delete file ${file.name}:`, fileError)
+          }
+        }
+      }
+
+      // 2. Clear selfies from AsyncStorage
+      await AsyncStorage.removeItem(USER_SELFIES)
+
+      return { success: true, deleted: deletedCount }
+    } catch (error) {
+      console.error('Error removing all selfies:', error)
+      return {
+        success: false,
+        deleted: 0,
+        error: error instanceof Error ? error.message : 'Unknown error'
+      }
+    }
+  }
+
   return {
     countFilesByPattern,
     getTotalFileSystemFiles,
     countAsyncStorageItems,
+    removeAllSelfies,
   }
 }

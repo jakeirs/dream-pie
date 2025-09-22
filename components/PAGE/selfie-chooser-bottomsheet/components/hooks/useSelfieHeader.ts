@@ -1,8 +1,6 @@
 import { useState } from 'react'
 
 import { useSelfieChooserStore } from '@/stores'
-import { deleteItemFromFileSystem } from '@/stores/fileSystem/utils/utils'
-import { USER_SELFIES } from '@/stores/AsyncStorage/keys'
 
 export const useSelfieHeader = () => {
   const {
@@ -10,8 +8,7 @@ export const useSelfieHeader = () => {
     setDeleteMode,
     selectedToDelete,
     clearSelectedToDelete,
-    selfies,
-    setSelfies,
+    deleteSelfiesAndWait,
   } = useSelfieChooserStore()
 
   const [isDeleting, setIsDeleting] = useState(false)
@@ -23,22 +20,13 @@ export const useSelfieHeader = () => {
         setDeleteMode(false)
         return
       }
-      // Delete selected selfies
+      // Delete selected selfies efficiently
       if (selectedToDelete.length > 0) {
         setIsDeleting(true)
         try {
-          // Delete each selected selfie using the utility function
-          for (const selfieId of selectedToDelete) {
-            try {
-              await deleteItemFromFileSystem(selfieId, USER_SELFIES)
-            } catch (error) {
-              console.warn(`Failed to delete selfie ${selfieId}:`, error)
-            }
-          }
+          // Use efficient delete method that preserves existing references
+          await deleteSelfiesAndWait(selectedToDelete)
 
-          // Update zustand store
-          const remainingSelfies = selfies.filter((selfie) => !selectedToDelete.includes(selfie.id))
-          setSelfies(remainingSelfies)
           clearSelectedToDelete()
           setDeleteMode(false)
         } catch (error) {

@@ -1,10 +1,11 @@
-import { View, Text, Pressable, ScrollView } from 'react-native'
+import { View, Text, Pressable, ScrollView, Alert } from 'react-native'
 import { useState, useEffect, useCallback } from 'react'
 
 import Card from '@/components/ui/Card/Card'
 import { Icon } from '@/components/ui/icons/Icon'
 import { useAppStores } from '@/stores'
 import { useFileSystemStats } from '@/components/ui/StatsFiles/hooks/useFileSystemStats'
+import { useUtilsFileSystemStats } from '@/hooks/useUtilsFileSystemStats'
 import { Directory, Paths } from 'expo-file-system'
 
 import { FilterType } from '@/types/dream/gallery'
@@ -70,8 +71,10 @@ export default function StatsFiles({ activeFilter, className = '' }: StatsFilesP
   const [showUrlList, setShowUrlList] = useState(false)
   const [fileSystemFiles, setFileSystemFiles] = useState<FileSystemFile[]>([])
   const [isLoadingObjects, setIsLoadingObjects] = useState(false)
+  const [isDeleting, setIsDeleting] = useState(false)
 
   const { stats, refreshStats } = useFileSystemStats()
+  const { removeAllSelfies } = useUtilsFileSystemStats()
   const { pose, selfieChooser, creation } = useAppStores()
 
   // Load ALL actual FileSystem files
@@ -182,6 +185,60 @@ export default function StatsFiles({ activeFilter, className = '' }: StatsFilesP
     setShowUrlList(!showUrlList)
   }
 
+  const handleDeleteAllSelfies = () => {
+    const selfieCount = stats.fileSystem.selfies + stats.asyncStorage.selfies
+
+    if (selfieCount === 0) {
+      Alert.alert('No Selfies', 'There are no selfies to delete.')
+      return
+    }
+
+    Alert.alert(
+      'Delete All Selfies',
+      `Are you sure you want to delete all ${selfieCount} selfies from both FileSystem and AsyncStorage? This action cannot be undone.`,
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'Delete All',
+          style: 'destructive',
+          onPress: async () => {
+            setIsDeleting(true)
+            try {
+              const result = await removeAllSelfies()
+
+              if (result.success) {
+                // Clear Zustand selfies as well
+                selfieChooser.reset()
+
+                // Refresh stats to show updated counts
+                await refreshStats()
+
+                // Refresh file list if shown
+                if (showUrlList) {
+                  await loadFileSystemObjects()
+                }
+
+                Alert.alert(
+                  'Success',
+                  `Successfully deleted ${result.deleted} selfie files from FileSystem and cleared AsyncStorage data.`
+                )
+              } else {
+                Alert.alert('Error', result.error || 'Failed to delete selfies')
+              }
+            } catch (error) {
+              Alert.alert('Error', 'An unexpected error occurred while deleting selfies')
+            } finally {
+              setIsDeleting(false)
+            }
+          },
+        },
+      ]
+    )
+  }
+
   if (stats.isLoading) {
     return (
       <Card variant="info" className={`mb-4 ${className}`}>
@@ -211,6 +268,14 @@ export default function StatsFiles({ activeFilter, className = '' }: StatsFilesP
       <Pressable onPress={toggleExpanded} className="mb-3 flex-row items-center justify-between">
         <Text className="text-lg font-semibold text-gray-800">📊 File Statistics</Text>
         <View className="flex-row items-center gap-2">
+          <Pressable onPress={handleDeleteAllSelfies} disabled={isDeleting}>
+            <Icon
+              family={ICON_FAMILY_NAME.Feather}
+              name={isDeleting ? "loader" : "trash-2"}
+              size={16}
+              color={isDeleting ? '#9ca3af' : '#dc2626'}
+            />
+          </Pressable>
           <Pressable onPress={toggleUrlList}>
             <Icon
               family={ICON_FAMILY_NAME.Feather}
