@@ -1,6 +1,7 @@
 import { Directory, Paths, File } from 'expo-file-system'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { USER_SELFIES } from '@/stores/AsyncStorage/keys'
+import { deleteItemFromFileSystem } from '@/stores/fileSystem/utils/utils'
 
 /**
  * Utility functions for file system and AsyncStorage operations
@@ -66,36 +67,60 @@ export const useUtilsFileSystemStats = () => {
 
   /**
    * Remove all selfie files from FileSystem and AsyncStorage
+   * Uses the bulk delete utility for consistency with other deletion operations
    */
   const removeAllSelfies = async (): Promise<{ success: boolean; deleted: number; error?: string }> => {
     try {
-      let deletedCount = 0
+      console.log('🔄 removeAllSelfies called - starting bulk selfie removal')
 
-      // 1. Remove selfie files from FileSystem
-      const documentDir = new Directory(Paths.document)
-      const exists = await documentDir.exists
+      // Load all selfie data from AsyncStorage to get their IDs
+      const selfieData = await AsyncStorage.getItem(USER_SELFIES)
 
-      if (exists) {
-        const files = await documentDir.list()
-        const selfieFiles = files.filter(file => file.name.match(/^selfie_.*\.jpg$/))
+      if (!selfieData) {
+        console.log('📝 No selfies found in AsyncStorage')
 
-        for (const file of selfieFiles) {
-          try {
-            const fileObj = new File(file.uri)
-            await fileObj.delete()
-            deletedCount++
-          } catch (fileError) {
-            console.warn(`Failed to delete file ${file.name}:`, fileError)
+        // Still check FileSystem for orphaned files
+        let deletedCount = 0
+        const documentDir = new Directory(Paths.document)
+        const exists = await documentDir.exists
+
+        if (exists) {
+          const files = await documentDir.list()
+          const selfieFiles = files.filter(file => file.name.match(/^selfie_.*\.jpg$/))
+
+          for (const file of selfieFiles) {
+            try {
+              const fileObj = new File(file.uri)
+              await fileObj.delete()
+              deletedCount++
+              console.log(`🗑️ Deleted orphaned selfie file: ${file.name}`)
+            } catch (fileError) {
+              console.warn(`Failed to delete orphaned file ${file.name}:`, fileError)
+            }
           }
         }
+
+        return { success: true, deleted: deletedCount }
       }
 
-      // 2. Clear selfies from AsyncStorage
-      await AsyncStorage.removeItem(USER_SELFIES)
+      // Parse selfie data and extract IDs
+      const selfies = JSON.parse(selfieData)
+      if (!Array.isArray(selfies) || selfies.length === 0) {
+        console.log('📝 No valid selfies found in AsyncStorage')
+        return { success: true, deleted: 0 }
+      }
 
-      return { success: true, deleted: deletedCount }
+      const selfieIds = selfies.map(selfie => selfie.id)
+      console.log(`📊 Found ${selfieIds.length} selfies to delete`)
+
+      // Use the bulk delete function for consistency
+      await deleteItemFromFileSystem(selfieIds, USER_SELFIES)
+
+      console.log(`✅ removeAllSelfies complete - removed ${selfieIds.length} selfies`)
+      return { success: true, deleted: selfieIds.length }
+
     } catch (error) {
-      console.error('Error removing all selfies:', error)
+      console.error('❌ Error removing all selfies:', error)
       return {
         success: false,
         deleted: 0,

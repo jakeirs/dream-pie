@@ -31,59 +31,30 @@ export const useSelfieChooserStore = create<SelfieChooserStore>()(
 
       // Process single selfie through file system and add to store
       addSelfieAndWait: async (newSelfie: Selfie) => {
-        try {
-          // Process single selfie through file system to get permanent URI
-          const processedSelfie = await addToFileSystemAsyncStorage(
-            newSelfie,
-            USER_SELFIES,
-            'selfie'
-          )
+        // Process single selfie through file system to get permanent URI
+        const processedSelfie = await addToFileSystemAsyncStorage(newSelfie, USER_SELFIES, 'selfie')
 
-          // Add processed selfie to beginning of existing array
-          const currentSelfies = get().selfies
-          const updatedSelfies = [processedSelfie, ...currentSelfies]
+        // Add processed selfie to beginning of existing array
+        const currentSelfies = get().selfies
+        const updatedSelfies = [processedSelfie, ...currentSelfies]
 
-          set({ selfies: updatedSelfies }, false, 'addSelfieAndWait-success')
+        set({ selfies: updatedSelfies }, false, 'addSelfieAndWait-success')
 
-          return processedSelfie
-        } catch (error) {
-          console.error('❌ Error in addSelfieAndWait:', error)
-          throw error // Re-throw to let caller handle the error
-        }
+        return processedSelfie
       },
 
       // Delete specific selfies efficiently - preserves existing references
       deleteSelfiesAndWait: async (selfieIds: string[]) => {
-        try {
-          console.log(`🔄 deleteSelfiesAndWait called - deleting ${selfieIds.length} selfies`)
+        // Use bulk delete function for better performance and consistency
+        await deleteItemFromFileSystem(selfieIds, USER_SELFIES)
 
-          // Delete from FileSystem + AsyncStorage in parallel for performance
-          await Promise.all(
-            selfieIds.map(async (selfieId) => {
-              try {
-                await deleteItemFromFileSystem(selfieId, USER_SELFIES)
-                console.log(`✅ Deleted selfie: ${selfieId}`)
-              } catch (error) {
-                console.warn(`⚠️ Failed to delete selfie ${selfieId}:`, error)
-                // Continue with other deletions even if one fails
-              }
-            })
-          )
+        // Preserve existing references - only remove deleted items
+        const currentSelfies = get().selfies
+        const remainingSelfies = currentSelfies.filter((selfie) => !selfieIds.includes(selfie.id))
 
-          // Preserve existing references - only remove deleted items
-          const currentSelfies = get().selfies
-          const remainingSelfies = currentSelfies.filter((selfie) => !selfieIds.includes(selfie.id))
+        set({ selfies: remainingSelfies }, false, 'deleteSelfiesAndWait-success')
 
-          set({ selfies: remainingSelfies }, false, 'deleteSelfiesAndWait-success')
-
-          console.log(
-            `✅ deleteSelfiesAndWait complete - ${remainingSelfies.length} selfies remaining`
-          )
-          return remainingSelfies
-        } catch (error) {
-          console.error('❌ Error in deleteSelfiesAndWait:', error)
-          throw error // Re-throw to let caller handle the error
-        }
+        return remainingSelfies
       },
 
       selectedSelfie: null,

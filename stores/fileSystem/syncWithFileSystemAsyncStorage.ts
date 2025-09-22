@@ -83,18 +83,9 @@ export const syncWithFileSystemAsyncStorage = async <T extends ImageItem>(
     }
 
     // 6. Process removals: delete from FileSystem + AsyncStorage
-    for (const itemToRemove of itemsToRemove) {
-      console.log(`➖ Removing obsolete ${itemType}: ${itemToRemove.name}`)
-
-      try {
-        // Use existing utility to delete from FileSystem + AsyncStorage
-        await deleteItemFromFileSystem(itemToRemove.id, asyncStorageKey)
-        console.log(`✅ Successfully removed ${itemType}: ${itemToRemove.name}`)
-      } catch (error) {
-        console.error(`❌ Failed to remove ${itemType} ${itemToRemove.name}:`, error)
-        // Continue with next item instead of failing entire sync
-        continue
-      }
+    if (itemsToRemove.length > 0) {
+      const idsToRemove = itemsToRemove.map(item => item.id)
+      await deleteItemFromFileSystem(idsToRemove, asyncStorageKey)
     }
 
     // 7. Return final synchronized items (all with file URIs)

@@ -105,49 +105,40 @@ export const loadItemsFromAsyncStorage = async <T>(asyncStorageKey: string): Pro
 }
 
 /**
- * Delete item from both FileSystem and AsyncStorage
+ * Delete items from both FileSystem and AsyncStorage
  * Universal function that works for any item type (poses, selfies, creations, etc.)
- * Uses itemId + asyncStorageKey pattern for consistency with addToFileSystemAsyncStorage
+ * Always expects an array of item IDs for consistent bulk operations
  */
 export const deleteItemFromFileSystem = async <T extends ImageItem>(
-  itemId: string,
+  itemIds: string[],
   asyncStorageKey: string
 ): Promise<void> => {
   try {
-    console.log(`🗑️ Deleting item ${itemId} from FileSystem + AsyncStorage (${asyncStorageKey})`)
+    console.log(`🗑️ Deleting ${itemIds.length} items from FileSystem + AsyncStorage (${asyncStorageKey})`)
 
     // Load existing items
     const items = await loadItemsFromAsyncStorage<T>(asyncStorageKey)
+    const itemsToDelete = items.filter((item) => itemIds.includes(item.id))
 
-    // Find the item to delete
-    const itemToDelete = items.find((item) => item.id === itemId)
-    if (!itemToDelete) {
-      console.warn(`⚠️ Item ${itemId} not found in AsyncStorage (${asyncStorageKey})`)
-      return
-    }
-
-    try {
-      // Delete file if it's a file URI (using latest File API)
-      if (itemToDelete.imageUrl && itemToDelete.imageUrl.startsWith('file://')) {
-        const file = new File(itemToDelete.imageUrl)
-        await file.delete()
+    // Delete files
+    for (const item of itemsToDelete) {
+      if (item.imageUrl && item.imageUrl.startsWith('file://')) {
+        try {
+          const file = new File(item.imageUrl)
+          await file.delete()
+        } catch (fileError) {
+          console.warn(`⚠️ Failed to delete file for item ${item.id}:`, fileError)
+        }
       }
-    } catch (fileError) {
-      console.warn(`⚠️ Failed to delete file for item ${itemId}:`, fileError)
-      // Continue to remove from AsyncStorage even if file deletion fails
     }
 
     // Remove from AsyncStorage
-    const updatedItems = items.filter((item) => item.id !== itemId)
-    console.log(
-      'updatedItems  updatedItemsupdatedItemsupdatedItemsupdatedItemsafter deletion:',
-      updatedItems
-    )
+    const updatedItems = items.filter((item) => !itemIds.includes(item.id))
     await AsyncStorage.setItem(asyncStorageKey, JSON.stringify(updatedItems))
 
-    console.log(`✅ Successfully removed item ${itemId} from FileSystem + AsyncStorage`)
+    console.log(`✅ Successfully removed ${itemIds.length} items`)
   } catch (error) {
-    console.error(`❌ Error deleting item ${itemId} from FileSystem + AsyncStorage:`, error)
+    console.error(`❌ Error deleting items:`, error)
     throw error
   }
 }

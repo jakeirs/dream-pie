@@ -87,16 +87,9 @@ export const syncMockDataWithFileSystem = async <T extends ImageItem>(
     }
 
     // 6. Process removals: delete files and remove from storage
-    for (const itemToRemove of itemsToRemove) {
-      console.log(`➖ Removing ${itemType}: ${itemToRemove.name}`)
-      try {
-        await deleteItemFromFileSystem(itemToRemove.id, asyncStorageKey)
-        console.log(`✅ Successfully removed ${itemType}: ${itemToRemove.name}`)
-      } catch (error) {
-        console.error(`❌ Failed to remove ${itemType} ${itemToRemove.name}:`, error)
-        // Continue with next item instead of failing entire sync
-        continue
-      }
+    if (itemsToRemove.length > 0) {
+      const idsToRemove = itemsToRemove.map(item => item.id)
+      await deleteItemFromFileSystem(idsToRemove, asyncStorageKey)
     }
 
     // 7. Return synced items (all with file URIs)
