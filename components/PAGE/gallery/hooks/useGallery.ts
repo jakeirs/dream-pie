@@ -5,6 +5,8 @@ import { useCreationStore, usePoseStore, useSelfieChooserStore } from '@/stores'
 
 import { GalleryContent } from '@/types/dream/gallery'
 import { Creation, Pose, Selfie } from '@/types/dream'
+import { loadItemsFromAsyncStorage } from '@/stores/AsyncStorage/utils'
+import { USER_CREATIONS } from '@/stores/AsyncStorage/keys'
 
 export interface DisplayData {
   imageUri: string
@@ -37,21 +39,22 @@ export interface UseGallery {
 export const useGallery = (): UseGallery => {
   // Use selectors for optimal performance - only subscribe to needed data
   const creations = useCreationStore((state) => state.creations)
+  const setCreations = useCreationStore((state) => state.setCreations)
   const poses = usePoseStore((state) => state.poses)
   const selfies = useSelfieChooserStore((state) => state.selfies)
   const isLoading = useCreationStore((state) => state.isLoading)
   const modalRef = useRef<BottomSheetModal>(null)
 
-  // Initialize stores on mount - only if data is not already loaded
-  const initializeStores = useCallback(() => {
-    // Data should already be loaded at app level
-    // This is kept for backward compatibility but should be minimal
-    console.log('Gallery stores already initialized:', {
-      creations: creations.length,
-      poses: poses.length,
-      selfies: selfies.length
-    })
-  }, [creations.length, poses.length, selfies.length])
+  const initializeStores = useCallback(async () => {
+    // Load user-captured selfies from AsyncStorage
+    const userCreations = await loadItemsFromAsyncStorage<Creation>(USER_CREATIONS)
+
+    if (userCreations.length > 0) {
+      setCreations(userCreations)
+      return
+    }
+    setCreations([])
+  }, [])
 
   useEffect(() => {
     initializeStores()
