@@ -24,16 +24,12 @@ export const SelfieGrid = () => {
   }, [setSelfies])
 
   const loadSelfies = async () => {
-    try {
-      // Load user-captured selfies from AsyncStorage
-      const userSelfiesJson = await AsyncStorage.getItem(USER_SELFIES)
-      const userSelfies: Selfie[] = userSelfiesJson ? JSON.parse(userSelfiesJson) : []
-      if (userSelfies.length > 0) {
-        setSelfies(userSelfies)
-        return
-      }
-    } catch (error) {
-      console.error('Error loading selfies:', error)
+    // Load user-captured selfies from AsyncStorage
+    const userSelfiesJson = await AsyncStorage.getItem(USER_SELFIES)
+    const userSelfies: Selfie[] = userSelfiesJson ? JSON.parse(userSelfiesJson) : []
+    if (userSelfies.length > 0) { 
+      setSelfies(userSelfies)
+      return
     }
   }
 
