@@ -32,8 +32,6 @@ export const useSelfieChooserStore = create<SelfieChooserStore>()(
       // Process single selfie through file system and add to store
       addSelfieAndWait: async (newSelfie: Selfie) => {
         try {
-          console.log('🔄 addSelfieAndWait called - processing single selfie')
-
           // Process single selfie through file system to get permanent URI
           const processedSelfie = await addToFileSystemAsyncStorage(
             newSelfie,
@@ -47,7 +45,6 @@ export const useSelfieChooserStore = create<SelfieChooserStore>()(
 
           set({ selfies: updatedSelfies }, false, 'addSelfieAndWait-success')
 
-          console.log(`✅ addSelfieAndWait complete - processed ${processedSelfie.name}`)
           return processedSelfie
         } catch (error) {
           console.error('❌ Error in addSelfieAndWait:', error)

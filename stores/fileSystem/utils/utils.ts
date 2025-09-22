@@ -126,14 +126,23 @@ export const deleteItemFromFileSystem = async <T extends ImageItem>(
       return
     }
 
-    // Delete file if it's a file URI (using latest File API)
-    if (itemToDelete.imageUrl && itemToDelete.imageUrl.startsWith('file://')) {
-      const file = new File(itemToDelete.imageUrl)
-      await file.delete()
+    try {
+      // Delete file if it's a file URI (using latest File API)
+      if (itemToDelete.imageUrl && itemToDelete.imageUrl.startsWith('file://')) {
+        const file = new File(itemToDelete.imageUrl)
+        await file.delete()
+      }
+    } catch (fileError) {
+      console.warn(`⚠️ Failed to delete file for item ${itemId}:`, fileError)
+      // Continue to remove from AsyncStorage even if file deletion fails
     }
 
     // Remove from AsyncStorage
     const updatedItems = items.filter((item) => item.id !== itemId)
+    console.log(
+      'updatedItems  updatedItemsupdatedItemsupdatedItemsupdatedItemsafter deletion:',
+      updatedItems
+    )
     await AsyncStorage.setItem(asyncStorageKey, JSON.stringify(updatedItems))
 
     console.log(`✅ Successfully removed item ${itemId} from FileSystem + AsyncStorage`)

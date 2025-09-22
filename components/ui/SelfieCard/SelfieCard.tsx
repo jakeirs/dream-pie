@@ -1,4 +1,4 @@
-import { Image, useImage } from 'expo-image'
+import { Image } from 'expo-image'
 import { useEffect } from 'react'
 import { View, Text, Pressable } from 'react-native'
 import Animated, { useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated'
@@ -16,7 +16,6 @@ interface SelfieCardProps {
 export default function SelfieCard({ selfie, isSelected, onSelect }: SelfieCardProps) {
   const { deleteMode, selectedToDelete, toggleSelectedToDelete } = useSelfieChooserStore()
   const borderOpacity = useSharedValue(0)
-  const image = useImage(selfie.imageUrl)
 
   const isSelectedToDelete = selectedToDelete.includes(selfie.id)
   const showSelection = deleteMode ? isSelectedToDelete : isSelected
@@ -45,9 +44,9 @@ export default function SelfieCard({ selfie, isSelected, onSelect }: SelfieCardP
         style={animatedBorderStyle}>
         {/* Image Container */}
         <View className="relative">
-          {image && (
+          {selfie.imageUrl && (
             <Image
-              source={image}
+              source={selfie.imageUrl}
               style={{ width: '100%', height: 160 }}
               className="rounded-t-xl"
               contentFit="cover"
@@ -60,7 +59,9 @@ export default function SelfieCard({ selfie, isSelected, onSelect }: SelfieCardP
               <View
                 className="h-7 w-7 items-center justify-center rounded-full shadow-md"
                 style={{ backgroundColor: deleteMode ? brandColors.error : brandColors.primary }}>
-                <Text className="text-sm font-bold" style={{ color: brandColors.errorForeground }}>✓</Text>
+                <Text className="text-sm font-bold" style={{ color: brandColors.errorForeground }}>
+                  ✓
+                </Text>
               </View>
             </View>
           )}
