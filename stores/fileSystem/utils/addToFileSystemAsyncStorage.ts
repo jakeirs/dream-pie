@@ -61,7 +61,10 @@ const isBundledAsset = (uri: any): boolean => {
  * Check if the URI is a local device file (camera/gallery/file system)
  */
 const isLocalUri = (uri: any): boolean => {
-  return typeof uri === 'string' && (uri.startsWith('file://') || uri.startsWith('content://') || uri.startsWith('ph://'))
+  return (
+    typeof uri === 'string' &&
+    (uri.startsWith('file://') || uri.startsWith('content://') || uri.startsWith('ph://'))
+  )
 }
 
 /**
@@ -107,20 +110,10 @@ export const addToFileSystemAsyncStorage = async <T extends ImageItem>(
   itemType: string
 ): Promise<T> => {
   try {
-    console.log(`➕ Adding ${itemType} to FileSystem + AsyncStorage: ${item.name}`)
-
     // Validate required fields
     if (!item.imageUrl) {
       throw new Error(`${itemType} ${item.name} has undefined or empty imageUrl`)
     }
-
-    // Debug logging for image source type
-    console.log(`🔍 Analyzing image source for ${item.name}:`)
-    console.log(`   - Type: ${typeof item.imageUrl}`)
-    console.log(`   - Value: ${JSON.stringify(item.imageUrl)}`)
-    console.log(`   - isBundledAsset: ${isBundledAsset(item.imageUrl)}`)
-    console.log(`   - isRemoteUrl: ${isRemoteUrl(item.imageUrl)}`)
-    console.log(`   - isLocalUri: ${isLocalUri(item.imageUrl)}`)
 
     // Generate unique filename based on item ID and timestamp
     const timestamp = Date.now()
@@ -130,8 +123,6 @@ export const addToFileSystemAsyncStorage = async <T extends ImageItem>(
 
     // Handle different image source types - CHECK BUNDLED ASSETS FIRST
     if (isBundledAsset(item.imageUrl)) {
-      // Bundled asset: Use existing expo-asset logic
-      console.log(`📦 Processing bundled asset: ${item.imageUrl}`)
       const asset = Asset.fromModule(item.imageUrl)
       await asset.downloadAsync()
       sourceUri = asset.localUri || asset.uri
@@ -147,7 +138,6 @@ export const addToFileSystemAsyncStorage = async <T extends ImageItem>(
       sourceUri = await downloadRemoteImage(item.imageUrl, filename)
     } else if (isLocalUri(item.imageUrl)) {
       // Local device URI: Copy to permanent location
-      console.log(`📱 Processing local device URI: ${item.imageUrl}`)
       const sourceFile = new File(item.imageUrl)
       const destinationFile = new File(Paths.document, filename)
       await sourceFile.copy(destinationFile)
@@ -169,8 +159,6 @@ export const addToFileSystemAsyncStorage = async <T extends ImageItem>(
 
     // Save to AsyncStorage
     await saveToAsyncStorage(fileSystemItem, asyncStorageKey)
-
-    console.log(`✅ Successfully added ${itemType}: ${item.name} -> ${sourceUri}`)
     return fileSystemItem
   } catch (error) {
     console.error(`❌ Error adding ${itemType} ${item.name} to FileSystem + AsyncStorage:`, error)
