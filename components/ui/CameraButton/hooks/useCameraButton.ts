@@ -2,9 +2,7 @@ import { useState } from 'react'
 import { Alert } from 'react-native'
 import * as ImagePicker from 'expo-image-picker'
 
-import { USER_SELFIES } from '@/stores/AsyncStorage/keys'
 import { Selfie } from '@/types/dream/selfie'
-import { addToFileSystemAsyncStorage } from '@/stores/fileSystem/utils/addToFileSystemAsyncStorage'
 
 interface UseCameraButtonProps {
   onPhotoSelected: (selfie: Selfie) => void
@@ -70,8 +68,6 @@ export const useCameraButton = ({ onPhotoSelected }: UseCameraButtonProps) => {
 
   const processSelectedImage = async (asset: ImagePicker.ImagePickerAsset) => {
     try {
-      console.log('📷 Processing selected image from camera/gallery:', asset.uri)
-
       // Generate unique ID and timestamp
       const timestamp = Date.now()
 
@@ -85,13 +81,7 @@ export const useCameraButton = ({ onPhotoSelected }: UseCameraButtonProps) => {
         createdAt: new Date().toISOString(),
       }
 
-      // Use unified utility to handle file operations and AsyncStorage
-      const processedSelfie = await addToFileSystemAsyncStorage(tempSelfie, USER_SELFIES, 'selfie')
-
-      // Notify parent component with processed selfie (has permanent file URI)
-      onPhotoSelected(processedSelfie)
-
-      console.log('✅ Camera/gallery image processed successfully:', processedSelfie.imageUrl)
+      onPhotoSelected(tempSelfie)
     } catch (error) {
       console.error('❌ Error processing camera/gallery image:', error)
       Alert.alert('Error', 'Failed to save image. Please try again.')

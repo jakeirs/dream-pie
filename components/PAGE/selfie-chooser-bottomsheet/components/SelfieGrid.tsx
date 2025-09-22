@@ -28,9 +28,12 @@ export const SelfieGrid = () => {
       const userSelfiesJson = await AsyncStorage.getItem(USER_SELFIES)
       const userSelfies: Selfie[] = userSelfiesJson ? JSON.parse(userSelfiesJson) : []
 
-      // Combine user selfies with mock selfies
-      const allSelfies = [...userSelfies, ...mockSelfies]
-      setSelfies(allSelfies)
+      if (userSelfies.length > 0) {
+        setSelfies(userSelfies)
+        return
+      }
+
+      setSelfies(mockSelfies)
     } catch (error) {
       console.error('Error loading selfies:', error)
       // Fallback to mock data only
@@ -58,7 +61,7 @@ export const SelfieGrid = () => {
     const updatedSelfies = [newSelfie, ...selfies]
     setSelfies(updatedSelfies)
 
-    // Automatically select the new selfie
+    // Automatically select the new selfie`
     setSelectedSelfie(newSelfie)
   }
 

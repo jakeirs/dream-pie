@@ -76,7 +76,7 @@ export const syncWithFileSystemAsyncStorage = async <T extends ImageItem>(
         await addToFileSystemAsyncStorage(incomingItem, asyncStorageKey, itemType)
         console.log(`✅ Successfully added ${itemType}: ${incomingItem.name}`)
       } catch (error) {
-        console.error(`❌ Failed to add ${itemType} ${incomingItem.name}:`, error)
+        console.error(`❌ Failed to add NEW ${itemType} ${incomingItem.name}:`, error)
         // Continue with next item instead of failing entire sync
         continue
       }

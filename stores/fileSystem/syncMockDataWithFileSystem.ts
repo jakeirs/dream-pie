@@ -119,11 +119,4 @@ export const syncMockDataWithFileSystem = async <T extends ImageItem>(
   }
 }
 
-// Backward compatibility functions for existing code
-export const syncMockPosesWithFileSystem = async (mockPoses: Pose[]): Promise<Pose[]> => {
-  return syncMockDataWithFileSystem(mockPoses, USER_POSES, 'pose')
-}
 
-export const syncMockSelfiesWithFileSystem = async (mockSelfies: Selfie[]): Promise<Selfie[]> => {
-  return syncMockDataWithFileSystem(mockSelfies, USER_SELFIES, 'selfie')
-}

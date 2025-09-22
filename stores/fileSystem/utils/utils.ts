@@ -127,7 +127,7 @@ export const deleteItemFromFileSystem = async <T extends ImageItem>(
     }
 
     // Delete file if it's a file URI (using latest File API)
-    if (itemToDelete.imageUrl.startsWith('file://')) {
+    if (itemToDelete.imageUrl && itemToDelete.imageUrl.startsWith('file://')) {
       const file = new File(itemToDelete.imageUrl)
       await file.delete()
       console.log(`🗑️ Deleted file: ${itemToDelete.imageUrl}`)
