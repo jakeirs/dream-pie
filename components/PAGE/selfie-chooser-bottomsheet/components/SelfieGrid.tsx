@@ -1,8 +1,7 @@
 // Following Import Order Standards (React 19+)
 // 1. React Native Core & Expo
-import { View, Text } from 'react-native'
-import { useEffect, useState } from 'react'
-import AsyncStorage from '@react-native-async-storage/async-storage'
+import { View } from 'react-native'
+import { useEffect } from 'react'
 
 // 2. UI components (@/components/ui)
 import SelfieCard from '@/components/ui/SelfieCard/SelfieCard'
@@ -11,7 +10,8 @@ import CameraButton from '@/components/ui/CameraButton/CameraButton'
 // 3. Constants, Types, Mock Data
 import { useSelfieChooserStore } from '@/stores'
 import { USER_SELFIES } from '@/stores/AsyncStorage/keys'
-import { mockSelfies } from '@/mockData/dream/selfies'
+import { loadItemsFromAsyncStorage } from '@/stores/AsyncStorage/utils'
+
 import { Selfie } from '@/types/dream/selfie'
 
 export const SelfieGrid = () => {
@@ -25,12 +25,13 @@ export const SelfieGrid = () => {
 
   const loadSelfies = async () => {
     // Load user-captured selfies from AsyncStorage
-    const userSelfiesJson = await AsyncStorage.getItem(USER_SELFIES)
-    const userSelfies: Selfie[] = userSelfiesJson ? JSON.parse(userSelfiesJson) : []
-    if (userSelfies.length > 0) { 
+    const userSelfies = await loadItemsFromAsyncStorage<Selfie>(USER_SELFIES)
+
+    if (userSelfies.length > 0) {
       setSelfies(userSelfies)
       return
     }
+    setSelfies([])
   }
 
   const handleSelfieSelect = (selfieId: string) => {

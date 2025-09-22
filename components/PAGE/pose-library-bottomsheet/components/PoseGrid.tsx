@@ -1,5 +1,3 @@
-// Following Import Order Standards (React 19+)
-// 1. React Native Core & Expo
 import { View, Text } from 'react-native'
 import { useEffect } from 'react'
 
@@ -9,6 +7,9 @@ import PoseCard from '@/components/ui/PoseCard/PoseCard'
 // 3. Constants, Types, Mock Data
 import { usePoseStore } from '@/stores'
 import { mockPoses } from '@/mockData/dream/poses'
+import { loadItemsFromAsyncStorage } from '@/stores/AsyncStorage/utils'
+import type { Pose } from '@/types'
+import { USER_POSES } from '@/stores/AsyncStorage/keys'
 
 export const PoseGrid = () => {
   const { setSelectedPose, selectedPose, poses, setPoses } = usePoseStore()
@@ -16,10 +17,13 @@ export const PoseGrid = () => {
   // Load poses on mount if empty - now async to handle file system sync
   useEffect(() => {
     const loadPoses = async () => {
-      if (poses.length === 0) {
-        console.log('🔄 PoseGrid: Loading poses from mockData and syncing to file system')
+      const loadedPoses = await loadItemsFromAsyncStorage<Pose>(USER_POSES)
+
+      if (loadedPoses.length === 0) {
         await setPoses(mockPoses)
+        return
       }
+      setPoses(loadedPoses)
     }
 
     loadPoses()
