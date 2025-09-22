@@ -28,28 +28,15 @@ export const SelfieGrid = () => {
       // Load user-captured selfies from AsyncStorage
       const userSelfiesJson = await AsyncStorage.getItem(USER_SELFIES)
       const userSelfies: Selfie[] = userSelfiesJson ? JSON.parse(userSelfiesJson) : []
-
       if (userSelfies.length > 0) {
         setSelfies(userSelfies)
         return
       }
-
-      setSelfies(mockSelfies)
     } catch (error) {
       console.error('Error loading selfies:', error)
-      // Fallback to mock data only
-      setSelfies(mockSelfies)
     }
   }
 
-  // Safety check for selfies array
-  if (!selfies || selfies.length === 0) {
-    return (
-      <View className="flex-1 items-center justify-center p-4">
-        <Text className="text-center text-textSecondary">Loading selfies...</Text>
-      </View>
-    )
-  }
   const handleSelfieSelect = (selfieId: string) => {
     const selfie = selfies.find((s) => s.id === selfieId)
     if (selfie) {

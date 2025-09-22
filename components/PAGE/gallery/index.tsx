@@ -14,8 +14,8 @@ import { ICON_FAMILY_NAME } from '@/components/ui/icons/constants'
 
 export default function GalleryPage() {
   // Custom hooks for clean separation of concerns
-  // const gallery = useGallery()
-  // const filters = useGalleryFilters()
+  const gallery = useGallery()
+  const filters = useGalleryFilters()
 
   const handleSettingsPress = () => {
     router.push('/settings')
@@ -32,19 +32,18 @@ export default function GalleryPage() {
         }}
       />
 
-      {/* <ScrollView
+      <ScrollView
         className="flex-1"
         showsVerticalScrollIndicator={true}
         contentContainerStyle={{ flexGrow: 1 }}>
-        {/* Filter Section */}
-      {/* <Top
+        <Top
           filters={filters.filters}
           activeFilter={filters.activeFilter}
           onFilterChange={filters.setActiveFilter}
-        /> */}
+        />
 
-      {/* Content Section */}
-      {/* <Bottom
+        {/* Content Section */}
+        <Bottom
           currentItems={filters.currentItems}
           activeFilter={filters.activeFilter}
           isLoading={gallery.isLoading}
@@ -54,7 +53,7 @@ export default function GalleryPage() {
       </ScrollView>
 
       {/* Gallery Card Modal */}
-      {/* <BottomSheet ref={gallery.modalRef} isModal={true} scrollView={true}>
+      <BottomSheet ref={gallery.modalRef} isModal={true} scrollView={true}>
         {gallery.selectedItem && (
           <GalleryCardModal
             imageUri={gallery.getItemDisplayData(gallery.selectedItem).imageUri}
@@ -63,7 +62,7 @@ export default function GalleryPage() {
             onClose={gallery.handleModalClose}
           />
         )}
-      </BottomSheet>  */}
+      </BottomSheet>
     </View>
   )
 }
