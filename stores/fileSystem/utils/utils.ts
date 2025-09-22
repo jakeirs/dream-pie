@@ -15,7 +15,6 @@ import { File, Paths } from 'expo-file-system'
 import * as FileSystem from 'expo-file-system/legacy'
 import { Asset } from 'expo-asset'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { USER_POSES } from '../../AsyncStorage/keys'
 
 // Define common interface for items with imageUrl
 interface ImageItem {
@@ -100,8 +99,8 @@ export const loadItemsFromAsyncStorage = async <T>(asyncStorageKey: string): Pro
 }
 
 /**
- * Delete item from both file system and AsyncStorage
- * Uses legacy API for file deletion
+ * Delete item from both file system (using new File API) and AsyncStorage
+ * Universal function that works for any item type (poses, selfies, creations, etc.)
  */
 export const deleteItemFromFileSystem = async <T extends ImageItem>(
   itemId: string,
@@ -118,10 +117,10 @@ export const deleteItemFromFileSystem = async <T extends ImageItem>(
       return
     }
 
-    // Delete file if it's a file URI (using legacy API)
+    // Delete file if it's a file URI (using new File API)
     if (itemToDelete.imageUrl.startsWith('file://')) {
-      await FileSystem.deleteAsync(itemToDelete.imageUrl)
-      console.log(`🗑️ Deleted file for item ${itemId}`)
+      const file = new File(itemToDelete.imageUrl)
+      await file.delete()
     }
 
     // Remove from AsyncStorage
@@ -133,17 +132,4 @@ export const deleteItemFromFileSystem = async <T extends ImageItem>(
     console.error(`❌ Error deleting item ${itemId}:`, error)
     throw error
   }
-}
-
-// Backward compatibility functions for existing pose code
-export const savePoseToAsyncStorage = async (pose: any): Promise<void> => {
-  return saveItemToAsyncStorage(pose, USER_POSES)
-}
-
-export const loadPosesFromAsyncStorage = async (): Promise<any[]> => {
-  return loadItemsFromAsyncStorage(USER_POSES)
-}
-
-export const deletePoseFromFileSystem = async (poseId: string): Promise<void> => {
-  return deleteItemFromFileSystem(poseId, USER_POSES)
 }

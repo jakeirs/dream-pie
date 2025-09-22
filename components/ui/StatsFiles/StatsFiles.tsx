@@ -87,7 +87,7 @@ export default function StatsFiles({ activeFilter, className = '' }: StatsFilesP
       }
 
       const files = await documentDir.list()
-      const fileList: FileSystemFile[] = files.map(file => {
+      const fileList: FileSystemFile[] = files.map((file) => {
         const fileName = file.name
         let type: 'pose' | 'selfie' | 'creation' | 'other' = 'other'
 
@@ -216,7 +216,7 @@ export default function StatsFiles({ activeFilter, className = '' }: StatsFilesP
               family={ICON_FAMILY_NAME.Feather}
               name="list"
               size={16}
-              color={showUrlList ? "#3b82f6" : "#6b7280"}
+              color={showUrlList ? '#3b82f6' : '#6b7280'}
             />
           </Pressable>
           <Pressable onPress={handleRefresh}>
@@ -325,12 +325,8 @@ export default function StatsFiles({ activeFilter, className = '' }: StatsFilesP
       {showUrlList && (
         <View className="mt-4 border-t border-gray-200 pt-4">
           <View className="mb-3 flex-row items-center justify-between">
-            <Text className="text-sm font-semibold text-gray-700">
-              📋 All FileSystem URLs
-            </Text>
-            <Text className="text-xs text-gray-500">
-              {fileSystemFiles.length} items
-            </Text>
+            <Text className="text-sm font-semibold text-gray-700">📋 All FileSystem URLs</Text>
+            <Text className="text-xs text-gray-500">{fileSystemFiles.length} items</Text>
           </View>
 
           {isLoadingObjects ? (
@@ -347,15 +343,17 @@ export default function StatsFiles({ activeFilter, className = '' }: StatsFilesP
                   {fileSystemFiles.map((file, index) => (
                     <View key={file.uri || index} className="mb-3 rounded-lg bg-gray-50 p-3">
                       <View className="mb-1 flex-row items-center justify-between">
-                        <Text className="text-sm font-semibold text-gray-800">
-                          {file.name}
-                        </Text>
-                        <Text className={`rounded px-2 py-1 text-xs font-medium ${
-                          file.type === 'pose' ? 'bg-green-100 text-green-800' :
-                          file.type === 'selfie' ? 'bg-blue-100 text-blue-800' :
-                          file.type === 'creation' ? 'bg-purple-100 text-purple-800' :
-                          'bg-gray-100 text-gray-800'
-                        }`}>
+                        <Text className="text-sm font-semibold text-gray-800">{file.name}</Text>
+                        <Text
+                          className={`rounded px-2 py-1 text-xs font-medium ${
+                            file.type === 'pose'
+                              ? 'bg-green-100 text-green-800'
+                              : file.type === 'selfie'
+                                ? 'bg-blue-100 text-blue-800'
+                                : file.type === 'creation'
+                                  ? 'bg-purple-100 text-purple-800'
+                                  : 'bg-gray-100 text-gray-800'
+                          }`}>
                           {file.type}
                         </Text>
                       </View>
@@ -367,9 +365,7 @@ export default function StatsFiles({ activeFilter, className = '' }: StatsFilesP
                 </ScrollView>
               ) : (
                 <View className="flex-row items-center justify-center rounded-lg bg-gray-50 py-6">
-                  <Text className="text-gray-500">
-                    No files found in FileSystem
-                  </Text>
+                  <Text className="text-gray-500">No files found in FileSystem</Text>
                 </View>
               )}
             </>

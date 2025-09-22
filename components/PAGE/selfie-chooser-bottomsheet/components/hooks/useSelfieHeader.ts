@@ -1,10 +1,8 @@
 import { useState } from 'react'
-import { File } from 'expo-file-system'
-import AsyncStorage from '@react-native-async-storage/async-storage'
 
 import { useSelfieChooserStore } from '@/stores'
+import { deleteItemFromFileSystem } from '@/stores/fileSystem/utils/utils'
 import { USER_SELFIES } from '@/stores/AsyncStorage/keys'
-import { Selfie } from '@/types/dream/selfie'
 
 export const useSelfieHeader = () => {
   const {
@@ -29,39 +27,16 @@ export const useSelfieHeader = () => {
       if (selectedToDelete.length > 0) {
         setIsDeleting(true)
         try {
-          // Get selfies to delete
-          const selfiesToDelete = selfies.filter((selfie) => selectedToDelete.includes(selfie.id))
-
-          // Delete files from filesystem
-          for (const selfie of selfiesToDelete) {
+          // Delete each selected selfie using the utility function
+          for (const selfieId of selectedToDelete) {
             try {
-              // Only delete if it's a user-generated selfie (has a local file path)
-              if (
-                selfie.imageUrl &&
-                typeof selfie.imageUrl === 'string' &&
-                selfie.imageUrl.startsWith('file://')
-              ) {
-                const file = new File(selfie.imageUrl)
-                await file.delete()
-              }
+              await deleteItemFromFileSystem(selfieId, USER_SELFIES)
             } catch (error) {
-              console.warn(`Failed to delete file ${selfie.imageUrl}:`, error)
+              console.warn(`Failed to delete selfie ${selfieId}:`, error)
             }
           }
 
-          // Update AsyncStorage - remove deleted selfies from user_selfies
-          try {
-            const userSelfiesJson = await AsyncStorage.getItem(USER_SELFIES)
-            const userSelfies: Selfie[] = userSelfiesJson ? JSON.parse(userSelfiesJson) : []
-            const updatedUserSelfies = userSelfies.filter(
-              (selfie) => !selectedToDelete.includes(selfie.id)
-            )
-            await AsyncStorage.setItem(USER_SELFIES, JSON.stringify(updatedUserSelfies))
-          } catch (error) {
-            console.warn('Failed to update AsyncStorage:', error)
-          }
-
-          // Update store
+          // Update zustand store
           const remainingSelfies = selfies.filter((selfie) => !selectedToDelete.includes(selfie.id))
           setSelfies(remainingSelfies)
           clearSelectedToDelete()
