@@ -1,6 +1,6 @@
 import { Directory, Paths, File } from 'expo-file-system'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { USER_SELFIES } from '@/stores/AsyncStorage/keys'
+import { USER_SELFIES, USER_POSES, USER_CREATIONS } from '@/stores/AsyncStorage/keys'
 import { deleteItemFromFileSystem } from '@/stores/fileSystem'
 
 /**
@@ -66,67 +66,93 @@ export const useUtilsFileSystemStats = () => {
   }
 
   /**
-   * Remove all selfie files from FileSystem and AsyncStorage
-   * Uses the bulk delete utility for consistency with other deletion operations
+   * Remove all data (selfies, poses, and creations) from FileSystem and AsyncStorage
+   * Comprehensive cleanup function that removes all user-generated content
    */
-  const removeAllSelfies = async (): Promise<{
+  const removeAllData = async (): Promise<{
     success: boolean
-    deleted: number
+    deleted: { selfies: number; poses: number; creations: number; total: number }
     error?: string
   }> => {
     try {
-      console.log('🔄 removeAllSelfies called - starting bulk selfie removal')
+      console.log('🔄 removeAllData called - starting comprehensive data removal')
 
-      // Load all selfie data from AsyncStorage to get their IDs
-      const selfieData = await AsyncStorage.getItem(USER_SELFIES)
+      let totalDeleted = 0
+      const deletedCounts = { selfies: 0, poses: 0, creations: 0, total: 0 }
 
-      if (!selfieData) {
-        console.log('📝 No selfies found in AsyncStorage')
+      // Define data types to process
+      const dataTypes = [
+        { key: USER_SELFIES, filePattern: /^selfie_.*\.jpg$/, name: 'selfies' },
+        { key: USER_POSES, filePattern: /^pose_.*\.jpg$/, name: 'poses' },
+        { key: USER_CREATIONS, filePattern: /^creation_.*\.jpg$/, name: 'creations' },
+      ]
 
-        // Still check FileSystem for orphaned files
-        let deletedCount = 0
-        const documentDir = new Directory(Paths.document)
-        const exists = await documentDir.exists
+      // Process each data type
+      for (const dataType of dataTypes) {
+        try {
+          console.log(`🔄 Processing ${dataType.name}...`)
 
-        if (exists) {
-          const files = await documentDir.list()
-          const selfieFiles = files.filter((file) => file.name.match(/^selfie_.*\.jpg$/))
+          // Load data from AsyncStorage to get IDs
+          const asyncData = await AsyncStorage.getItem(dataType.key)
+          let itemIds: string[] = []
 
-          for (const file of selfieFiles) {
-            try {
-              const fileObj = new File(file.uri)
-              await fileObj.delete()
-              deletedCount++
-              console.log(`🗑️ Deleted orphaned selfie file: ${file.name}`)
-            } catch (fileError) {
-              console.warn(`Failed to delete orphaned file ${file.name}:`, fileError)
+          if (asyncData) {
+            const items = JSON.parse(asyncData)
+            if (Array.isArray(items) && items.length > 0) {
+              itemIds = items.map((item) => item.id)
+              console.log(`📊 Found ${itemIds.length} ${dataType.name} in AsyncStorage`)
             }
           }
+
+          if (itemIds.length > 0) {
+            // Use bulk delete function for consistency
+            await deleteItemFromFileSystem(itemIds, dataType.key)
+            deletedCounts[dataType.name as keyof typeof deletedCounts] = itemIds.length
+            totalDeleted += itemIds.length
+            console.log(`✅ Deleted ${itemIds.length} ${dataType.name} via bulk delete`)
+          } else {
+            // Check for orphaned files in FileSystem
+            const documentDir = new Directory(Paths.document)
+            const exists = await documentDir.exists
+
+            if (exists) {
+              const files = await documentDir.list()
+              const matchingFiles = files.filter((file) => dataType.filePattern.test(file.name))
+
+              let orphanedDeleted = 0
+              for (const file of matchingFiles) {
+                try {
+                  const fileObj = new File(file.uri)
+                  await fileObj.delete()
+                  orphanedDeleted++
+                  console.log(`🗑️ Deleted orphaned ${dataType.name} file: ${file.name}`)
+                } catch (fileError) {
+                  console.warn(`Failed to delete orphaned file ${file.name}:`, fileError)
+                }
+              }
+
+              if (orphanedDeleted > 0) {
+                deletedCounts[dataType.name as keyof typeof deletedCounts] = orphanedDeleted
+                totalDeleted += orphanedDeleted
+                console.log(`✅ Deleted ${orphanedDeleted} orphaned ${dataType.name} files`)
+              }
+            }
+          }
+        } catch (typeError) {
+          console.warn(`⚠️ Error processing ${dataType.name}:`, typeError)
+          // Continue with other types even if one fails
         }
-
-        return { success: true, deleted: deletedCount }
       }
 
-      // Parse selfie data and extract IDs
-      const selfies = JSON.parse(selfieData)
-      if (!Array.isArray(selfies) || selfies.length === 0) {
-        console.log('📝 No valid selfies found in AsyncStorage')
-        return { success: true, deleted: 0 }
-      }
+      deletedCounts.total = totalDeleted
+      console.log(`✅ removeAllData complete - removed ${totalDeleted} total items:`, deletedCounts)
 
-      const selfieIds = selfies.map((selfie) => selfie.id)
-      console.log(`📊 Found ${selfieIds.length} selfies to delete`)
-
-      // Use the bulk delete function for consistency
-      await deleteItemFromFileSystem(selfieIds, USER_SELFIES)
-
-      console.log(`✅ removeAllSelfies complete - removed ${selfieIds.length} selfies`)
-      return { success: true, deleted: selfieIds.length }
+      return { success: true, deleted: deletedCounts }
     } catch (error) {
-      console.error('❌ Error removing all selfies:', error)
+      console.error('❌ Error removing all data:', error)
       return {
         success: false,
-        deleted: 0,
+        deleted: { selfies: 0, poses: 0, creations: 0, total: 0 },
         error: error instanceof Error ? error.message : 'Unknown error',
       }
     }
@@ -136,6 +162,6 @@ export const useUtilsFileSystemStats = () => {
     countFilesByPattern,
     getTotalFileSystemFiles,
     countAsyncStorageItems,
-    removeAllSelfies,
+    removeAllData,
   }
 }

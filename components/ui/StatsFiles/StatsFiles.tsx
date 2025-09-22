@@ -74,7 +74,7 @@ export default function StatsFiles({ activeFilter, className = '' }: StatsFilesP
   const [isDeleting, setIsDeleting] = useState(false)
 
   const { stats, refreshStats } = useFileSystemStats()
-  const { removeAllSelfies } = useUtilsFileSystemStats()
+  const { removeAllData } = useUtilsFileSystemStats()
   const { pose, selfieChooser, creation } = useAppStores()
 
   // Load ALL actual FileSystem files
@@ -185,17 +185,34 @@ export default function StatsFiles({ activeFilter, className = '' }: StatsFilesP
     setShowUrlList(!showUrlList)
   }
 
-  const handleDeleteAllSelfies = () => {
-    const selfieCount = stats.fileSystem.selfies + stats.asyncStorage.selfies
+  const handleDeleteAllData = () => {
+    const totalCount =
+      stats.fileSystem.selfies +
+      stats.asyncStorage.selfies +
+      stats.fileSystem.poses +
+      stats.asyncStorage.poses +
+      stats.fileSystem.creations +
+      stats.asyncStorage.creations
 
-    if (selfieCount === 0) {
-      Alert.alert('No Selfies', 'There are no selfies to delete.')
+    if (totalCount === 0) {
+      Alert.alert('No Data', 'There are no selfies, poses, or creations to delete.')
       return
     }
 
+    const itemBreakdown = []
+    if (stats.fileSystem.selfies + stats.asyncStorage.selfies > 0) {
+      itemBreakdown.push(`${stats.fileSystem.selfies + stats.asyncStorage.selfies} selfies`)
+    }
+    if (stats.fileSystem.poses + stats.asyncStorage.poses > 0) {
+      itemBreakdown.push(`${stats.fileSystem.poses + stats.asyncStorage.poses} poses`)
+    }
+    if (stats.fileSystem.creations + stats.asyncStorage.creations > 0) {
+      itemBreakdown.push(`${stats.fileSystem.creations + stats.asyncStorage.creations} creations`)
+    }
+
     Alert.alert(
-      'Delete All Selfies',
-      `Are you sure you want to delete all ${selfieCount} selfies from both FileSystem and AsyncStorage? This action cannot be undone.`,
+      'Delete All Data',
+      `Are you sure you want to delete all ${totalCount} items (${itemBreakdown.join(', ')}) from both FileSystem and AsyncStorage? This action cannot be undone.`,
       [
         {
           text: 'Cancel',
@@ -207,11 +224,13 @@ export default function StatsFiles({ activeFilter, className = '' }: StatsFilesP
           onPress: async () => {
             setIsDeleting(true)
             try {
-              const result = await removeAllSelfies()
+              const result = await removeAllData()
 
               if (result.success) {
-                // Clear Zustand selfies as well
+                // Clear all Zustand stores
                 selfieChooser.reset()
+                pose.reset()
+                creation.reset()
 
                 // Refresh stats to show updated counts
                 await refreshStats()
@@ -221,15 +240,22 @@ export default function StatsFiles({ activeFilter, className = '' }: StatsFilesP
                   await loadFileSystemObjects()
                 }
 
+                const deletedBreakdown = []
+                if (result.deleted.selfies > 0)
+                  deletedBreakdown.push(`${result.deleted.selfies} selfies`)
+                if (result.deleted.poses > 0) deletedBreakdown.push(`${result.deleted.poses} poses`)
+                if (result.deleted.creations > 0)
+                  deletedBreakdown.push(`${result.deleted.creations} creations`)
+
                 Alert.alert(
                   'Success',
-                  `Successfully deleted ${result.deleted} selfie files from FileSystem and cleared AsyncStorage data.`
+                  `Successfully deleted ${result.deleted.total} items (${deletedBreakdown.join(', ')}) from FileSystem and cleared AsyncStorage data.`
                 )
               } else {
-                Alert.alert('Error', result.error || 'Failed to delete selfies')
+                Alert.alert('Error', result.error || 'Failed to delete data')
               }
             } catch (error) {
-              Alert.alert('Error', 'An unexpected error occurred while deleting selfies')
+              Alert.alert('Error', 'An unexpected error occurred while deleting data')
             } finally {
               setIsDeleting(false)
             }
@@ -268,7 +294,7 @@ export default function StatsFiles({ activeFilter, className = '' }: StatsFilesP
       <Pressable onPress={toggleExpanded} className="mb-3 flex-row items-center justify-between">
         <Text className="text-lg font-semibold text-gray-800">📊 File Statistics</Text>
         <View className="flex-row items-center gap-2">
-          <Pressable onPress={handleDeleteAllSelfies} disabled={isDeleting}>
+          <Pressable onPress={handleDeleteAllData} disabled={isDeleting}>
             <Icon
               family={ICON_FAMILY_NAME.Feather}
               name={isDeleting ? 'loader' : 'trash-2'}

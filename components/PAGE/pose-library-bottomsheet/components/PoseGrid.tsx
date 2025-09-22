@@ -27,7 +27,7 @@ export const PoseGrid = () => {
     }
 
     loadPoses()
-  }, [poses.length, setPoses])
+  }, [setPoses])
 
   // Safety check for poses array
   if (!poses || poses.length === 0) {
