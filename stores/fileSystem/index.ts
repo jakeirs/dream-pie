@@ -23,4 +23,4 @@ export { deleteItemFromFileSystem } from './utils/deleteItemFromFileSystem'
 export { syncWithFileSystemAsyncStorage } from './utils/syncWithFileSystemAsyncStorage'
 
 // Pure FileSystem operations
-export { copyBundledAssetToFileSystem } from './utils/copyBundledAssetToFileSystem'
+export { copyBundledAssetToFileSystem } from './utils/[depricated]__copyBundledAssetToFileSystem'

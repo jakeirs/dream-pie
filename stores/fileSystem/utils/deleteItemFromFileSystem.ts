@@ -47,7 +47,9 @@ export const deleteItemFromFileSystem = async <T extends ImageItem>(
   asyncStorageKey: string
 ): Promise<void> => {
   try {
-    console.log(`🗑️ Deleting ${itemIds.length} items from FileSystem + AsyncStorage (${asyncStorageKey})`)
+    console.log(
+      `🗑️ Deleting ${itemIds.length} items from FileSystem + AsyncStorage (${asyncStorageKey})`
+    )
 
     // Load existing items
     const items = await loadItemsFromAsyncStorage<T>(asyncStorageKey)
@@ -59,7 +61,6 @@ export const deleteItemFromFileSystem = async <T extends ImageItem>(
         try {
           const file = new File(item.imageUrl)
           await file.delete()
-          console.log(`🗂️ Deleted file: ${item.imageUrl}`)
         } catch (fileError) {
           console.warn(`⚠️ Failed to delete file for item ${item.id}:`, fileError)
         }
@@ -69,8 +70,6 @@ export const deleteItemFromFileSystem = async <T extends ImageItem>(
     // Remove from AsyncStorage
     const updatedItems = items.filter((item) => !itemIds.includes(item.id))
     await AsyncStorage.setItem(asyncStorageKey, JSON.stringify(updatedItems))
-
-    console.log(`✅ Successfully removed ${itemIds.length} items`)
   } catch (error) {
     console.error(`❌ Error deleting items:`, error)
     throw error

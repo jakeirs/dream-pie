@@ -1,4 +1,5 @@
 /**
+ * [depricated] - we have something similar in addToFileSystemAsyncStorage.ts now
  * COPY BUNDLED ASSET TO FILESYSTEM UTILITY
  *
  * Pure FileSystem utility for copying bundled assets (appAssets imports)
