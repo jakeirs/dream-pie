@@ -1,5 +1,5 @@
 import { View, Text } from 'react-native'
-import { Image, useImage } from 'expo-image'
+import { Image } from 'expo-image'
 
 import Button from '@/components/ui/Button/Button'
 
@@ -12,21 +12,22 @@ interface GalleryCardModalProps {
   onClose: () => void
 }
 
-export default function GalleryCardModal({ imageUri, title, description, onClose }: GalleryCardModalProps) {
-  const image = useImage(imageUri)
-
+export default function GalleryCardModal({
+  imageUri,
+  title,
+  description,
+  onClose,
+}: GalleryCardModalProps) {
   return (
     <View className="flex-1 px-6 py-4">
       {/* Header */}
-      <Text className="mb-6 text-center text-2xl font-bold text-textPrimary">
-        {title}
-      </Text>
+      <Text className="mb-6 text-center text-2xl font-bold text-textPrimary">{title}</Text>
 
       {/* Image */}
       <View className="mb-6 items-center">
-        {image && (
+        {imageUri && (
           <Image
-            source={image}
+            source={imageUri}
             style={{
               width: 280,
               height: 350,
@@ -48,10 +49,8 @@ export default function GalleryCardModal({ imageUri, title, description, onClose
       <View className="mb-6 rounded-xl bg-cardSecondary p-4">
         <Text className="mb-2 text-lg font-bold text-textPrimary">Photo Details</Text>
         <Text className="text-textSecondary">
-          • Created with Dream Pie AI{'\n'}
-          • Professional quality enhancement{'\n'}
-          • Background replacement applied{'\n'}
-          • Color grading optimized
+          • Created with Dream Pie AI{'\n'}• Professional quality enhancement{'\n'}• Background
+          replacement applied{'\n'}• Color grading optimized
         </Text>
       </View>
 
@@ -63,9 +62,7 @@ export default function GalleryCardModal({ imageUri, title, description, onClose
           backgroundColor: brandColors.primary,
           paddingVertical: 18,
         }}>
-        <Text
-          className="text-lg font-bold"
-          style={{ color: brandColors.primaryForeground }}>
+        <Text className="text-lg font-bold" style={{ color: brandColors.primaryForeground }}>
           Close
         </Text>
       </Button>
