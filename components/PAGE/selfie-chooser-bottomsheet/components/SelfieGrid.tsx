@@ -1,7 +1,7 @@
 // Following Import Order Standards (React 19+)
 // 1. React Native Core & Expo
 import { View, Text } from 'react-native'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 
 // 2. UI components (@/components/ui)
@@ -15,7 +15,8 @@ import { mockSelfies } from '@/mockData/dream/selfies'
 import { Selfie } from '@/types/dream/selfie'
 
 export const SelfieGrid = () => {
-  const { setSelectedSelfie, selectedSelfie, selfies, setSelfies } = useSelfieChooserStore()
+  const { setSelectedSelfie, selectedSelfie, selfies, setSelfies, addSelfieAndWait } =
+    useSelfieChooserStore()
 
   // Load selfies on mount if empty
   useEffect(() => {
@@ -57,12 +58,20 @@ export const SelfieGrid = () => {
   }
 
   const handlePhotoSelected = async (newSelfie: Selfie) => {
-    // Add new selfie to the beginning of the list
-    const updatedSelfies = [newSelfie, ...selfies]
-    setSelfies(updatedSelfies)
+    try {
+      console.log('📸 Processing new photo selection...')
 
-    // Automatically select the new selfie`
-    setSelectedSelfie(newSelfie)
+      // Wait for file processing to complete and get permanent URI
+      const processedSelfie = await addSelfieAndWait(newSelfie)
+
+      // Now update UI with stable, permanent URI
+      setSelectedSelfie(processedSelfie)
+
+      console.log('✅ Photo processing complete, UI updated with permanent URI')
+    } catch (error) {
+      console.error('❌ Failed to process photo:', error)
+      // Could show user error message here if needed
+    }
   }
 
   return (

@@ -33,7 +33,7 @@ export default function CameraButton({ onPhotoSelected }: CameraButtonProps) {
           activeOpacity={0.8}>
           <Icon
             family={ICON_FAMILY_NAME.Feather}
-            name="camera"
+            name={'camera'}
             size={32}
             color={brandColors.primaryForeground}
           />
@@ -43,7 +43,7 @@ export default function CameraButton({ onPhotoSelected }: CameraButtonProps) {
       <Alert visible={showAlert} onClose={hideAlert} title="Select Photo">
         <View className="space-y-3">
           <Text className="mb-8 text-center text-base" style={{ color: brandColors.textSecondary }}>
-            Choose how you want to add a photo
+            {'Choose how you want to add a photo'}
           </Text>
 
           <TouchableOpacity

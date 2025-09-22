@@ -2,11 +2,13 @@ import { create } from 'zustand'
 import { devtools } from '@csark0812/zustand-expo-devtools'
 import { Selfie } from '@/types/dream/selfie'
 import { syncWithFileSystemAsyncStorage } from './fileSystem/syncWithFileSystemAsyncStorage'
+import { addToFileSystemAsyncStorage } from './fileSystem/utils/addToFileSystemAsyncStorage'
 import { USER_SELFIES } from './AsyncStorage/keys'
 
 interface SelfieChooserStore {
   selfies: Selfie[] // Selfies with file URIs (synchronized with FileSystem + AsyncStorage)
   setSelfies: (incomingSelfies: Selfie[]) => Promise<void> // Compare AsyncStorage vs incoming selfies and sync
+  addSelfieAndWait: (newSelfie: Selfie) => Promise<Selfie> // Process single selfie and return with permanent URI
   selectedSelfie: Selfie | null
   setSelectedSelfie: (selfie: Selfie | null) => void
   deleteMode: boolean
@@ -39,6 +41,28 @@ export const useSelfieChooserStore = create<SelfieChooserStore>()(
 
           // Fallback: set empty array to prevent crashes
           set({ selfies: [] }, false, 'setSelfies-error')
+        }
+      },
+
+      // Process single selfie through file system and add to store
+      addSelfieAndWait: async (newSelfie: Selfie) => {
+        try {
+          console.log('🔄 addSelfieAndWait called - processing single selfie')
+
+          // Process single selfie through file system to get permanent URI
+          const processedSelfie = await addToFileSystemAsyncStorage(newSelfie, USER_SELFIES, 'selfie')
+
+          // Add processed selfie to beginning of existing array
+          const currentSelfies = get().selfies
+          const updatedSelfies = [processedSelfie, ...currentSelfies]
+
+          set({ selfies: updatedSelfies }, false, 'addSelfieAndWait-success')
+
+          console.log(`✅ addSelfieAndWait complete - processed ${processedSelfie.name}`)
+          return processedSelfie
+        } catch (error) {
+          console.error('❌ Error in addSelfieAndWait:', error)
+          throw error // Re-throw to let caller handle the error
         }
       },
 
