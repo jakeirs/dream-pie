@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 
-import { useUtilsFileSystemStats } from '@/hooks/useUtilsFileSystemStats'
+import { useUtilsFileSystemStats } from '@/components/ui/StatsFiles/hooks/useUtilsFileSystemStats'
 import { USER_POSES, USER_SELFIES, USER_CREATIONS } from '@/stores/AsyncStorage/keys'
 
 export interface FileSystemStats {

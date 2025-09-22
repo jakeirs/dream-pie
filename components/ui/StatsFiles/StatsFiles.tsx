@@ -5,7 +5,7 @@ import Card from '@/components/ui/Card/Card'
 import { Icon } from '@/components/ui/icons/Icon'
 import { useAppStores } from '@/stores'
 import { useFileSystemStats } from '@/components/ui/StatsFiles/hooks/useFileSystemStats'
-import { useUtilsFileSystemStats } from '@/hooks/useUtilsFileSystemStats'
+import { useUtilsFileSystemStats } from '@/components/ui/StatsFiles/hooks/useUtilsFileSystemStats'
 import { Directory, Paths } from 'expo-file-system'
 
 import { FilterType } from '@/types/dream/gallery'
@@ -271,7 +271,7 @@ export default function StatsFiles({ activeFilter, className = '' }: StatsFilesP
           <Pressable onPress={handleDeleteAllSelfies} disabled={isDeleting}>
             <Icon
               family={ICON_FAMILY_NAME.Feather}
-              name={isDeleting ? "loader" : "trash-2"}
+              name={isDeleting ? 'loader' : 'trash-2'}
               size={16}
               color={isDeleting ? '#9ca3af' : '#dc2626'}
             />
