@@ -1,12 +1,12 @@
 import { create } from 'zustand'
 import { devtools } from '@csark0812/zustand-expo-devtools'
 import { Selfie } from '@/types/dream/selfie'
-import { syncMockDataWithFileSystem } from './fileSystem/syncMockDataWithFileSystem'
+import { syncWithFileSystemAsyncStorage } from './fileSystem/syncWithFileSystemAsyncStorage'
 import { USER_SELFIES } from './AsyncStorage/keys'
 
 interface SelfieChooserStore {
-  selfies: Selfie[] // Selfies with file URIs (synced from mockData)
-  setSelfies: (mockSelfies: Selfie[]) => Promise<void> // Now async - auto-syncs mockData to file system
+  selfies: Selfie[] // Selfies with file URIs (synchronized with FileSystem + AsyncStorage)
+  setSelfies: (incomingSelfies: Selfie[]) => Promise<void> // Compare AsyncStorage vs incoming selfies and sync
   selectedSelfie: Selfie | null
   setSelectedSelfie: (selfie: Selfie | null) => void
   deleteMode: boolean
@@ -20,20 +20,20 @@ interface SelfieChooserStore {
 export const useSelfieChooserStore = create<SelfieChooserStore>()(
   devtools(
     (set, get) => ({
-      selfies: [], // Selfies with file URIs (automatically synced from mockData)
+      selfies: [], // Selfies with file URIs (synchronized with FileSystem + AsyncStorage)
 
-      // Main method: Automatically sync mockData to file system
-      setSelfies: async (mockSelfies: Selfie[]) => {
+      // Main method: Compare AsyncStorage vs incoming selfies and synchronize
+      setSelfies: async (incomingSelfies: Selfie[]) => {
         try {
-          console.log('🔄 setSelfies called - starting automatic sync to file system')
+          console.log('🔄 setSelfies called - starting FileSystem + AsyncStorage sync')
 
-          // Sync mockData selfies to file system using universal function with AsyncStorage key
-          const syncedSelfies = await syncMockDataWithFileSystem(mockSelfies, USER_SELFIES, 'selfie')
+          // Sync incoming selfies with FileSystem + AsyncStorage using new logic
+          const syncedSelfies = await syncWithFileSystemAsyncStorage(incomingSelfies, USER_SELFIES, 'selfie')
 
-          // Update store with selfies that have file URIs
+          // Update store with synchronized selfies (all have file URIs)
           set({ selfies: syncedSelfies }, false, 'setSelfies-synced')
 
-          console.log(`✅ setSelfies complete - ${syncedSelfies.length} selfies with file URIs`)
+          console.log(`✅ setSelfies complete - ${syncedSelfies.length} selfies synchronized`)
         } catch (error) {
           console.error('❌ Error in setSelfies sync:', error)
 

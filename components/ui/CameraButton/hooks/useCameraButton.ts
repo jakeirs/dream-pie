@@ -1,11 +1,10 @@
 import { useState } from 'react'
 import { Alert } from 'react-native'
 import * as ImagePicker from 'expo-image-picker'
-import { File, Paths } from 'expo-file-system'
-import AsyncStorage from '@react-native-async-storage/async-storage'
 
 import { USER_SELFIES } from '@/stores/AsyncStorage/keys'
 import { Selfie } from '@/types/dream/selfie'
+import { addToFileSystemAsyncStorage } from '@/stores/fileSystem/utils/addToFileSystemAsyncStorage'
 
 interface UseCameraButtonProps {
   onPhotoSelected: (selfie: Selfie) => void
@@ -58,6 +57,7 @@ export const useCameraButton = ({ onPhotoSelected }: UseCameraButtonProps) => {
           })
 
       if (!result.canceled && result.assets[0]) {
+        console.log('Image selected:', result.assets[0])
         await processSelectedImage(result.assets[0])
       }
     } catch (error) {
@@ -70,48 +70,31 @@ export const useCameraButton = ({ onPhotoSelected }: UseCameraButtonProps) => {
 
   const processSelectedImage = async (asset: ImagePicker.ImagePickerAsset) => {
     try {
-      // Generate unique filename
+      console.log('📷 Processing selected image from camera/gallery:', asset.uri)
+
+      // Generate unique ID and timestamp
       const timestamp = Date.now()
-      const filename = `selfie_${timestamp}.jpg`
 
-      // Create source file from asset URI
-      const sourceFile = new File(asset.uri)
-
-      // Create destination file in document directory
-      const destinationFile = new File(Paths.document, filename)
-
-      // Copy image to app's document directory using new API
-      await sourceFile.copy(destinationFile)
-
-      // Create new selfie object
-      const newSelfie: Selfie = {
+      // Create temporary selfie object with camera/gallery URI
+      const tempSelfie: Selfie = {
         id: `user_${timestamp}`,
         name: 'My Photo',
         description: 'User captured photo',
-        imageUrl: destinationFile.uri,
+        imageUrl: asset.uri, // Pass local device URI to utility
         tags: ['user-photo'],
         createdAt: new Date().toISOString(),
       }
 
-      // Save to AsyncStorage for persistence
-      await saveToAsyncStorage(newSelfie)
+      // Use unified utility to handle file operations and AsyncStorage
+      const processedSelfie = await addToFileSystemAsyncStorage(tempSelfie, USER_SELFIES, 'selfie')
 
-      // Notify parent component
-      onPhotoSelected(newSelfie)
+      // Notify parent component with processed selfie (has permanent file URI)
+      onPhotoSelected(processedSelfie)
+
+      console.log('✅ Camera/gallery image processed successfully:', processedSelfie.imageUrl)
     } catch (error) {
-      console.error('Error processing image:', error)
+      console.error('❌ Error processing camera/gallery image:', error)
       Alert.alert('Error', 'Failed to save image. Please try again.')
-    }
-  }
-
-  const saveToAsyncStorage = async (selfie: Selfie) => {
-    try {
-      const existingSelfies = await AsyncStorage.getItem(USER_SELFIES)
-      const selfies = existingSelfies ? JSON.parse(existingSelfies) : []
-      selfies.push(selfie)
-      await AsyncStorage.setItem(USER_SELFIES, JSON.stringify(selfies))
-    } catch (error) {
-      console.error('Error saving to AsyncStorage:', error)
     }
   }
 

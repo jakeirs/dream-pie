@@ -9,6 +9,12 @@
  * - AsyncStorage operations for any data type
  * - File deletion with cleanup
  * - Uses hybrid API: new API for paths (Paths.document), legacy API for operations
+ *
+ * EXPORTS:
+ * - copyBundledAssetToFileSystem: Copy bundled assets to FileSystem
+ * - saveItemToAsyncStorage: Save items to AsyncStorage
+ * - loadItemsFromAsyncStorage: Load items from AsyncStorage
+ * - deleteItemFromFileSystem: Delete items from FileSystem + AsyncStorage
  */
 
 import { File, Paths } from 'expo-file-system'
@@ -99,14 +105,17 @@ export const loadItemsFromAsyncStorage = async <T>(asyncStorageKey: string): Pro
 }
 
 /**
- * Delete item from both file system (using new File API) and AsyncStorage
+ * Delete item from both FileSystem and AsyncStorage
  * Universal function that works for any item type (poses, selfies, creations, etc.)
+ * Uses itemId + asyncStorageKey pattern for consistency with addToFileSystemAsyncStorage
  */
 export const deleteItemFromFileSystem = async <T extends ImageItem>(
   itemId: string,
   asyncStorageKey: string
 ): Promise<void> => {
   try {
+    console.log(`🗑️ Deleting item ${itemId} from FileSystem + AsyncStorage (${asyncStorageKey})`)
+
     // Load existing items
     const items = await loadItemsFromAsyncStorage<T>(asyncStorageKey)
 
@@ -117,19 +126,20 @@ export const deleteItemFromFileSystem = async <T extends ImageItem>(
       return
     }
 
-    // Delete file if it's a file URI (using new File API)
+    // Delete file if it's a file URI (using latest File API)
     if (itemToDelete.imageUrl.startsWith('file://')) {
       const file = new File(itemToDelete.imageUrl)
       await file.delete()
+      console.log(`🗑️ Deleted file: ${itemToDelete.imageUrl}`)
     }
 
     // Remove from AsyncStorage
     const updatedItems = items.filter((item) => item.id !== itemId)
     await AsyncStorage.setItem(asyncStorageKey, JSON.stringify(updatedItems))
 
-    console.log(`🗑️ Removed item ${itemId} from AsyncStorage (${asyncStorageKey})`)
+    console.log(`✅ Successfully removed item ${itemId} from FileSystem + AsyncStorage`)
   } catch (error) {
-    console.error(`❌ Error deleting item ${itemId}:`, error)
+    console.error(`❌ Error deleting item ${itemId} from FileSystem + AsyncStorage:`, error)
     throw error
   }
 }

@@ -1,12 +1,12 @@
 import { create } from 'zustand'
 import { devtools } from '@csark0812/zustand-expo-devtools'
 import { Pose } from '@/types/dream/pose'
-import { syncMockDataWithFileSystem } from './fileSystem/syncMockDataWithFileSystem'
+import { syncWithFileSystemAsyncStorage } from './fileSystem/syncWithFileSystemAsyncStorage'
 import { USER_POSES } from './AsyncStorage/keys'
 
 interface PoseStore {
-  poses: Pose[] // Poses with file URIs (synced from mockData)
-  setPoses: (mockPoses: Pose[]) => Promise<void> // Now async - auto-syncs mockData to file system
+  poses: Pose[] // Poses with file URIs (synchronized with FileSystem + AsyncStorage)
+  setPoses: (incomingPoses: Pose[]) => Promise<void> // Compare AsyncStorage vs incoming poses and sync
   selectedPose: Pose | null
   setSelectedPose: (pose: Pose | null) => void
   reset: () => void
@@ -15,20 +15,20 @@ interface PoseStore {
 export const usePoseStore = create<PoseStore>()(
   devtools(
     (set, get) => ({
-      poses: [], // Poses with file URIs (automatically synced from mockData)
+      poses: [], // Poses with file URIs (synchronized with FileSystem + AsyncStorage)
 
-      // Main method: Automatically sync mockData to file system
-      setPoses: async (mockPoses: Pose[]) => {
+      // Main method: Compare AsyncStorage vs incoming poses and synchronize
+      setPoses: async (incomingPoses: Pose[]) => {
         try {
-          console.log('🔄 setPoses called - starting automatic sync to file system')
+          console.log('🔄 setPoses called - starting FileSystem + AsyncStorage sync')
 
-          // Sync mockData poses to file system using universal function with AsyncStorage key
-          const syncedPoses = await syncMockDataWithFileSystem(mockPoses, USER_POSES, 'pose')
+          // Sync incoming poses with FileSystem + AsyncStorage using new logic
+          const syncedPoses = await syncWithFileSystemAsyncStorage(incomingPoses, USER_POSES, 'pose')
 
-          // Update store with poses that have file URIs
+          // Update store with synchronized poses (all have file URIs)
           set({ poses: syncedPoses }, false, 'setPoses-synced')
 
-          console.log(`✅ setPoses complete - ${syncedPoses.length} poses with file URIs`)
+          console.log(`✅ setPoses complete - ${syncedPoses.length} poses synchronized`)
         } catch (error) {
           console.error('❌ Error in setPoses sync:', error)
 
