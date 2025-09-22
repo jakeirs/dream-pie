@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+import * as Crypto from 'expo-crypto'
 import {
   usePoseStore,
   useSelfieChooserStore,
@@ -40,7 +41,7 @@ export const useGeneratePhotoLogic = () => {
   useEffect(() => {
     if (result && result.imageUrl && usedPose && usedSelfie) {
       const creation: Creation = {
-        id: crypto.randomUUID(),
+        id: Crypto.randomUUID(),
         usedPose,
         usedSelfie,
         imageUrl: result.imageUrl,
