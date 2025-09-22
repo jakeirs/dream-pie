@@ -103,6 +103,16 @@ export const usePhotoGenerationStore = create<PhotoGenerationStore>()(
           'setError'
         ),
 
+      // Set Abort Controller - Store reference for cancellation
+      setAbortController: (controller) =>
+        set(
+          {
+            abortController: controller,
+          },
+          false,
+          'setAbortController'
+        ),
+
       // Complete Generation - Stop processing
       completeGeneration: () =>
         set(
@@ -113,16 +123,6 @@ export const usePhotoGenerationStore = create<PhotoGenerationStore>()(
           },
           false,
           'completeGeneration'
-        ),
-
-      // Set Abort Controller - Store reference for cancellation
-      setAbortController: (controller) =>
-        set(
-          {
-            abortController: controller,
-          },
-          false,
-          'setAbortController'
         ),
 
       // Cancel Generation - Abort request and update state

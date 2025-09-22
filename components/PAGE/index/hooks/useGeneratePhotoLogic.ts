@@ -1,7 +1,15 @@
-import { usePoseStore, useSelfieChooserStore, usePhotoGenerationStore, useStore } from '@/stores'
+import { useEffect } from 'react'
+import {
+  usePoseStore,
+  useSelfieChooserStore,
+  usePhotoGenerationStore,
+  useCreationStore,
+  useStore,
+} from '@/stores'
 import { useFal } from '@/shared/hooks'
 import { convertImageForFal } from '@/shared/utils'
 import { getPosePromptByPoseId } from '@/mockData/prompts/posePrompts'
+import { Creation } from '@/types/dream'
 
 /**
  * Photo Generation Logic Hook
@@ -22,6 +30,26 @@ export const useGeneratePhotoLogic = () => {
   const selectedPose = useStore(usePoseStore, (state) => state.selectedPose)
   const selectedSelfie = useStore(useSelfieChooserStore, (state) => state.selectedSelfie)
   const photoGeneration = usePhotoGenerationStore()
+
+  // Selective subscriptions for creation saving performance optimization
+  const addCreation = useStore(useCreationStore, (state) => state.addCreation)
+  const result = useStore(usePhotoGenerationStore, (state) => state.result)
+  const usedPose = useStore(usePhotoGenerationStore, (state) => state.usedPose)
+  const usedSelfie = useStore(usePhotoGenerationStore, (state) => state.usedSelfie)
+
+  useEffect(() => {
+    if (result && result.imageUrl && usedPose && usedSelfie) {
+      const creation: Creation = {
+        id: crypto.randomUUID(),
+        usedPose,
+        usedSelfie,
+        imageUrl: result.imageUrl,
+        generatedAt: new Date().toISOString(),
+      }
+      addCreation(creation)
+      console.log('New creation added:', creation)
+    }
+  }, [result, usedPose, usedSelfie, addCreation])
 
   // Initialize shared FAL hook with callbacks to update photoGeneration store
   const { handleImageEdit } = useFal({

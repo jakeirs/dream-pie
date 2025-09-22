@@ -13,8 +13,3 @@ export interface Selfie {
   tags: string[]
   createdAt: string
 }
-
-export interface SelectedSelfie {
-  selfie: Selfie
-  selectedAt: string
-}
