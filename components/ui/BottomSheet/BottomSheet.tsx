@@ -8,6 +8,7 @@ import BottomSheetLib, {
   BottomSheetModalProps,
 } from '@gorhom/bottom-sheet'
 import { brandColors } from '@/shared/theme'
+import { useSafeAreaInsets } from 'react-native-safe-area-context'
 
 export interface BottomSheetProps extends Omit<BottomSheetLibProps, 'children'> {
   children: React.ReactNode
@@ -28,8 +29,12 @@ export interface BottomSheetModalExtendedProps extends Omit<BottomSheetModalProp
 export type CombinedBottomSheetProps = BottomSheetProps | BottomSheetModalExtendedProps
 
 const BottomSheet = forwardRef<BottomSheetLib, CombinedBottomSheetProps>(
-  ({ children, scrollView = true, index = 0, isModal = false, backdropAppearsIndex = 0, ...props }, ref) => {
+  (
+    { children, scrollView = true, index = 0, isModal = false, backdropAppearsIndex = 0, ...props },
+    ref
+  ) => {
     const defaultSnapPoints = useMemo(() => ['50%', '90%'], [])
+    const { top = 10 } = useSafeAreaInsets()
 
     const renderBackdrop = useCallback(
       (backdropProps: any) => (
@@ -60,6 +65,7 @@ const BottomSheet = forwardRef<BottomSheetLib, CombinedBottomSheetProps>(
         handleIndicatorStyle: { backgroundColor: brandColors.textLight },
         backgroundStyle: { backgroundColor: brandColors.primaryForeground },
         backdropComponent: renderBackdrop,
+        topInset: top,
       }
 
       const modalCombinedProps = { ...modalDefaultProps, ...props }
@@ -78,6 +84,7 @@ const BottomSheet = forwardRef<BottomSheetLib, CombinedBottomSheetProps>(
       handleIndicatorStyle: { backgroundColor: brandColors.textLight },
       backgroundStyle: { backgroundColor: brandColors.primaryForeground },
       backdropComponent: renderBackdrop,
+      topInset: top,
     }
 
     const combinedProps = { ...defaultProps, ...props }

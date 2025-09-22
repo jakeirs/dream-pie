@@ -64,8 +64,6 @@ export const syncMockDataWithFileSystem = async <T extends ImageItem>(
 
     // 5. Process additions: copy bundled assets to file system
     for (const mockItem of itemsToAdd) {
-      console.log(`➕ Adding ${itemType}: ${mockItem.name}`)
-
       try {
         // Copy bundled asset to file system
         const fileUri = await copyBundledAssetToFileSystem(mockItem, itemType)
@@ -78,7 +76,6 @@ export const syncMockDataWithFileSystem = async <T extends ImageItem>(
 
         // Save to AsyncStorage
         await saveItemToAsyncStorage(fileSystemItem, asyncStorageKey)
-        console.log(`✅ Successfully added ${itemType}: ${mockItem.name}`)
       } catch (error) {
         console.error(`❌ Failed to add ${itemType} ${mockItem.name}:`, error)
         // Continue with next item instead of failing entire sync
@@ -88,7 +85,7 @@ export const syncMockDataWithFileSystem = async <T extends ImageItem>(
 
     // 6. Process removals: delete files and remove from storage
     if (itemsToRemove.length > 0) {
-      const idsToRemove = itemsToRemove.map(item => item.id)
+      const idsToRemove = itemsToRemove.map((item) => item.id)
       await deleteItemFromFileSystem(idsToRemove, asyncStorageKey)
     }
 
@@ -103,7 +100,6 @@ export const syncMockDataWithFileSystem = async <T extends ImageItem>(
     // Enhanced fallback: try to return existing items if available
     try {
       const existingItems = await loadItemsFromAsyncStorage<T>(asyncStorageKey)
-      console.log(`🔄 Fallback: returning ${existingItems.length} existing ${itemType}s`)
       return existingItems
     } catch (fallbackError) {
       console.error('❌ Fallback also failed:', fallbackError)
@@ -111,5 +107,3 @@ export const syncMockDataWithFileSystem = async <T extends ImageItem>(
     }
   }
 }
-
-
