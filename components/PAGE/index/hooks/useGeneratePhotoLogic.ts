@@ -33,7 +33,7 @@ export const useGeneratePhotoLogic = () => {
   const photoGeneration = usePhotoGenerationStore()
 
   // Selective subscriptions for creation saving performance optimization
-  const addCreation = useStore(useCreationStore, (state) => state.addCreation)
+  const addCreationAndWait = useStore(useCreationStore, (state) => state.addCreationAndWait)
   const result = useStore(usePhotoGenerationStore, (state) => state.result)
   const usedPose = useStore(usePhotoGenerationStore, (state) => state.usedPose)
   const usedSelfie = useStore(usePhotoGenerationStore, (state) => state.usedSelfie)
@@ -42,15 +42,15 @@ export const useGeneratePhotoLogic = () => {
     if (result && result.imageUrl && usedPose && usedSelfie) {
       const creation: Creation = {
         id: Crypto.randomUUID(),
+        name: usedPose.name,
         usedPose,
         usedSelfie,
         imageUrl: result.imageUrl,
         generatedAt: new Date().toISOString(),
       }
-      addCreation(creation)
-      console.log('New creation added:', creation)
+      addCreationAndWait(creation)
     }
-  }, [result, usedPose, usedSelfie, addCreation])
+  }, [result, usedPose, usedSelfie, addCreationAndWait])
 
   // Initialize shared FAL hook with callbacks to update photoGeneration store
   const { handleImageEdit } = useFal({

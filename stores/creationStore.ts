@@ -23,6 +23,8 @@
 import { create } from 'zustand'
 import { devtools } from '@csark0812/zustand-expo-devtools'
 import { Creation } from '@/types/dream'
+import { addToFileSystemAsyncStorage } from './fileSystem'
+import { USER_CREATIONS } from './AsyncStorage/keys'
 
 interface CreationStore {
   // State
@@ -31,7 +33,7 @@ interface CreationStore {
 
   // Actions
   setCreations: (mockCreations: Creation[]) => void
-  addCreation: (creation: Creation) => void
+  addCreationAndWait: (creation: Creation) => Promise<Creation>
   removeCreation: (id: string) => void
   reset: () => void
 }
@@ -54,16 +56,22 @@ export const useCreationStore = create<CreationStore>()(
           'setCreations'
         )
       },
+      addCreationAndWait: async (creation: Creation) => {
+        // Process single creation through file system to get permanent URI
+        const processedCreation = await addToFileSystemAsyncStorage<Creation>(
+          creation,
+          USER_CREATIONS,
+          'creation'
+        )
 
-      // Add New Creation - From successful generation
-      addCreation: (creation) =>
-        set(
-          (state) => ({
-            creations: [creation, ...state.creations], // Add to beginning for newest-first order
-          }),
-          false,
-          'addCreation'
-        ),
+        // Add processed creation to beginning of existing array
+        const currentCreations = get().creations
+        const updatedCreations = [processedCreation, ...currentCreations]
+
+        set({ creations: updatedCreations }, false, 'addCreationAndWait-success')
+
+        return processedCreation
+      },
 
       // Remove Creation - User deletion
       removeCreation: (id) =>

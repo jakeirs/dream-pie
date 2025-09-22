@@ -10,6 +10,7 @@ import { Selfie } from './selfie'
 
 export interface Creation {
   id: string
+  name: string
   usedPose: Pose
   usedSelfie: Selfie
   imageUrl: string // AI generated result
