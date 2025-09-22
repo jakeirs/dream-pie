@@ -1,7 +1,7 @@
 import { Directory, Paths, File } from 'expo-file-system'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { USER_SELFIES } from '@/stores/AsyncStorage/keys'
-import { deleteItemFromFileSystem } from '@/stores/fileSystem/utils/utils'
+import { deleteItemFromFileSystem } from '@/stores/fileSystem'
 
 /**
  * Utility functions for file system and AsyncStorage operations
@@ -21,7 +21,7 @@ export const useUtilsFileSystemStats = () => {
       }
 
       const files = await documentDir.list()
-      const fileNames = files.map(file => file.name)
+      const fileNames = files.map((file) => file.name)
       return fileNames.filter((fileName) => pattern.test(fileName)).length
     } catch (error) {
       console.warn('Error counting files by pattern:', error)
@@ -69,7 +69,11 @@ export const useUtilsFileSystemStats = () => {
    * Remove all selfie files from FileSystem and AsyncStorage
    * Uses the bulk delete utility for consistency with other deletion operations
    */
-  const removeAllSelfies = async (): Promise<{ success: boolean; deleted: number; error?: string }> => {
+  const removeAllSelfies = async (): Promise<{
+    success: boolean
+    deleted: number
+    error?: string
+  }> => {
     try {
       console.log('🔄 removeAllSelfies called - starting bulk selfie removal')
 
@@ -86,7 +90,7 @@ export const useUtilsFileSystemStats = () => {
 
         if (exists) {
           const files = await documentDir.list()
-          const selfieFiles = files.filter(file => file.name.match(/^selfie_.*\.jpg$/))
+          const selfieFiles = files.filter((file) => file.name.match(/^selfie_.*\.jpg$/))
 
           for (const file of selfieFiles) {
             try {
@@ -110,7 +114,7 @@ export const useUtilsFileSystemStats = () => {
         return { success: true, deleted: 0 }
       }
 
-      const selfieIds = selfies.map(selfie => selfie.id)
+      const selfieIds = selfies.map((selfie) => selfie.id)
       console.log(`📊 Found ${selfieIds.length} selfies to delete`)
 
       // Use the bulk delete function for consistency
@@ -118,13 +122,12 @@ export const useUtilsFileSystemStats = () => {
 
       console.log(`✅ removeAllSelfies complete - removed ${selfieIds.length} selfies`)
       return { success: true, deleted: selfieIds.length }
-
     } catch (error) {
       console.error('❌ Error removing all selfies:', error)
       return {
         success: false,
         deleted: 0,
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? error.message : 'Unknown error',
       }
     }
   }

@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import { devtools } from '@csark0812/zustand-expo-devtools'
 import { Pose } from '@/types/dream/pose'
-import { syncWithFileSystemAsyncStorage } from './fileSystem/syncWithFileSystemAsyncStorage'
+import { syncWithFileSystemAsyncStorage } from './fileSystem'
 import { USER_POSES } from './AsyncStorage/keys'
 
 interface PoseStore {
@@ -20,19 +20,13 @@ export const usePoseStore = create<PoseStore>()(
       // Main method: Compare AsyncStorage vs incoming poses and synchronize
       setPoses: async (incomingPoses: Pose[]) => {
         try {
-          console.log('🔄 setPoses called - starting FileSystem + AsyncStorage sync')
-
-          // Sync incoming poses with FileSystem + AsyncStorage using new logic
-          const syncedPoses = await syncWithFileSystemAsyncStorage(incomingPoses, USER_POSES, 'pose')
-
-          // Update store with synchronized poses (all have file URIs)
+          const syncedPoses = await syncWithFileSystemAsyncStorage(
+            incomingPoses,
+            USER_POSES,
+            'pose'
+          )
           set({ poses: syncedPoses }, false, 'setPoses-synced')
-
-          console.log(`✅ setPoses complete - ${syncedPoses.length} poses synchronized`)
         } catch (error) {
-          console.error('❌ Error in setPoses sync:', error)
-
-          // Fallback: set empty array to prevent crashes
           set({ poses: [] }, false, 'setPoses-error')
         }
       },

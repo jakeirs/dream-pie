@@ -1,8 +1,7 @@
 import { create } from 'zustand'
 import { devtools } from '@csark0812/zustand-expo-devtools'
 import { Selfie } from '@/types/dream/selfie'
-import { addToFileSystemAsyncStorage } from './fileSystem/utils/addToFileSystemAsyncStorage'
-import { deleteItemFromFileSystem } from './fileSystem/utils/utils'
+import { addToFileSystemAsyncStorage, deleteItemFromFileSystem } from './fileSystem'
 import { USER_SELFIES } from './AsyncStorage/keys'
 
 interface SelfieChooserStore {
