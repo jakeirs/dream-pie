@@ -1,9 +1,12 @@
-import { View, Text } from 'react-native'
+import { View, Text, ActivityIndicator } from 'react-native'
 import { Image } from 'expo-image'
 
 import Button from '@/components/ui/Button/Button'
 
+import { useImageShare } from '@/hooks/useImageShare'
 import { brandColors } from '@/shared/theme'
+import { ICON_FAMILY_NAME } from '@/components/ui/icons/constants'
+import { Icon } from '@/components/ui/icons'
 
 interface GalleryCardModalProps {
   imageUri: string
@@ -18,6 +21,11 @@ export default function GalleryCardModal({
   description,
   onClose,
 }: GalleryCardModalProps) {
+  const { shareImage, isSharing } = useImageShare()
+
+  const handleShare = async () => {
+    await shareImage(imageUri, title)
+  }
   return (
     <View className="flex-1 px-6 py-4">
       {/* Header */}
@@ -54,18 +62,47 @@ export default function GalleryCardModal({
         </Text>
       </View>
 
-      {/* Close Button */}
-      <Button
-        onPress={onClose}
-        className="w-full"
-        style={{
-          backgroundColor: brandColors.primary,
-          paddingVertical: 18,
-        }}>
-        <Text className="text-lg font-bold" style={{ color: brandColors.primaryForeground }}>
-          Close
-        </Text>
-      </Button>
+      {/* Action Buttons */}
+      <View className="flex-row gap-3">
+        {/* Share Button */}
+        <Button
+          onPress={handleShare}
+          disabled={isSharing}
+          className="flex-1"
+          style={{
+            backgroundColor: isSharing ? brandColors.accent : brandColors.success,
+            paddingVertical: 18,
+          }}>
+          <View className="flex-row items-center justify-center gap-2">
+            {isSharing ? (
+              <ActivityIndicator size="small" color={brandColors.successForeground} />
+            ) : (
+              <Icon
+                family={ICON_FAMILY_NAME.Feather}
+                name="share"
+                size={20}
+                color={brandColors.successForeground}
+              />
+            )}
+            <Text className="text-lg font-bold" style={{ color: brandColors.successForeground }}>
+              {isSharing ? 'Preparing...' : 'Share'}
+            </Text>
+          </View>
+        </Button>
+
+        {/* Close Button */}
+        <Button
+          onPress={onClose}
+          className="flex-1"
+          style={{
+            backgroundColor: brandColors.primary,
+            paddingVertical: 18,
+          }}>
+          <Text className="text-lg font-bold" style={{ color: brandColors.primaryForeground }}>
+            Close
+          </Text>
+        </Button>
+      </View>
     </View>
   )
 }
