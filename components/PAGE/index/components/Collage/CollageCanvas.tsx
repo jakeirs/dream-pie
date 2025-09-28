@@ -5,8 +5,7 @@
  * Renders green background with centered selfie image
  */
 
-import React, { forwardRef } from 'react'
-import { View } from 'react-native'
+import { forwardRef } from 'react'
 import {
   Canvas,
   Rect,
@@ -22,7 +21,7 @@ interface CollageCanvasProps {
   visible?: boolean
 }
 
-const CollageCanvas = forwardRef<View, CollageCanvasProps>(
+const CollageCanvas = forwardRef<any, CollageCanvasProps>(
   ({ selfie, visible = true }, ref) => {
     const config = getDefaultCollageConfig()
 
@@ -37,42 +36,34 @@ const CollageCanvas = forwardRef<View, CollageCanvasProps>(
     if (!visible) return null
 
     return (
-      <View
+      <Canvas
         ref={ref}
         style={{
           width: config.canvasWidth,
           height: config.canvasHeight,
         }}
-        className="self-center"
       >
-        <Canvas
-          style={{
-            width: config.canvasWidth,
-            height: config.canvasHeight,
-          }}
-        >
-          {/* Green Background */}
-          <Rect
-            x={0}
-            y={0}
-            width={config.canvasWidth}
-            height={config.canvasHeight}
-            color={config.backgroundColorHex}
-          />
+        {/* Green Background */}
+        <Rect
+          x={0}
+          y={0}
+          width={config.canvasWidth}
+          height={config.canvasHeight}
+          color={config.backgroundColorHex}
+        />
 
-          {/* Centered Selfie Image */}
-          {image && imagePosition && (
-            <Image
-              image={image}
-              x={imagePosition.x}
-              y={imagePosition.y}
-              width={imagePosition.width}
-              height={imagePosition.height}
-              fit="contain"
-            />
-          )}
-        </Canvas>
-      </View>
+        {/* Centered Selfie Image */}
+        {image && imagePosition && (
+          <Image
+            image={image}
+            x={imagePosition.x}
+            y={imagePosition.y}
+            width={imagePosition.width}
+            height={imagePosition.height}
+            fit="contain"
+          />
+        )}
+      </Canvas>
     )
   }
 )

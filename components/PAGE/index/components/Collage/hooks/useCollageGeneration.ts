@@ -5,7 +5,8 @@
  * Handles generation states, errors, and coordinates the collage creation workflow
  */
 
-import { useState, useCallback, useRef } from 'react'
+import { useState, useCallback } from 'react'
+import { useCanvasRef } from '@shopify/react-native-skia'
 import { useSelfieChooserStore } from '@/stores/selfieChooserStore'
 import { CollageGenerationState, ShareResult } from '../types'
 import { exportCollageToFile } from '../utils/collageRenderer'
@@ -13,7 +14,7 @@ import { shareCollageImage, isShareSupported as checkShareSupport } from '../uti
 
 export function useCollageGeneration() {
   const { selectedSelfie } = useSelfieChooserStore()
-  const canvasRef = useRef<any>(null)
+  const canvasRef = useCanvasRef()
 
   const [state, setState] = useState<CollageGenerationState>({
     isGenerating: false,

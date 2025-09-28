@@ -5,10 +5,7 @@
  * Handles canvas setup, background fill, image loading, and export functionality
  */
 
-import {
-  SkImage,
-  makeImageFromView,
-} from '@shopify/react-native-skia'
+import { SkImage } from '@shopify/react-native-skia'
 import { File, Paths } from 'expo-file-system'
 import { CollageConfig, CollagePosition } from '../types'
 import { calculateImageDimensions, calculateCenterPosition } from './imageUtils'
@@ -44,8 +41,7 @@ export function calculateCollageImagePosition(
 }
 
 /**
- * Export collage canvas to a shareable image file
- * This function should be called after the canvas has been rendered
+ * Export collage canvas to a shareable image file using Skia's makeImageSnapshot
  */
 export async function exportCollageToFile(
   canvasRef: React.RefObject<any>
@@ -55,28 +51,34 @@ export async function exportCollageToFile(
       throw new Error('Canvas ref is not available')
     }
 
-    // Create image from the canvas view
-    const image = await makeImageFromView(canvasRef)
+    // Create image snapshot from the canvas
+    const image = canvasRef.current.makeImageSnapshot()
     if (!image) {
-      throw new Error('Failed to create image from canvas')
+      throw new Error('Failed to create image snapshot from canvas')
     }
 
     // Generate filename with timestamp
     const timestamp = Date.now()
     const filename = `dream-pie-collage-${timestamp}.png`
-    const outputPath = `${Paths.document}/${filename}`
 
-    // Create file and write image data
-    const file = new File(outputPath)
+    // Encode image to bytes (PNG format)
     const imageData = image.encodeToBytes()
 
     if (!imageData) {
       throw new Error('Failed to encode image data')
     }
 
+    // Create file using correct constructor pattern (following codebase patterns)
+    const file = new File(Paths.document, filename)
+
+    // Ensure file exists
+    await file.create()
+
+    // Write image data
     await file.write(imageData)
 
-    return outputPath
+    console.log('Collage exported successfully to:', file.uri)
+    return file.uri
   } catch (error) {
     console.error('Error exporting collage:', error)
     return null
