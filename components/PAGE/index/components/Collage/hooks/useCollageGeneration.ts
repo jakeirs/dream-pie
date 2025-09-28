@@ -59,7 +59,7 @@ export function useCollageGeneration() {
 
     try {
       // Wait a brief moment to allow canvas to render
-      await new Promise((resolve) => setTimeout(resolve, 500))
+      await new Promise((resolve) => setTimeout(resolve, 300))
 
       // Export canvas to file with configuration
       const imageUri = await exportCollageToFile(canvasRef, config)
