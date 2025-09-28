@@ -1,10 +1,11 @@
 import { useCallback } from 'react'
 
-import { calculateDualImageLayout, exportCollageToFile } from '../utils/collageRenderer'
-import { useStore } from 'zustand'
-import { usePhotoGenerationStore, usePoseStore, useSelfieChooserStore } from '@/stores'
 import { useCanvasRef, useImage } from '@shopify/react-native-skia'
-import { getDualImageCollageConfig } from '../utils/imageUtils'
+import { useStore } from 'zustand'
+
+import { usePhotoGenerationStore, usePoseStore, useSelfieChooserStore } from '@/stores'
+import { getDualImageCollageConfig } from './utils/imageUtils'
+import { calculateDualImageLayout, exportCollageToFile } from './utils/collageRenderer'
 
 export function useCollageGeneration() {
   const selectedPose = useStore(usePoseStore, (state) => state.selectedPose)
@@ -29,6 +30,7 @@ export function useCollageGeneration() {
       // Export canvas to file with configuration
       const imageUri = await exportCollageToFile(canvasRef, config)
       setCollageImageUri(imageUri)
+
       if (!imageUri) {
         throw new Error('Failed to generate collage image')
       }

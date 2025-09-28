@@ -1,10 +1,3 @@
-/**
- * COLLAGE TYPES
- *
- * TypeScript interfaces for collage generation feature
- * Used for image composition, canvas rendering, and sharing functionality
- */
-
 export type ImageFormat = 'png' | 'webp' | 'jpeg'
 
 export type BackgroundMode = 'solid' | 'transparent'
@@ -36,10 +29,5 @@ export interface CollagePosition {
 
 export interface DualImageLayout {
   posePhoto: CollagePosition // Top right, 70% size
-  selfiePhoto: CollagePosition     // Top left, remaining space
-}
-
-export interface ShareResult {
-  success: boolean
-  error?: string
+  selfiePhoto: CollagePosition // Top left, remaining space
 }

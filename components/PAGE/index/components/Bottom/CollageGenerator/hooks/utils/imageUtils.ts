@@ -1,4 +1,4 @@
-import { CollageConfig } from '../types'
+import type { CollageConfig } from '../../types/types'
 
 const MAX_COLLAGE_DIMENSION = 1000 // Maximum width or height in pixels
 

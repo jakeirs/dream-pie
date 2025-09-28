@@ -2,7 +2,7 @@ import { View } from 'react-native'
 import { Canvas, Rect, Image } from '@shopify/react-native-skia'
 
 import Button from '@/components/ui/Button/Button'
-import { useCollageGeneration } from './hooks/useCollageGeneration'
+import { useCollageGeneration } from '../hooks/useCollageGeneration'
 
 export function CollageCanvas() {
   const { generateCollage, canvasRef, poseImage, selfieImage, config, layout } =

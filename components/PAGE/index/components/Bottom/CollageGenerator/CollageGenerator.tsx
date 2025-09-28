@@ -1,10 +1,10 @@
 import { View } from 'react-native'
-
-import Button from '@/components/ui/Button/Button'
-import { CollageCanvas } from './CollageCanvas'
-import CollagePreview from './CollagePreview'
 import { useStore } from 'zustand'
-import { usePhotoGenerationStore, usePoseStore, useSelfieChooserStore } from '@/stores'
+
+import { CollageCanvas } from './components/CollageCanvas'
+import CollagePreview from './components/CollagePreview'
+
+import { usePoseStore, useSelfieChooserStore } from '@/stores'
 
 export default function CollageGenerator() {
   const selectedPose = useStore(usePoseStore, (state) => state.selectedPose)
@@ -14,7 +14,6 @@ export default function CollageGenerator() {
     return null
   }
 
-  console.log('Rendering CollageGenerator with selectedPose and selectedSelfie')
   return (
     <View className="flex-1 space-y-6 p-4">
       <CollageCanvas />

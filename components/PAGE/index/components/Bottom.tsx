@@ -1,7 +1,7 @@
 import { View } from 'react-native'
 
 import GenerateButton from './Bottom/GenerateButton'
-import CollageGenerator from './Collage'
+import CollageGenerator from './Bottom/CollageGenerator/CollageGenerator'
 
 interface BottomProps {}
 
