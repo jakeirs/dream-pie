@@ -6,7 +6,7 @@
  */
 
 import * as Sharing from 'expo-sharing'
-import { ShareResult, ImageFormat } from '../types'
+import { ShareResult } from '../types'
 
 /**
  * Determine MIME type from file extension
@@ -59,17 +59,5 @@ export async function shareCollageImage(imageUri: string): Promise<ShareResult> 
       success: false,
       error: error instanceof Error ? error.message : 'Unknown sharing error',
     }
-  }
-}
-
-/**
- * Check if sharing is supported on the current platform
- */
-export async function isShareSupported(): Promise<boolean> {
-  try {
-    return await Sharing.isAvailableAsync()
-  } catch (error) {
-    console.error('Error checking share availability:', error)
-    return false
   }
 }

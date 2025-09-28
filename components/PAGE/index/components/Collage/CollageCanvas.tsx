@@ -11,6 +11,7 @@ import { Pose } from '@/types/dream/pose'
 import { CollageConfig } from './types'
 import { getDefaultCollageConfig, getDualImageCollageConfig } from './utils/imageUtils'
 import { calculateCollageImagePosition, calculateDualImageLayout } from './utils/collageRenderer'
+import { View } from 'react-native'
 
 interface CollageCanvasProps {
   selfie: Selfie | null
@@ -47,72 +48,64 @@ function CollageCanvas({
 
   // Calculate layout positions
   let layout = null
-  let singleImagePosition = null
 
   if (isDualImageMode) {
     layout = calculateDualImageLayout(selfieImage, referenceImage, config)
-  } else if (selfieImage) {
-    // Fallback to single-image mode if only selfie is available
-    singleImagePosition = calculateCollageImagePosition(selfieImage, config)
   }
 
   if (!visible) return null
 
   return (
-    <Canvas
-      ref={ref}
+    <View
       style={{
-        width: config.canvasWidth,
-        height: config.canvasHeight,
+        position: 'absolute',
+        left: -9999,
+        top: -9999,
+        opacity: 0,
       }}>
-      {/* Conditional Background - only render if not transparent */}
-      {config.backgroundMode === 'solid' && (
-        <Rect
-          x={0}
-          y={0}
-          width={config.canvasWidth}
-          height={config.canvasHeight}
-          color={config.backgroundColorHex}
-        />
-      )}
-
-      {/* Dual Image Layout */}
-      {isDualImageMode && layout && (
-        <>
-          {/* Selfie Photo - Top Left */}
-          <Image
-            image={selfieImage}
-            x={layout.selfiePhoto.x}
-            y={layout.selfiePhoto.y}
-            width={layout.selfiePhoto.width}
-            height={layout.selfiePhoto.height}
-            fit="contain"
+      <Canvas
+        ref={ref}
+        style={{
+          width: config.canvasWidth,
+          height: config.canvasHeight,
+        }}>
+        {/* Conditional Background - only render if not transparent */}
+        {config.backgroundMode === 'solid' && (
+          <Rect
+            x={0}
+            y={0}
+            width={config.canvasWidth}
+            height={config.canvasHeight}
+            color={config.backgroundColorHex}
           />
+        )}
 
-          {/* Reference Photo - Top Right, 70% size */}
-          <Image
-            image={referenceImage}
-            x={layout.referencePhoto.x}
-            y={layout.referencePhoto.y}
-            width={layout.referencePhoto.width}
-            height={layout.referencePhoto.height}
-            fit="contain"
-          />
-        </>
-      )}
+        {/* Dual Image Layout */}
+        {isDualImageMode && layout && (
+          <>
+            {/* Selfie Photo - Top Left */}
+            <Image
+              image={selfieImage}
+              x={layout.selfiePhoto.x}
+              y={layout.selfiePhoto.y}
+              width={layout.selfiePhoto.width}
+              height={layout.selfiePhoto.height}
+              fit="contain"
+            />
 
-      {/* Single Image Fallback */}
-      {!isDualImageMode && selfieImage && singleImagePosition && (
-        <Image
-          image={selfieImage}
-          x={singleImagePosition.x}
-          y={singleImagePosition.y}
-          width={singleImagePosition.width}
-          height={singleImagePosition.height}
-          fit="contain"
-        />
-      )}
-    </Canvas>
+            {/* Reference Photo - Top Right, 70% size */}
+            <Image
+              image={referenceImage}
+              x={layout.referencePhoto.x}
+              y={layout.referencePhoto.y}
+              width={layout.referencePhoto.width}
+              height={layout.referencePhoto.height}
+              fit="contain"
+            />
+          </>
+        )}
+      </Canvas>
+    </View>
   )
 }
 

@@ -25,33 +25,11 @@ export default function CollageGenerator({ visible = true }: CollageGeneratorPro
     canvasRef,
     config,
     generateCollage,
-    shareCollage,
     resetCollage,
-    checkShareSupport,
     canGenerate,
-    canShare,
   } = useCollageGeneration()
 
-  // Check share support on mount
-  useEffect(() => {
-    checkShareSupport()
-  }, [checkShareSupport])
-
   const handleGenerateCollage = async () => {
-    if (!selectedSelfie) {
-      Alert.alert('No Selfie Selected', 'Please select a selfie first to create a collage.', [
-        { text: 'OK' },
-      ])
-      return
-    }
-
-    if (!selectedPose) {
-      Alert.alert('No Pose Selected', 'Please select a pose first to create a collage.', [
-        { text: 'OK' },
-      ])
-      return
-    }
-
     await generateCollage()
   }
 
@@ -59,47 +37,6 @@ export default function CollageGenerator({ visible = true }: CollageGeneratorPro
 
   return (
     <View className="flex-1 space-y-6 p-4">
-      {/* Header */}
-      <View className="items-center">
-        <Text className="mb-2 text-2xl font-bold text-textPrimary">Collage Creator</Text>
-        <Text className="text-center text-textSecondary">
-          Create a beautiful collage with your selfie and reference pose
-        </Text>
-      </View>
-
-      {/* Selected Images Info */}
-      <View className="space-y-3">
-        {/* Selected Selfie Info */}
-        {selectedSelfie ? (
-          <View className="rounded-lg bg-card p-3">
-            <Text className="font-medium text-textPrimary">Selected Selfie: {selectedSelfie.name}</Text>
-            <Text className="text-sm text-textSecondary">{selectedSelfie.description}</Text>
-          </View>
-        ) : (
-          <View className="rounded-lg border border-warning/20 bg-warning/10 p-3">
-            <Text className="text-center font-medium text-warning">No selfie selected</Text>
-            <Text className="mt-1 text-center text-sm text-warning/80">
-              Please select a selfie to create a collage
-            </Text>
-          </View>
-        )}
-
-        {/* Selected Pose Info */}
-        {selectedPose ? (
-          <View className="rounded-lg bg-card p-3">
-            <Text className="font-medium text-textPrimary">Selected Pose: {selectedPose.name}</Text>
-            <Text className="text-sm text-textSecondary">{selectedPose.description}</Text>
-          </View>
-        ) : (
-          <View className="rounded-lg border border-warning/20 bg-warning/10 p-3">
-            <Text className="text-center font-medium text-warning">No pose selected</Text>
-            <Text className="mt-1 text-center text-sm text-warning/80">
-              Please select a pose to create a collage
-            </Text>
-          </View>
-        )}
-      </View>
-
       {/* Generation Button */}
       {!state.isReady && (
         <View className="items-center">
@@ -137,13 +74,7 @@ export default function CollageGenerator({ visible = true }: CollageGeneratorPro
       )}
 
       {/* Hidden Canvas for Generation */}
-      <View
-        style={{
-          position: 'absolute',
-          left: -9999,
-          top: -9999,
-          opacity: 0,
-        }}>
+
         <CollageCanvas
           ref={canvasRef}
           selfie={selectedSelfie}
@@ -151,15 +82,10 @@ export default function CollageGenerator({ visible = true }: CollageGeneratorPro
           visible={state.isGenerating || state.isReady}
           config={config}
         />
-      </View>
+
 
       {/* Preview and Share */}
-      <CollagePreview
-        state={state}
-        onShare={shareCollage}
-        onReset={resetCollage}
-        canShare={canShare}
-      />
+      <CollagePreview state={state} onReset={resetCollage} />
     </View>
   )
 }
