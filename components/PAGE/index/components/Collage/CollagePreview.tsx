@@ -1,9 +1,15 @@
 import { View, Text } from 'react-native'
 import { Image } from 'expo-image'
-
-import Button from '@/components/ui/Button/Button'
+import { useStore } from 'zustand'
+import { usePhotoGenerationStore } from '@/stores'
 
 export default function CollagePreview() {
+  const collageImageUri = useStore(usePhotoGenerationStore, (state) => state.collageImageUri)
+
+  if (!collageImageUri) {
+    return null
+  }
+
   return (
     <View className="items-center space-y-4">
       {/* Preview Title */}
@@ -12,7 +18,7 @@ export default function CollagePreview() {
       {/* Generated Collage Preview */}
       <View className="rounded-lg bg-card p-4 shadow-md">
         <Image
-          source={{ uri: '' }}
+          source={{ uri: collageImageUri }}
           style={{
             width: 300,
             height: 300,

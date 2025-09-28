@@ -4,7 +4,7 @@ import Button from '@/components/ui/Button/Button'
 import { CollageCanvas } from './CollageCanvas'
 import CollagePreview from './CollagePreview'
 import { useStore } from 'zustand'
-import { usePoseStore, useSelfieChooserStore } from '@/stores'
+import { usePhotoGenerationStore, usePoseStore, useSelfieChooserStore } from '@/stores'
 
 export default function CollageGenerator() {
   const selectedPose = useStore(usePoseStore, (state) => state.selectedPose)

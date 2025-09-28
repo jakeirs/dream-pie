@@ -1,7 +1,5 @@
 import { CollageConfig } from '../types'
 
-// COLLAGE LAYOUT SIZE CONSTANTS - Adjust these to change layout proportions
-const REFERENCE_PHOTO_SCALE = 0.7 // Reference photo takes 70% of original collage size
 const MAX_COLLAGE_DIMENSION = 1000 // Maximum width or height in pixels
 
 /**
@@ -84,7 +82,7 @@ export function getDualImageCollageConfig(
   return {
     canvasWidth: dimensions.width,
     canvasHeight: dimensions.height,
-    backgroundColorHex: '#4ADE80', // Green-400 from Tailwind
+    backgroundColorHex: '#4ADE80',
     backgroundMode: 'solid',
     imagePadding: 0, // No padding for tight layout
     imageAreaSize: Math.min(dimensions.width, dimensions.height),

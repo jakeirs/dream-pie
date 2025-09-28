@@ -36,6 +36,7 @@ interface PhotoGenerationStore {
   result: FalResponse | null
 
   // Used Inputs (stored for reference and history)
+  collageImageUri: string | null
   usedPose: Pose | null
   usedSelfie: Selfie | null
   usedPosePrompt: PosePrompt | null
@@ -45,6 +46,7 @@ interface PhotoGenerationStore {
 
   // Actions
   startGeneration: (pose: Pose, selfie: Selfie, posePrompt: PosePrompt) => void
+  setCollageImageUri: (uri: string | null) => void
   setResult: (result: FalResponse) => void
   setError: (error: string) => void
   completeGeneration: () => void
@@ -61,12 +63,13 @@ export const usePhotoGenerationStore = create<PhotoGenerationStore>()(
       isCancelling: false,
       abortController: null,
       result: null,
+      collageImageUri: null,
       usedPose: null,
       usedSelfie: null,
       usedPosePrompt: null,
       error: null,
 
-      // Start Generation - Store inputs and initialize processing
+      // Start Generation - with Fal.ai
       startGeneration: (pose, selfie, posePrompt) =>
         set(
           {
@@ -81,7 +84,10 @@ export const usePhotoGenerationStore = create<PhotoGenerationStore>()(
           'startGeneration'
         ),
 
-      // Set Generation Result
+      // Set Collage Image URI
+      setCollageImageUri: (uri) => set({ collageImageUri: uri }, false, 'setCollageImageUri'),
+
+      // Set Generation Result from Fal.ai
       setResult: (result) =>
         set(
           {
