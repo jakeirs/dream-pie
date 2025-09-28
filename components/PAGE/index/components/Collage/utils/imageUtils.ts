@@ -5,7 +5,7 @@
  * Handles aspect ratio calculations, scaling, and positioning
  */
 
-import { CollagePosition, CollageConfig } from '../types'
+import { CollagePosition, CollageConfig, ImageFormat, BackgroundMode } from '../types'
 
 /**
  * Calculate scaled image dimensions to fit within the image area while maintaining aspect ratio
@@ -57,14 +57,27 @@ export function calculateCenterPosition(
 }
 
 /**
- * Get default collage configuration
+ * Get default collage configuration with WebP and transparent background for optimal file size
  */
 export function getDefaultCollageConfig(): CollageConfig {
   return {
     canvasWidth: 700,
     canvasHeight: 700,
     backgroundColorHex: '#4ADE80', // Green-400 from Tailwind
+    backgroundMode: 'transparent', // Use transparent for smaller file size
     imagePadding: 100,
     imageAreaSize: 500, // 700 - (100 * 2) = 500
+    outputFormat: 'webp', // Use WebP for smaller file size
+    quality: 85, // Maintain 100% quality as requested
+  }
+}
+
+/**
+ * Get collage configuration with solid background (for legacy compatibility)
+ */
+export function getSolidBackgroundCollageConfig(): CollageConfig {
+  return {
+    ...getDefaultCollageConfig(),
+    backgroundMode: 'solid',
   }
 }

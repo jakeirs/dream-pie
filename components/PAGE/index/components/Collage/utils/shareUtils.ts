@@ -6,7 +6,25 @@
  */
 
 import * as Sharing from 'expo-sharing'
-import { ShareResult } from '../types'
+import { ShareResult, ImageFormat } from '../types'
+
+/**
+ * Determine MIME type from file extension
+ */
+function getMimeType(imageUri: string): string {
+  const extension = imageUri.split('.').pop()?.toLowerCase()
+  switch (extension) {
+    case 'webp':
+      return 'image/webp'
+    case 'png':
+      return 'image/png'
+    case 'jpg':
+    case 'jpeg':
+      return 'image/jpeg'
+    default:
+      return 'image/webp' // Default to WebP for our use case
+  }
+}
 
 /**
  * Share an image file using the device's native sharing capabilities
@@ -23,9 +41,12 @@ export async function shareCollageImage(imageUri: string): Promise<ShareResult> 
       }
     }
 
+    // Determine the correct MIME type from file extension
+    const mimeType = getMimeType(imageUri)
+
     // Share the image
     await Sharing.shareAsync(imageUri, {
-      mimeType: 'image/png',
+      mimeType,
       dialogTitle: 'Share your Dream Pie collage',
     })
 

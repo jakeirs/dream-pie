@@ -22,6 +22,7 @@ export default function CollageGenerator({ visible = true }: CollageGeneratorPro
     state,
     selectedSelfie,
     canvasRef,
+    config,
     generateCollage,
     shareCollage,
     resetCollage,
@@ -121,6 +122,7 @@ export default function CollageGenerator({ visible = true }: CollageGeneratorPro
           ref={canvasRef}
           selfie={selectedSelfie}
           visible={state.isGenerating || state.isReady}
+          config={config}
         />
       </View>
 

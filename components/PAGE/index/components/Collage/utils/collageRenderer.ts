@@ -5,10 +5,10 @@
  * Handles canvas setup, background fill, image loading, and export functionality
  */
 
-import { SkImage } from '@shopify/react-native-skia'
+import { SkImage, ImageFormat } from '@shopify/react-native-skia'
 import { File, Paths } from 'expo-file-system'
-import { CollageConfig, CollagePosition } from '../types'
-import { calculateImageDimensions, calculateCenterPosition } from './imageUtils'
+import { CollageConfig, CollagePosition, ImageFormat as CollageImageFormat } from '../types'
+import { calculateImageDimensions, calculateCenterPosition, getDefaultCollageConfig } from './imageUtils'
 
 /**
  * Calculate the final positioning for the selfie image within the collage
@@ -42,12 +42,19 @@ export function calculateCollageImagePosition(
 
 /**
  * Export collage canvas to a shareable image file using Skia's makeImageSnapshot
+ * Supports WebP and PNG formats with configurable quality settings
  */
-export async function exportCollageToFile(canvasRef: React.RefObject<any>): Promise<string | null> {
+export async function exportCollageToFile(
+  canvasRef: React.RefObject<any>,
+  config?: CollageConfig
+): Promise<string | null> {
   try {
     if (!canvasRef.current) {
       throw new Error('Canvas ref is not available')
     }
+
+    // Use provided config or default
+    const exportConfig = config || getDefaultCollageConfig()
 
     // Create image snapshot from the canvas
     const image = canvasRef.current.makeImageSnapshot()
@@ -55,12 +62,16 @@ export async function exportCollageToFile(canvasRef: React.RefObject<any>): Prom
       throw new Error('Failed to create image snapshot from canvas')
     }
 
-    // Generate filename with timestamp
+    // Generate filename with timestamp and correct extension
     const timestamp = Date.now()
-    const filename = `dream-pie-collage-${timestamp}.png`
+    const extension = exportConfig.outputFormat
+    const filename = `dream-pie-collage-${timestamp}.${extension}`
 
-    // Encode image to bytes (PNG format)
-    const imageData = image.encodeToBytes()
+    // Map our format type to Skia's ImageFormat enum
+    const skiaFormat = exportConfig.outputFormat === 'webp' ? ImageFormat.WEBP : ImageFormat.PNG
+
+    // Encode image to bytes with format and quality
+    const imageData = image.encodeToBytes(skiaFormat, exportConfig.quality)
 
     if (!imageData) {
       throw new Error('Failed to encode image data')
@@ -75,8 +86,9 @@ export async function exportCollageToFile(canvasRef: React.RefObject<any>): Prom
     // Write image data
     await file.write(imageData)
 
-    console.log('Collage exported successfully to:', file.uri)
-    console.log('FILES SIZE', file.size, file.info())
+    console.log(`Collage exported successfully as ${exportConfig.outputFormat.toUpperCase()}:`, file.uri)
+    console.log(`Quality: ${exportConfig.quality}%, Background: ${exportConfig.backgroundMode}`)
+    console.log('File size:', file.size, 'bytes')
 
     return file.uri
   } catch (error) {

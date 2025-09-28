@@ -8,13 +8,15 @@
 import { useState, useCallback } from 'react'
 import { useCanvasRef } from '@shopify/react-native-skia'
 import { useSelfieChooserStore } from '@/stores/selfieChooserStore'
-import { CollageGenerationState, ShareResult } from '../types'
+import { CollageGenerationState, ShareResult, CollageConfig } from '../types'
 import { exportCollageToFile } from '../utils/collageRenderer'
 import { shareCollageImage, isShareSupported as checkShareSupport } from '../utils/shareUtils'
+import { getDefaultCollageConfig } from '../utils/imageUtils'
 
 export function useCollageGeneration() {
   const { selectedSelfie } = useSelfieChooserStore()
   const canvasRef = useCanvasRef()
+  const config = getDefaultCollageConfig()
 
   const [state, setState] = useState<CollageGenerationState>({
     isGenerating: false,
@@ -53,8 +55,8 @@ export function useCollageGeneration() {
       // Wait a brief moment to allow canvas to render
       await new Promise((resolve) => setTimeout(resolve, 500))
 
-      // Export canvas to file
-      const imageUri = await exportCollageToFile(canvasRef)
+      // Export canvas to file with configuration
+      const imageUri = await exportCollageToFile(canvasRef, config)
 
       if (!imageUri) {
         throw new Error('Failed to generate collage image')
@@ -115,6 +117,7 @@ export function useCollageGeneration() {
     selectedSelfie,
     canvasRef,
     shareSupported,
+    config,
 
     // Actions
     generateCollage,
