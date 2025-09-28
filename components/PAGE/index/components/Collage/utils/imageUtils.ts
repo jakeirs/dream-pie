@@ -64,7 +64,7 @@ export function getDefaultCollageConfig(): CollageConfig {
     canvasWidth: 700,
     canvasHeight: 700,
     backgroundColorHex: '#4ADE80', // Green-400 from Tailwind
-    backgroundMode: 'transparent', // Use transparent for smaller file size
+    backgroundMode: 'solid', // Use transparent for smaller file size
     imagePadding: 100,
     imageAreaSize: 500, // 700 - (100 * 2) = 500
     outputFormat: 'webp', // Use WebP for smaller file size
