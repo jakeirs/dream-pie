@@ -1,63 +1,25 @@
-/**
- * COLLAGE GENERATOR COMPONENT
- *
- * Main component for the collage generation feature
- * Handles the complete workflow from generation to sharing
- */
-
-import { useEffect } from 'react'
-import { View, Text, ActivityIndicator, Alert } from 'react-native'
+import { View } from 'react-native'
 
 import Button from '@/components/ui/Button/Button'
-import CollageCanvas from './CollageCanvas'
+import { CollageCanvas } from './CollageCanvas'
 import CollagePreview from './CollagePreview'
-import { useCollageGeneration } from './hooks/useCollageGeneration'
+import { useStore } from 'zustand'
+import { usePoseStore, useSelfieChooserStore } from '@/stores'
 
-interface CollageGeneratorProps {
-  visible?: boolean
-}
+export default function CollageGenerator() {
+  const selectedPose = useStore(usePoseStore, (state) => state.selectedPose)
+  const selectedSelfie = useStore(useSelfieChooserStore, (state) => state.selectedSelfie)
 
-export default function CollageGenerator({ visible = true }: CollageGeneratorProps) {
-  const {
-    state,
-    selectedSelfie,
-    selectedPose,
-    canvasRef,
-    config,
-    generateCollage,
-    resetCollage,
-    canGenerate,
-  } = useCollageGeneration()
-
-  const handleGenerateCollage = async () => {
-    await generateCollage()
+  if (!selectedPose || !selectedSelfie) {
+    return null
   }
 
-  if (!visible) return null
-
+  console.log('Rendering CollageGenerator with selectedPose and selectedSelfie')
   return (
     <View className="flex-1 space-y-6 p-4">
-      {/* Generation Button */}
-      {!state.isReady && (
-        <View className="items-center">
-          <Button
-            title={state.isGenerating ? 'Generating...' : 'Create Collage'}
-            onPress={handleGenerateCollage}
-            disabled={!canGenerate}
-            variant="primary"
-            size="lg"
-          />
-        </View>
-      )}
+      <CollageCanvas />
 
-      <CollageCanvas
-        ref={canvasRef}
-        visible={state.isGenerating || state.isReady}
-        config={config}
-      />
-
-      {/* Preview and Share */}
-      <CollagePreview state={state} onReset={resetCollage} />
+      <CollagePreview />
     </View>
   )
 }

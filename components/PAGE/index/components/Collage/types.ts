@@ -35,7 +35,7 @@ export interface CollagePosition {
 }
 
 export interface DualImageLayout {
-  referencePhoto: CollagePosition // Top right, 70% size
+  posePhoto: CollagePosition // Top right, 70% size
   selfiePhoto: CollagePosition     // Top left, remaining space
 }
 

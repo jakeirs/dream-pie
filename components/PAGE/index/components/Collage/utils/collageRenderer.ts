@@ -1,47 +1,10 @@
-/**
- * COLLAGE RENDERER
- *
- * Core rendering logic for creating collages with React Native Skia
- * Handles canvas setup, background fill, image loading, and export functionality
- */
-
 import { SkImage, ImageFormat } from '@shopify/react-native-skia'
 import { File, Paths } from 'expo-file-system'
-import { CollageConfig, CollagePosition, ImageFormat as CollageImageFormat, DualImageLayout } from '../types'
-import { calculateImageDimensions, calculateCenterPosition, getDefaultCollageConfig } from './imageUtils'
+import { CollageConfig, CollagePosition, DualImageLayout } from '../types'
+import { calculateImageDimensions } from './imageUtils'
 
 // Reference photo scale factor
 const REFERENCE_PHOTO_SCALE = 0.7
-
-/**
- * Calculate the final positioning for the selfie image within the collage (legacy single-image)
- */
-export function calculateCollageImagePosition(
-  image: SkImage,
-  config: CollageConfig
-): CollagePosition {
-  // Get image dimensions
-  const imageWidth = image.width()
-  const imageHeight = image.height()
-
-  // Calculate scaled dimensions to fit within the image area
-  const scaledDimensions = calculateImageDimensions(
-    imageWidth,
-    imageHeight,
-    config.imageAreaSize,
-    config.imageAreaSize
-  )
-
-  // Calculate center position within the canvas
-  const position = calculateCenterPosition(
-    config.canvasWidth,
-    config.canvasHeight,
-    scaledDimensions.width,
-    scaledDimensions.height
-  )
-
-  return position
-}
 
 /**
  * Calculate dual-image layout positions for collage
@@ -50,33 +13,40 @@ export function calculateCollageImagePosition(
  */
 export function calculateDualImageLayout(
   selfieImage: SkImage,
-  referenceImage: SkImage,
+  poseImage: SkImage,
   config: CollageConfig
 ): DualImageLayout {
+  if (!selfieImage || !poseImage) {
+    return {
+      posePhoto: { x: 0, y: 0, width: 0, height: 0 },
+      selfiePhoto: { x: 0, y: 0, width: 0, height: 0 },
+    }
+  }
+
   const canvasWidth = config.canvasWidth
   const canvasHeight = config.canvasHeight
 
   // Calculate reference photo dimensions (70% of canvas size)
-  const referenceMaxWidth = canvasWidth * REFERENCE_PHOTO_SCALE
-  const referenceMaxHeight = canvasHeight * REFERENCE_PHOTO_SCALE
+  const poseImageMaxWidth = canvasWidth * REFERENCE_PHOTO_SCALE
+  const poseImageMaxHeight = canvasHeight * REFERENCE_PHOTO_SCALE
 
-  const referenceDimensions = calculateImageDimensions(
-    referenceImage.width(),
-    referenceImage.height(),
-    referenceMaxWidth,
-    referenceMaxHeight
+  const poseImageDimensions = calculateImageDimensions(
+    poseImage.width(),
+    poseImage.height(),
+    poseImageMaxWidth,
+    poseImageMaxHeight
   )
 
   // Position reference photo in top-right corner
-  const referencePosition: CollagePosition = {
-    x: canvasWidth - referenceDimensions.width, // Right edge
+  const poseImagePosition: CollagePosition = {
+    x: canvasWidth - poseImageDimensions.width, // Right edge
     y: 0, // Top edge
-    width: referenceDimensions.width,
-    height: referenceDimensions.height,
+    width: poseImageDimensions.width,
+    height: poseImageDimensions.height,
   }
 
   // Calculate remaining space for selfie photo (top-left area)
-  const selfieMaxWidth = canvasWidth - referenceDimensions.width
+  const selfieMaxWidth = canvasWidth - poseImageDimensions.width
   const selfieMaxHeight = canvasHeight
 
   const selfieDimensions = calculateImageDimensions(
@@ -95,7 +65,7 @@ export function calculateDualImageLayout(
   }
 
   return {
-    referencePhoto: referencePosition,
+    posePhoto: poseImagePosition,
     selfiePhoto: selfiePosition,
   }
 }
@@ -106,15 +76,12 @@ export function calculateDualImageLayout(
  */
 export async function exportCollageToFile(
   canvasRef: React.RefObject<any>,
-  config?: CollageConfig
+  config: CollageConfig
 ): Promise<string | null> {
   try {
     if (!canvasRef.current) {
       throw new Error('Canvas ref is not available')
     }
-
-    // Use provided config or default
-    const exportConfig = config || getDefaultCollageConfig()
 
     // Create image snapshot from the canvas
     const image = canvasRef.current.makeImageSnapshot()
@@ -124,30 +91,23 @@ export async function exportCollageToFile(
 
     // Generate filename with timestamp and correct extension
     const timestamp = Date.now()
-    const extension = exportConfig.outputFormat
+    const extension = config.outputFormat
     const filename = `dream-pie-collage-${timestamp}.${extension}`
 
-    // Map our format type to Skia's ImageFormat enum
-    const skiaFormat = exportConfig.outputFormat === 'webp' ? ImageFormat.WEBP : ImageFormat.PNG
+    const skiaFormat = config.outputFormat === 'webp' ? ImageFormat.WEBP : ImageFormat.PNG
 
-    // Encode image to bytes with format and quality
-    const imageData = image.encodeToBytes(skiaFormat, exportConfig.quality)
+    const imageData = image.encodeToBytes(skiaFormat, config.quality)
 
     if (!imageData) {
       throw new Error('Failed to encode image data')
     }
 
-    // Create file using correct constructor pattern (following codebase patterns)
     const file = new File(Paths.document, filename)
 
-    // Ensure file exists
     await file.create()
-
-    // Write image data
     await file.write(imageData)
 
-    console.log(`Collage exported successfully as ${exportConfig.outputFormat.toUpperCase()}:`, file.uri)
-    console.log(`Quality: ${exportConfig.quality}%, Background: ${exportConfig.backgroundMode}`)
+    console.log(`Collage exported successfully as:`, file.uri)
     console.log('File size:', file.size, 'bytes')
 
     return file.uri

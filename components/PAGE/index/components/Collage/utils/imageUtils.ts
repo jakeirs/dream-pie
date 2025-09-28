@@ -1,11 +1,4 @@
-/**
- * IMAGE UTILITIES
- *
- * Helper functions for image processing in collage generation
- * Handles aspect ratio calculations, scaling, and positioning
- */
-
-import { CollagePosition, CollageConfig, ImageFormat, BackgroundMode } from '../types'
+import { CollageConfig } from '../types'
 
 // COLLAGE LAYOUT SIZE CONSTANTS - Adjust these to change layout proportions
 const REFERENCE_PHOTO_SCALE = 0.7 // Reference photo takes 70% of original collage size
@@ -41,32 +34,12 @@ export function calculateImageDimensions(
 }
 
 /**
- * Calculate position to center image within canvas
- */
-export function calculateCenterPosition(
-  canvasWidth: number,
-  canvasHeight: number,
-  imageWidth: number,
-  imageHeight: number
-): CollagePosition {
-  const x = (canvasWidth - imageWidth) / 2
-  const y = (canvasHeight - imageHeight) / 2
-
-  return {
-    x,
-    y,
-    width: imageWidth,
-    height: imageHeight,
-  }
-}
-
-/**
  * Calculate collage dimensions based on reference photo aspect ratio
  * Maintains reference photo aspect ratio while respecting maximum dimension constraints
  */
 export function calculateCollageDimensions(
-  referenceWidth: number,
-  referenceHeight: number
+  referenceWidth: number = 700,
+  referenceHeight: number = 700
 ): {
   width: number
   height: number
@@ -96,31 +69,17 @@ export function calculateCollageDimensions(
 }
 
 /**
- * Get default collage configuration with WebP and transparent background for optimal file size
- */
-export function getDefaultCollageConfig(): CollageConfig {
-  return {
-    canvasWidth: 700,
-    canvasHeight: 700,
-    backgroundColorHex: '#4ADE80', // Green-400 from Tailwind
-    backgroundMode: 'solid', // Use transparent for smaller file size
-    imagePadding: 100,
-    imageAreaSize: 500, // 700 - (100 * 2) = 500
-    outputFormat: 'webp', // Use WebP for smaller file size
-    quality: 85, // Maintain 100% quality as requested
-  }
-}
-
-/**
  * Get collage configuration for dual-image layout with dynamic sizing
  */
 export function getDualImageCollageConfig(
-  referenceWidth: number,
-  referenceHeight: number
+  poseImageWidth?: number | null,
+  poseImageHeight?: number | null
 ): CollageConfig {
-  const dimensions = calculateCollageDimensions(referenceWidth, referenceHeight)
-
-  console.log('Calculated collage dimensions:', dimensions)
+  if (!poseImageWidth || !poseImageHeight) {
+    poseImageWidth = 700
+    poseImageHeight = 700
+  }
+  const dimensions = calculateCollageDimensions(poseImageWidth, poseImageHeight)
 
   return {
     canvasWidth: dimensions.width,
@@ -131,15 +90,5 @@ export function getDualImageCollageConfig(
     imageAreaSize: Math.min(dimensions.width, dimensions.height),
     outputFormat: 'webp',
     quality: 85,
-  }
-}
-
-/**
- * Get collage configuration with solid background (for legacy compatibility)
- */
-export function getSolidBackgroundCollageConfig(): CollageConfig {
-  return {
-    ...getDefaultCollageConfig(),
-    backgroundMode: 'solid',
   }
 }
