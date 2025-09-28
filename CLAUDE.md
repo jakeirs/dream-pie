@@ -197,6 +197,12 @@ import { mockUsers } from '@/mockData'
   - Utilities (@/lib)
   - Types (@/types)
 
+### 🎯 **React 19 Ref-as-a-Prop Pattern**
+
+**✅ NEW (React 19+)**: `function Button({ children, buttonRef }) { return <button ref={buttonRef}>{children}</button> }`
+
+**❌ DEPRECATED**: `forwardRef` - Don't use for new components in React 19+
+
 ### 🚀 **React Native Reanimated 4.x Gesture API**
 
 **IMPORTANT**: This project uses **Reanimated 4.1.0** which requires the **new Gesture API**. The old `useAnimatedGestureHandler` API has been **removed** and will cause crashes.
