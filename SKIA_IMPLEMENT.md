@@ -11,6 +11,12 @@ This document describes the React Native Skia implementation in Dream Pie for cr
 - **b17f96a WORKING** - Final working implementation with core canvas rendering
 - **bfb370e saved** - Complete collage system with hooks, utilities, and sharing
 
+### React 19 Migration
+
+- **Latest Update** - Migrated from `forwardRef` to React 19's ref-as-a-prop pattern
+- **Components Updated**: CollageCanvas.tsx updated to use modern ref handling
+- **Benefits**: Simplified component architecture, better TypeScript integration, reduced boilerplate
+
 ### Key Files Modified
 
 ```
@@ -33,10 +39,11 @@ components/PAGE/index/components/Collage/
 #### 1. CollageCanvas (`CollageCanvas.tsx`)
 - **Purpose**: React Native Skia Canvas component for real-time collage rendering
 - **Technology**: `@shopify/react-native-skia` Canvas, Rect, Image, and useImage
+- **React Pattern**: Uses React 19 ref-as-a-prop pattern (modern approach)
 - **Features**:
   - Green background rendering (#4ADE80)
   - Centered selfie image with aspect ratio preservation
-  - Canvas ref forwarding for export functionality
+  - Canvas ref handling for export functionality
 
 #### 2. Collage Generator (`index.tsx`)
 - **Purpose**: Main orchestration component for the complete collage workflow
@@ -268,6 +275,68 @@ interface CollageGenerationState {
 3. **Success**: `{ isGenerating: false, isReady: true, collageImageUri: 'file://...' }`
 4. **Error**: `{ isGenerating: false, error: 'Error message' }`
 
+### React 19 Migration Details
+
+**Component Pattern Evolution**:
+
+The CollageCanvas component was migrated from React 18's `forwardRef` pattern to React 19's modern ref-as-a-prop approach for improved developer experience and reduced boilerplate.
+
+**Before (React 18 forwardRef pattern):**
+```typescript
+import { forwardRef } from 'react'
+
+interface CollageCanvasProps {
+  selfie: Selfie | null
+  visible?: boolean
+}
+
+const CollageCanvas = forwardRef<any, CollageCanvasProps>(
+  ({ selfie, visible = true }, ref) => {
+    return (
+      <Canvas ref={ref} style={{ width: 700, height: 700 }}>
+        {/* Canvas content */}
+      </Canvas>
+    )
+  }
+)
+
+CollageCanvas.displayName = 'CollageCanvas'
+```
+
+**After (React 19 ref-as-a-prop pattern):**
+```typescript
+interface CollageCanvasProps {
+  selfie: Selfie | null
+  visible?: boolean
+  ref?: React.RefObject<any>
+}
+
+function CollageCanvas({ selfie, visible = true, ref }: CollageCanvasProps) {
+  return (
+    <Canvas ref={ref} style={{ width: 700, height: 700 }}>
+      {/* Canvas content */}
+    </Canvas>
+  )
+}
+```
+
+**Migration Benefits**:
+- **Simplified Syntax**: No more `forwardRef` wrapper function
+- **Better TypeScript Integration**: Ref type directly in props interface
+- **Reduced Boilerplate**: Removed need for `displayName` property
+- **Improved Developer Experience**: Standard function component pattern
+- **Future-Proof**: Aligns with React's modern component architecture
+
+**Usage Remains Unchanged**:
+```typescript
+// Component usage stays exactly the same
+<CollageCanvas
+  ref={canvasRef}
+  selfie={selectedSelfie}
+  visible={state.isGenerating || state.isReady}
+/>
+```
+
 ### Memory Management and Performance
 
 **Image Loading Best Practices**:
@@ -377,6 +446,11 @@ const result = await shareCollage()
 
 ## 🔧 Technical Requirements
 
+### React Version
+- **React 19+**: Required for ref-as-a-prop pattern
+- **Backward Compatibility**: Implementation maintains compatibility with existing usage patterns
+- **Migration Path**: Simple upgrade from forwardRef to standard function components
+
 ### Dependencies
 
 ```json
@@ -422,4 +496,4 @@ const result = await shareCollage()
 - **Image Memory**: Variable based on source image size
 - **Export Memory**: ~2x canvas memory during export process
 
-This implementation provides a robust, performant, and user-friendly collage generation system using React Native Skia, with proper integration into Dream Pie's existing architecture and type system.
+This implementation provides a robust, performant, and user-friendly collage generation system using React Native Skia, with proper integration into Dream Pie's existing architecture and type system. The recent migration to React 19's ref-as-a-prop pattern demonstrates the codebase's commitment to modern React practices while maintaining backward compatibility and improving developer experience.

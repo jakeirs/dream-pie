@@ -5,7 +5,6 @@
  * Renders green background with centered selfie image
  */
 
-import { forwardRef } from 'react'
 import {
   Canvas,
   Rect,
@@ -19,10 +18,10 @@ import { calculateCollageImagePosition } from './utils/collageRenderer'
 interface CollageCanvasProps {
   selfie: Selfie | null
   visible?: boolean
+  ref?: React.RefObject<any>
 }
 
-const CollageCanvas = forwardRef<any, CollageCanvasProps>(
-  ({ selfie, visible = true }, ref) => {
+function CollageCanvas({ selfie, visible = true, ref }: CollageCanvasProps) {
     const config = getDefaultCollageConfig()
 
     // Load the selfie image using Skia's useImage hook
@@ -65,9 +64,6 @@ const CollageCanvas = forwardRef<any, CollageCanvasProps>(
         )}
       </Canvas>
     )
-  }
-)
-
-CollageCanvas.displayName = 'CollageCanvas'
+}
 
 export default CollageCanvas

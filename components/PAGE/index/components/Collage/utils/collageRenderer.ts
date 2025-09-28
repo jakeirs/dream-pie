@@ -43,9 +43,7 @@ export function calculateCollageImagePosition(
 /**
  * Export collage canvas to a shareable image file using Skia's makeImageSnapshot
  */
-export async function exportCollageToFile(
-  canvasRef: React.RefObject<any>
-): Promise<string | null> {
+export async function exportCollageToFile(canvasRef: React.RefObject<any>): Promise<string | null> {
   try {
     if (!canvasRef.current) {
       throw new Error('Canvas ref is not available')
@@ -78,6 +76,8 @@ export async function exportCollageToFile(
     await file.write(imageData)
 
     console.log('Collage exported successfully to:', file.uri)
+    console.log('FILES SIZE', file.size, file.info())
+
     return file.uri
   } catch (error) {
     console.error('Error exporting collage:', error)
