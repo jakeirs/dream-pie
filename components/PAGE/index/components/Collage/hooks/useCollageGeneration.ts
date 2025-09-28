@@ -8,15 +8,21 @@
 import { useState, useCallback } from 'react'
 import { useCanvasRef } from '@shopify/react-native-skia'
 import { useSelfieChooserStore } from '@/stores/selfieChooserStore'
+import { usePoseStore } from '@/stores/poseStore'
 import { CollageGenerationState, ShareResult, CollageConfig } from '../types'
 import { exportCollageToFile } from '../utils/collageRenderer'
 import { shareCollageImage, isShareSupported as checkShareSupport } from '../utils/shareUtils'
-import { getDefaultCollageConfig } from '../utils/imageUtils'
+import { getDefaultCollageConfig, getDualImageCollageConfig } from '../utils/imageUtils'
 
 export function useCollageGeneration() {
   const { selectedSelfie } = useSelfieChooserStore()
+  const { selectedPose } = usePoseStore()
   const canvasRef = useCanvasRef()
-  const config = getDefaultCollageConfig()
+
+  // Dynamic config based on whether we have both images
+  const config = selectedSelfie && selectedPose
+    ? getDualImageCollageConfig(800, 600) // Default size, will be updated when images load
+    : getDefaultCollageConfig()
 
   const [state, setState] = useState<CollageGenerationState>({
     isGenerating: false,
@@ -33,12 +39,20 @@ export function useCollageGeneration() {
     setShareSupported(supported)
   }, [])
 
-  // Generate collage from current selected selfie
+  // Generate collage from current selected selfie and pose
   const generateCollage = useCallback(async () => {
     if (!selectedSelfie) {
       setState((prev) => ({
         ...prev,
         error: 'No selfie selected. Please select a selfie first.',
+      }))
+      return
+    }
+
+    if (!selectedPose) {
+      setState((prev) => ({
+        ...prev,
+        error: 'No pose selected. Please select a pose first.',
       }))
       return
     }
@@ -78,7 +92,7 @@ export function useCollageGeneration() {
         error: error instanceof Error ? error.message : 'Failed to generate collage',
       }))
     }
-  }, [selectedSelfie])
+  }, [selectedSelfie, selectedPose])
 
   // Share the generated collage
   const shareCollage = useCallback(async (): Promise<ShareResult> => {
@@ -115,6 +129,7 @@ export function useCollageGeneration() {
     // State
     state,
     selectedSelfie,
+    selectedPose,
     canvasRef,
     shareSupported,
     config,
@@ -126,7 +141,7 @@ export function useCollageGeneration() {
     checkShareSupport: checkShareSupportFunc,
 
     // Computed values
-    canGenerate: !!selectedSelfie && !state.isGenerating,
+    canGenerate: !!selectedSelfie && !!selectedPose && !state.isGenerating,
     canShare: state.isReady && !!state.collageImageUri && shareSupported,
   }
 }

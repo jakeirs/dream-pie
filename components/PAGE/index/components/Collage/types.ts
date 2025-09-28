@@ -34,6 +34,11 @@ export interface CollagePosition {
   height: number
 }
 
+export interface DualImageLayout {
+  referencePhoto: CollagePosition // Top right, 70% size
+  selfiePhoto: CollagePosition     // Top left, remaining space
+}
+
 export interface ShareResult {
   success: boolean
   error?: string

@@ -7,11 +7,14 @@
 
 import { SkImage, ImageFormat } from '@shopify/react-native-skia'
 import { File, Paths } from 'expo-file-system'
-import { CollageConfig, CollagePosition, ImageFormat as CollageImageFormat } from '../types'
+import { CollageConfig, CollagePosition, ImageFormat as CollageImageFormat, DualImageLayout } from '../types'
 import { calculateImageDimensions, calculateCenterPosition, getDefaultCollageConfig } from './imageUtils'
 
+// Reference photo scale factor
+const REFERENCE_PHOTO_SCALE = 0.7
+
 /**
- * Calculate the final positioning for the selfie image within the collage
+ * Calculate the final positioning for the selfie image within the collage (legacy single-image)
  */
 export function calculateCollageImagePosition(
   image: SkImage,
@@ -38,6 +41,63 @@ export function calculateCollageImagePosition(
   )
 
   return position
+}
+
+/**
+ * Calculate dual-image layout positions for collage
+ * Reference photo: top-right, 70% of canvas size
+ * Selfie photo: top-left, filling remaining space
+ */
+export function calculateDualImageLayout(
+  selfieImage: SkImage,
+  referenceImage: SkImage,
+  config: CollageConfig
+): DualImageLayout {
+  const canvasWidth = config.canvasWidth
+  const canvasHeight = config.canvasHeight
+
+  // Calculate reference photo dimensions (70% of canvas size)
+  const referenceMaxWidth = canvasWidth * REFERENCE_PHOTO_SCALE
+  const referenceMaxHeight = canvasHeight * REFERENCE_PHOTO_SCALE
+
+  const referenceDimensions = calculateImageDimensions(
+    referenceImage.width(),
+    referenceImage.height(),
+    referenceMaxWidth,
+    referenceMaxHeight
+  )
+
+  // Position reference photo in top-right corner
+  const referencePosition: CollagePosition = {
+    x: canvasWidth - referenceDimensions.width, // Right edge
+    y: 0, // Top edge
+    width: referenceDimensions.width,
+    height: referenceDimensions.height,
+  }
+
+  // Calculate remaining space for selfie photo (top-left area)
+  const selfieMaxWidth = canvasWidth - referenceDimensions.width
+  const selfieMaxHeight = canvasHeight
+
+  const selfieDimensions = calculateImageDimensions(
+    selfieImage.width(),
+    selfieImage.height(),
+    selfieMaxWidth,
+    selfieMaxHeight
+  )
+
+  // Position selfie photo in top-left corner
+  const selfiePosition: CollagePosition = {
+    x: 0, // Left edge
+    y: 0, // Top edge
+    width: selfieDimensions.width,
+    height: selfieDimensions.height,
+  }
+
+  return {
+    referencePhoto: referencePosition,
+    selfiePhoto: selfiePosition,
+  }
 }
 
 /**
