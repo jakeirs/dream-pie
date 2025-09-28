@@ -8,7 +8,8 @@
       "WebFetch(domain:docs.expo.dev)",
       "WebFetch(domain:sdk.vercel.ai)",
       "WebFetch(domain:ai-sdk.dev)",
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "WebFetch(domain:shopify.github.io)"
     ],
     "deny": [],
     "ask": []
