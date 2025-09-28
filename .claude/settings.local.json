@@ -9,7 +9,9 @@
       "WebFetch(domain:sdk.vercel.ai)",
       "WebFetch(domain:ai-sdk.dev)",
       "Bash(cat:*)",
-      "WebFetch(domain:shopify.github.io)"
+      "WebFetch(domain:shopify.github.io)",
+      "mcp__context7__resolve-library-id",
+      "mcp__context7__get-library-docs"
     ],
     "deny": [],
     "ask": []

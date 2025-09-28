@@ -52,8 +52,6 @@ export default function CollageGenerator({ visible = true }: CollageGeneratorPro
 
       <CollageCanvas
         ref={canvasRef}
-        selfie={selectedSelfie}
-        referencePhoto={selectedPose}
         visible={state.isGenerating || state.isReady}
         config={config}
       />

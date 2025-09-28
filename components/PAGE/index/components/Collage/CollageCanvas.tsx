@@ -12,36 +12,26 @@ import { CollageConfig } from './types'
 import { getDefaultCollageConfig, getDualImageCollageConfig } from './utils/imageUtils'
 import { calculateCollageImagePosition, calculateDualImageLayout } from './utils/collageRenderer'
 import { View } from 'react-native'
+import { useStore } from 'zustand'
+import { usePoseStore, useSelfieChooserStore } from '@/stores'
 
 interface CollageCanvasProps {
-  selfie: Selfie | null
-  referencePhoto: Pose | null
   visible?: boolean
   ref?: React.RefObject<any>
   config?: CollageConfig
 }
 
-function CollageCanvas({
-  selfie,
-  referencePhoto,
-  visible = true,
-  ref,
-  config: providedConfig,
-}: CollageCanvasProps) {
-  // Load both images using Skia's useImage hook
-  const selfieImage = useImage(selfie?.imageUrl || null)
-  const referenceImage = useImage(referencePhoto?.imageUrl || null)
+function CollageCanvas({ ref, config: providedConfig }: CollageCanvasProps) {
+  const selectedPose = useStore(usePoseStore, (state) => state.selectedPose)
+  const selectedSelfie = useStore(useSelfieChooserStore, (state) => state.selectedSelfie)
 
-  // Determine if we have both images for dual layout
-  const isDualImageMode = selfieImage && referenceImage
+  const selfieImage = useImage(selectedSelfie?.imageUrl)
+  const poseImage = useImage(selectedPose?.imageUrl)
 
-  console.log('CollageCanvas - Selfie Image:', !!isDualImageMode)
-
-  // Dynamic config based on reference photo dimensions for dual-image mode
   let config = providedConfig
 
-  if (isDualImageMode && !providedConfig && referenceImage) {
-    config = getDualImageCollageConfig(referenceImage.width(), referenceImage.height())
+  if (!providedConfig && poseImage) {
+    config = getDualImageCollageConfig(poseImage.width(), poseImage.height())
   } else {
     config = config || getDefaultCollageConfig()
   }
@@ -49,11 +39,11 @@ function CollageCanvas({
   // Calculate layout positions
   let layout = null
 
-  if (isDualImageMode) {
-    layout = calculateDualImageLayout(selfieImage, referenceImage, config)
+  if (selfieImage && poseImage && config) {
+    layout = calculateDualImageLayout(selfieImage, poseImage, config)
   }
 
-  if (!visible) return null
+  if (!layout) return null
 
   return (
     <View
@@ -80,30 +70,22 @@ function CollageCanvas({
           />
         )}
 
-        {/* Dual Image Layout */}
-        {isDualImageMode && layout && (
-          <>
-            {/* Selfie Photo - Top Left */}
-            <Image
-              image={selfieImage}
-              x={layout.selfiePhoto.x}
-              y={layout.selfiePhoto.y}
-              width={layout.selfiePhoto.width}
-              height={layout.selfiePhoto.height}
-              fit="contain"
-            />
-
-            {/* Reference Photo - Top Right, 70% size */}
-            <Image
-              image={referenceImage}
-              x={layout.referencePhoto.x}
-              y={layout.referencePhoto.y}
-              width={layout.referencePhoto.width}
-              height={layout.referencePhoto.height}
-              fit="contain"
-            />
-          </>
-        )}
+        <Image
+          image={selfieImage}
+          x={layout.selfiePhoto.x}
+          y={layout.selfiePhoto.y}
+          width={layout.selfiePhoto.width}
+          height={layout.selfiePhoto.height}
+          fit="contain"
+        />
+        <Image
+          image={poseImage}
+          x={layout.referencePhoto.x}
+          y={layout.referencePhoto.y}
+          width={layout.referencePhoto.width}
+          height={layout.referencePhoto.height}
+          fit="contain"
+        />
       </Canvas>
     </View>
   )
