@@ -31,11 +31,3 @@ export const mockSelfies: Selfie[] = [
     createdAt: '2024-01-15T10:30:00Z',
   },
 ]
-
-export const getSelfieById = (id: string): Selfie | undefined => {
-  return mockSelfies.find((selfie) => selfie.id === id)
-}
-
-export const getSelfiesByTag = (tag: string): Selfie[] => {
-  return mockSelfies.filter((selfie) => selfie.tags.includes(tag))
-}

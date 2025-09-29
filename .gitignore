@@ -13,6 +13,8 @@ web-build/
 .env.local
 .env.*.local
 
+assets/poses/
+
 
 ios
 android

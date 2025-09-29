@@ -10,6 +10,7 @@ import { mockPoses } from '@/mockData/dream/poses'
 import { loadItemsFromAsyncStorage } from '@/stores/AsyncStorage/utils'
 import type { Pose } from '@/types'
 import { USER_POSES } from '@/stores/AsyncStorage/keys'
+import { allPoses } from '@/shared/assets/poses'
 
 export const PoseGrid = () => {
   const { setSelectedPose, selectedPose, poses, setPoses } = usePoseStore()
@@ -20,7 +21,7 @@ export const PoseGrid = () => {
       const loadedPoses = await loadItemsFromAsyncStorage<Pose>(USER_POSES)
 
       if (loadedPoses.length === 0) {
-        await setPoses(mockPoses)
+        await setPoses(allPoses)
         return
       }
       setPoses(loadedPoses)

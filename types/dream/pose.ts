@@ -11,19 +11,13 @@ export interface Pose {
   description: string
   category: PoseCategory
   imageUrl: string // File URI string (converted from bundled assets automatically)
-  isPremium: boolean
+  isPremium?: boolean
   tags: string[]
   createdAt: string
   posePromptId?: string // Optional reference to prompt ID
 }
 
-export type PoseCategory =
-  | 'professional'
-  | 'casual'
-  | 'travel'
-  | 'fashion'
-  | 'fitness'
-  | 'creative'
+export type PoseCategory = 'professional' | 'casual' | 'travel' | 'fashion' | 'fitness' | 'creative' | 'standing' | 'selfie' | 'sitting'
 
 export interface PoseCategoryInfo {
   id: PoseCategory
