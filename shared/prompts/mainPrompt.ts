@@ -16,10 +16,12 @@ FINAL INSTRUCTION:
 * The Girl from the left Image wears clothes of the person from the right Image.
 * ALWAYS ONLY ONE PERSON on the final photo
 * Hair Length and color or facial features that match the person from the left Image
-* NEVER present side-by-side images. NEVER present collage or split images. ALWAYS ONE Photo, ALWAYS ONE PERSON on the final photo
-* Only person from the left Image in the final Image
-
+*
+* The background of the photo is similar to the right Image, but the person is identical to the left of provided Image.
 `
+
+// * NEVER present side-by-side images. NEVER present collage or split images. ALWAYS ONE Photo, ALWAYS ONE PERSON on the final photo
+
 // <negative-prompt>
 // *   Person from original bigger photo in on the final photo PLEASE
 // *   More than one person on the final photo

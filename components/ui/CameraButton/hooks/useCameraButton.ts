@@ -41,15 +41,15 @@ export const useCameraButton = ({ onPhotoSelected }: UseCameraButtonProps) => {
       const result = useCamera
         ? await ImagePicker.launchCameraAsync({
             mediaTypes,
-            allowsEditing: true,
-            aspect: [1, 1], // Square aspect ratio
+            // allowsEditing: true,
+            // aspect: [1, 1], // Square aspect ratio
             quality: 0.8,
             cameraType: ImagePicker.CameraType.front,
           })
         : await ImagePicker.launchImageLibraryAsync({
             mediaTypes,
-            allowsEditing: true,
-            aspect: [1, 1], // Square aspect ratio
+            // allowsEditing: true,
+            // aspect: [1, 1], // Square aspect ratio
             quality: 0.8,
             selectionLimit: 1,
           })

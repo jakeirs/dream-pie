@@ -81,6 +81,7 @@ export const usePhotoGenerationStore = create<PhotoGenerationStore>()(
             error: null,
             usedPose: pose,
             usedSelfie: selfie,
+            collageImageUri: null,
             mainPrompt: MAIN_PROMPT,
           },
           false,

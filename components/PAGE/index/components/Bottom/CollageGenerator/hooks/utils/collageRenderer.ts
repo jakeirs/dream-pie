@@ -4,7 +4,7 @@ import { CollageConfig, CollagePosition, DualImageLayout } from '../../types/typ
 import { calculateImageDimensions } from './imageUtils'
 
 // Reference photo scale factor
-const REFERENCE_PHOTO_SCALE = 0.52
+const REFERENCE_PHOTO_SCALE = 0.68
 
 /**
  * Calculate dual-image layout positions for collage
