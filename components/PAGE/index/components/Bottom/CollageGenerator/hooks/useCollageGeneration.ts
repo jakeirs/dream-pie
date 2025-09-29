@@ -11,6 +11,10 @@ export function useCollageGeneration() {
   const selectedPose = useStore(usePoseStore, (state) => state.selectedPose)
   const selectedSelfie = useStore(useSelfieChooserStore, (state) => state.selectedSelfie)
   const setCollageImageUri = useStore(usePhotoGenerationStore, (state) => state.setCollageImageUri)
+  const isPhotoGenerationProcessing = useStore(
+    usePhotoGenerationStore,
+    (state) => state.isProcessing
+  )
 
   const selfieImage = useImage(selectedSelfie?.imageUrl)
   const poseImage = useImage(selectedPose?.imageUrl)
@@ -46,5 +50,6 @@ export function useCollageGeneration() {
     canvasRef,
     config,
     layout,
+    isPhotoGenerationProcessing,
   }
 }

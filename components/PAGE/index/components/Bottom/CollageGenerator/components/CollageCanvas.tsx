@@ -3,10 +3,24 @@ import { Canvas, Rect, Image } from '@shopify/react-native-skia'
 
 import Button from '@/components/ui/Button/Button'
 import { useCollageGeneration } from '../hooks/useCollageGeneration'
+import { useEffect } from 'react'
 
 export function CollageCanvas() {
-  const { generateCollage, canvasRef, poseImage, selfieImage, config, layout } =
-    useCollageGeneration()
+  const {
+    generateCollage,
+    canvasRef,
+    poseImage,
+    selfieImage,
+    config,
+    layout,
+    isPhotoGenerationProcessing,
+  } = useCollageGeneration()
+
+  useEffect(() => {
+    if (isPhotoGenerationProcessing) {
+      generateCollage()
+    }
+  }, [isPhotoGenerationProcessing])
 
   if (!layout) return null
 

@@ -1,10 +1,10 @@
 import { SkImage, ImageFormat } from '@shopify/react-native-skia'
 import { File, Paths } from 'expo-file-system'
-import { CollageConfig, CollagePosition, DualImageLayout } from '../types'
+import { CollageConfig, CollagePosition, DualImageLayout } from '../../types/types'
 import { calculateImageDimensions } from './imageUtils'
 
 // Reference photo scale factor
-const REFERENCE_PHOTO_SCALE = 0.7
+const REFERENCE_PHOTO_SCALE = 0.65
 
 /**
  * Calculate dual-image layout positions for collage

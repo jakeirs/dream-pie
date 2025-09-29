@@ -24,13 +24,19 @@ export interface FalHookCallbacks {
  * See components/PAGE/test-api for useState wrapper example
  */
 export const useFal = (callbacks?: FalHookCallbacks) => {
-  const handleImageEdit = async (imageData: string, prompt: string = 'change the clothes to black jacket', abortSignal?: AbortSignal) => {
+  const handleImageEdit = async (
+    imageData: string,
+    prompt: string = 'change the clothes to black jacket',
+    abortSignal?: AbortSignal
+  ) => {
     callbacks?.onStart?.()
+
+    console.log('handleImageEdit prompt:', prompt)
 
     try {
       const request: FalRequest = {
         prompt: prompt,
-        imageData: imageData
+        imageData: imageData,
       }
 
       const response = await fetch('/api/fal', {
@@ -53,7 +59,8 @@ export const useFal = (callbacks?: FalHookCallbacks) => {
       if (error instanceof Error && error.name === 'AbortError') {
         callbacks?.onError?.('Generation cancelled by user')
       } else {
-        const errorMessage = error instanceof Error ? error.message : 'Something went wrong with FAL AI'
+        const errorMessage =
+          error instanceof Error ? error.message : 'Something went wrong with FAL AI'
         callbacks?.onError?.(errorMessage)
       }
     } finally {

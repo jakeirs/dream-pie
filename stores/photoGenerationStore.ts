@@ -23,6 +23,7 @@
 import { create } from 'zustand'
 import { devtools } from '@csark0812/zustand-expo-devtools'
 import { FalResponse, Pose, Selfie, PosePrompt } from '@/types'
+import { MAIN_PROMPT } from '@/shared/prompts/mainPrompt'
 
 interface PhotoGenerationStore {
   // Generation State
@@ -40,12 +41,13 @@ interface PhotoGenerationStore {
   usedPose: Pose | null
   usedSelfie: Selfie | null
   usedPosePrompt: PosePrompt | null
+  mainPrompt: string | null
 
   // Error Handling
   error: string | null
 
   // Actions
-  startGeneration: (pose: Pose, selfie: Selfie, posePrompt: PosePrompt) => void
+  startGeneration: (pose: Pose, selfie: Selfie) => void
   setCollageImageUri: (uri: string | null) => void
   setResult: (result: FalResponse) => void
   setError: (error: string) => void
@@ -67,10 +69,11 @@ export const usePhotoGenerationStore = create<PhotoGenerationStore>()(
       usedPose: null,
       usedSelfie: null,
       usedPosePrompt: null,
+      mainPrompt: null,
       error: null,
 
       // Start Generation - with Fal.ai
-      startGeneration: (pose, selfie, posePrompt) =>
+      startGeneration: (pose, selfie) =>
         set(
           {
             isProcessing: true,
@@ -78,7 +81,7 @@ export const usePhotoGenerationStore = create<PhotoGenerationStore>()(
             error: null,
             usedPose: pose,
             usedSelfie: selfie,
-            usedPosePrompt: posePrompt,
+            mainPrompt: MAIN_PROMPT,
           },
           false,
           'startGeneration'
@@ -126,6 +129,7 @@ export const usePhotoGenerationStore = create<PhotoGenerationStore>()(
             isProcessing: false,
             isCancelling: false,
             abortController: null,
+            collageImageUri: null,
           },
           false,
           'completeGeneration'
@@ -142,6 +146,8 @@ export const usePhotoGenerationStore = create<PhotoGenerationStore>()(
             return {
               isCancelling: true,
               abortController: null,
+              collageImageUri: null,
+              mainPrompt: null,
             }
           },
           false,
@@ -160,6 +166,8 @@ export const usePhotoGenerationStore = create<PhotoGenerationStore>()(
             usedSelfie: null,
             usedPosePrompt: null,
             error: null,
+            collageImageUri: null,
+            mainPrompt: null,
           },
           false,
           'reset'

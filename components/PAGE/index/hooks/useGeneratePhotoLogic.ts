@@ -9,8 +9,8 @@ import {
 } from '@/stores'
 import { useFal } from '@/shared/hooks'
 import { convertImageForFal } from '@/shared/utils'
-import { getPosePromptByPoseId } from '@/mockData/prompts/posePrompts'
 import { Creation } from '@/types/dream'
+import { MAIN_PROMPT } from '@/shared/prompts/mainPrompt'
 
 /**
  * Photo Generation Logic Hook
@@ -52,6 +52,43 @@ export const useGeneratePhotoLogic = () => {
     }
   }, [result, usedPose, usedSelfie, addCreationAndWait])
 
+  // Handle collage image generation when collageImageUri is available
+  const handleCollageImageGeneration = async () => {
+    try {
+      // Start generation with selected inputs
+
+      // Convert image to base64 format for FAL API
+      let convertedImageData: string
+      try {
+        convertedImageData = await convertImageForFal(photoGeneration.collageImageUri)
+      } catch (conversionError) {
+        const errorMessage =
+          conversionError instanceof Error
+            ? conversionError.message
+            : 'Failed to prepare image for generation'
+        photoGeneration.setError(`Image conversion failed: ${errorMessage}`)
+        return
+      }
+
+      // Create AbortController for cancellation support
+      const abortController = new AbortController()
+      photoGeneration.setAbortController(abortController)
+
+      // Call FAL AI with converted base64 image and pose prompt
+      await handleImageEdit(convertedImageData, MAIN_PROMPT, abortController.signal)
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to generate photo'
+      photoGeneration.setError(errorMessage)
+      photoGeneration.completeGeneration()
+    }
+  }
+
+  useEffect(() => {
+    if (photoGeneration.collageImageUri) {
+      handleCollageImageGeneration()
+    }
+  }, [photoGeneration.collageImageUri])
+
   // Initialize shared FAL hook with callbacks to update photoGeneration store
   const { handleImageEdit } = useFal({
     onStart: () => {},
@@ -79,43 +116,11 @@ export const useGeneratePhotoLogic = () => {
       return
     }
 
-    // Get pose prompt using the posePromptId from the selected pose
-    const posePrompt = getPosePromptByPoseId(selectedPose.id)
-    if (!posePrompt) {
-      photoGeneration.setError('Pose prompt not found for selected pose')
-      return
-    }
+    photoGeneration.startGeneration(selectedPose, selectedSelfie)
 
-    try {
-      // Start generation with selected inputs
-      photoGeneration.startGeneration(selectedPose, selectedSelfie, posePrompt)
-
-      // Create AbortController for cancellation support
-      const abortController = new AbortController()
-      photoGeneration.setAbortController(abortController)
-
-      // Convert image to base64 format for FAL API
-      let convertedImageData: string
-      try {
-        convertedImageData = await convertImageForFal(selectedSelfie.imageUrl)
-        console.log('selectedSelfie.imageUrl', selectedSelfie.imageUrl)
-        console.log('convertedImageData', convertedImageData)
-      } catch (conversionError) {
-        const errorMessage =
-          conversionError instanceof Error
-            ? conversionError.message
-            : 'Failed to prepare image for generation'
-        photoGeneration.setError(`Image conversion failed: ${errorMessage}`)
-        return
-      }
-
-      // Call FAL AI with converted base64 image and pose prompt
-      await handleImageEdit(convertedImageData, posePrompt.prompt, abortController.signal)
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Failed to generate photo'
-      photoGeneration.setError(errorMessage)
-      photoGeneration.completeGeneration()
-    }
+    // Create AbortController for cancellation support
+    const abortController = new AbortController()
+    photoGeneration.setAbortController(abortController)
   }
 
   // Helper to check if generation can proceed
