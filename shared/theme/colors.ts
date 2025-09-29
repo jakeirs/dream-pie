@@ -28,9 +28,12 @@ export const brandColors = {
   error: '#FF453A', // Error states, delete actions
   errorForeground: '#FFFFFF',
 
+  destructive: '#FF453A', // Destructive actions (alias for error)
+
   // UI Elements
   border: '#E5E7EB', // Dividers, borders
   borderLight: '#F3F4F6', // Light borders on white backgrounds
+  muted: '#F5F5F4', // Muted backgrounds
 }
 
 export type BrandColors = typeof brandColors
