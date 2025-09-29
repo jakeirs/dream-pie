@@ -107,6 +107,11 @@ export const usePhotoGenerationStore = create<PhotoGenerationStore>()(
           {
             error,
             result: null,
+            isProcessing: false,
+            isCancelling: false,
+            abortController: null,
+            collageImageUri: null,
+            mainPrompt: null,
           },
           false,
           'setError'
@@ -145,6 +150,7 @@ export const usePhotoGenerationStore = create<PhotoGenerationStore>()(
             }
             return {
               isCancelling: true,
+              isProcessing: false,
               abortController: null,
               collageImageUri: null,
               mainPrompt: null,

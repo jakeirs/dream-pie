@@ -84,10 +84,10 @@ export const useGeneratePhotoLogic = () => {
   }
 
   useEffect(() => {
-    if (photoGeneration.collageImageUri) {
+    if (photoGeneration.collageImageUri && photoGeneration.isProcessing) {
       handleCollageImageGeneration()
     }
-  }, [photoGeneration.collageImageUri])
+  }, [photoGeneration.collageImageUri, photoGeneration.isProcessing])
 
   // Initialize shared FAL hook with callbacks to update photoGeneration store
   const { handleImageEdit } = useFal({
