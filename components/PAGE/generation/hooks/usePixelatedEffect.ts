@@ -9,7 +9,7 @@ import { useStore } from 'zustand'
 import { usePoseStore } from '@/stores'
 
 import { IParticle } from '../types/types'
-import { getDefaultParticleConfig } from './utils/imageProcessor'
+import { getDefaultParticleConfig } from './utils/getDefaultConfig'
 import { makeImageParticles } from './utils/particleUtils'
 
 export function usePixelatedEffect() {

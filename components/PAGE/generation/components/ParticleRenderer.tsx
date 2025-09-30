@@ -18,7 +18,7 @@ export default function ParticleRenderer({
   config,
 }: ParticleRendererProps) {
   const picture = useDerivedValue(() => {
-    const currentParticles = particlesShared.value
+    const currentParticles = particlesShared.get()
     const { particleSize, stageWidth, stageHeight } = config
 
     // Pre-calculate image rectangles once
