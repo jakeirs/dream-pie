@@ -47,6 +47,7 @@ function AnimatedCircle() {
 ```
 
 **❌ NO NEED FOR**:
+
 - `createAnimatedComponent()`
 - `useAnimatedProps()`
 - Manual re-render triggers (when using `.modify()` correctly)
@@ -78,6 +79,7 @@ x.value = withSpring(100)
 ```
 
 **Characteristics**:
+
 - ✅ Triggers Skia re-renders automatically
 - ✅ Works with `useDerivedValue`
 - ✅ Integrates seamlessly with gesture handlers
@@ -112,6 +114,7 @@ function App() {
 ### Why .modify() is Essential
 
 From official Reanimated documentation:
+
 > **"When storing large arrays or complex objects in a shared value, you can use .modify method to alter the existing value instead of creating a new one."**
 
 ### The Problem with Direct Mutation
@@ -150,10 +153,7 @@ particles.modify((array) => {
 
 ```typescript
 interface SharedValue<T> {
-  modify: (
-    modifier: (value: T) => T,
-    forceUpdate?: boolean
-  ) => void
+  modify: (modifier: (value: T) => T, forceUpdate?: boolean) => void
 }
 
 // Usage
@@ -166,6 +166,7 @@ sharedValue.modify((currentValue) => {
 ```
 
 **Key Points**:
+
 - ✅ Must include `'worklet'` directive
 - ✅ Must return the modified value
 - ✅ Maintains reactivity for array/object mutations
@@ -182,8 +183,6 @@ function ParticleSystem() {
   const renderTrigger = useSharedValue(0)
 
   const gesture = Gesture.Pan().onChange((event) => {
-    'worklet'
-
     // ✅ CORRECT: Use .modify() for array mutations
     particles.modify((particleArray) => {
       'worklet'
@@ -216,6 +215,7 @@ function ParticleSystem() {
 ### ⚠️ WARNING: Avoid Unless You Know What You're Doing
 
 From official Reanimated documentation:
+
 > **"The usage of makeMutable is discouraged in most cases. It's recommended to use the useSharedValue hook instead unless you know what you're doing and you are aware of the consequences."**
 
 ### Why makeMutable is Problematic
@@ -232,6 +232,7 @@ function App() {
 ### If You Must Use makeMutable
 
 **Requirements**:
+
 1. Wrap in `useMemo` to prevent re-creation
 2. Manual cleanup with `cancelAnimation`
 3. Cannot be used directly in component scope
@@ -256,13 +257,13 @@ function App() {
 
 ### Comparison: makeMutable vs useSharedValue
 
-| Feature | makeMutable | useSharedValue |
-|---------|-------------|----------------|
-| Component scope | ❌ Needs useMemo | ✅ Safe to use directly |
-| Reuses object on re-render | ❌ No (without useMemo) | ✅ Yes |
-| Auto cleanup | ❌ Manual required | ✅ Automatic |
-| Initial value changes | ❌ Creates new object | ✅ Ignores changes |
-| Can use in loops | ✅ Yes (if iterations constant) | ✅ Yes (if iterations constant) |
+| Feature                    | makeMutable                     | useSharedValue                  |
+| -------------------------- | ------------------------------- | ------------------------------- |
+| Component scope            | ❌ Needs useMemo                | ✅ Safe to use directly         |
+| Reuses object on re-render | ❌ No (without useMemo)         | ✅ Yes                          |
+| Auto cleanup               | ❌ Manual required              | ✅ Automatic                    |
+| Initial value changes      | ❌ Creates new object           | ✅ Ignores changes              |
+| Can use in loops           | ✅ Yes (if iterations constant) | ✅ Yes (if iterations constant) |
 
 ### Recommended: Use useSharedValue Instead
 
@@ -352,15 +353,16 @@ function RotatingCircle() {
 A function passed to the callback argument is automatically workletized and ran on the UI thread.
 
 **Arguments**
-1. `callback`
-A function executed on every frame update. This function receives a frameInfo object containing the following fields:
 
-  - `timestamp` a number indicating the system time (in milliseconds) when the last frame was rendered.
-  - `timeSincePreviousFrame` a number indicating the time (in milliseconds) since last frame. This value will be null on the first frame after activation. Starting from the second frame, it should be ~16 ms on 60 Hz, and ~8 ms on 120 Hz displays (provided there are no frame dropped).
-  - `timeSinceFirstFrame` a number indicating the time (in milliseconds) since the callback was activated.
+1. `callback`
+   A function executed on every frame update. This function receives a frameInfo object containing the following fields:
+
+- `timestamp` a number indicating the system time (in milliseconds) when the last frame was rendered.
+- `timeSincePreviousFrame` a number indicating the time (in milliseconds) since last frame. This value will be null on the first frame after activation. Starting from the second frame, it should be ~16 ms on 60 Hz, and ~8 ms on 120 Hz displays (provided there are no frame dropped).
+- `timeSinceFirstFrame` a number indicating the time (in milliseconds) since the callback was activated.
 
 2. `autostart` (Optional)
-Whether the callback should start automatically. Defaults to true.
+   Whether the callback should start automatically. Defaults to true.
 
 **Returns**
 
@@ -369,7 +371,6 @@ Whether the callback should start automatically. Defaults to true.
 - `setActive` a function that lets you start the frame callback or stop it from running
 - `isActive` a boolean indicating whether a callback is running
 - `callbackId` a number indicating a unique identifier of the frame callback
-
 
 ```typescript
 function PhysicsSimulation() {
@@ -432,7 +433,6 @@ function DraggableCircle() {
 
   const gesture = Gesture.Pan()
     .onChange((event) => {
-      'worklet'
       x.value += event.changeX
       y.value += event.changeY
     })
@@ -461,8 +461,6 @@ function InteractiveParticles() {
   const renderTrigger = useSharedValue(0)
 
   const gesture = Gesture.Pan().onChange((event) => {
-    'worklet'
-
     particles.modify((particleArray) => {
       'worklet'
       const touchX = event.x
@@ -511,15 +509,12 @@ function InteractiveCard() {
 
   const gesture = Gesture.Pan()
     .onStart(() => {
-      'worklet'
       scale.value = withSpring(1.1)
     })
     .onChange((event) => {
-      'worklet'
       x.value += event.changeX
     })
     .onEnd(() => {
-      'worklet'
       scale.value = withSpring(1)
       x.value = withSpring(0)
     })
@@ -562,9 +557,9 @@ particles.modify((arr) => {
 
 ```typescript
 // ❌ BAD: Creates 1000+ individual shared values
-const particles = initialParticles.map(p => ({
+const particles = initialParticles.map((p) => ({
   x: useSharedValue(p.x),
-  y: useSharedValue(p.y)
+  y: useSharedValue(p.y),
 }))
 ```
 
@@ -575,7 +570,6 @@ const particles = initialParticles.map(p => ({
 ```typescript
 // ✅ GOOD: Single re-render after all updates
 useFrameCallback(() => {
-
   particles.modify((arr) => {
     'worklet'
     for (let i = 0; i < arr.length; i++) {
@@ -632,20 +626,14 @@ useAnimatedReaction(
 ```typescript
 // ✅ GOOD: Only re-computes when necessary
 const transform = useDerivedValue(() => {
-  return [
-    { translateX: x.value },
-    { translateY: y.value }
-  ]
+  return [{ translateX: x.value }, { translateY: y.value }]
 }, [x, y]) // Only x and y
 ```
 
 ```typescript
 // ❌ BAD: Re-computes unnecessarily
 const transform = useDerivedValue(() => {
-  return [
-    { translateX: x.value },
-    { translateY: y.value }
-  ]
+  return [{ translateX: x.value }, { translateY: y.value }]
   // Missing dependencies array - recomputes on every render
 })
 ```
@@ -726,22 +714,23 @@ return (
 
 ---
 
-### ❌ PITFALL 4: Forgetting 'worklet' Directive
+### ❌ PITFALL 4: Forgetting 'worklet' Directive in .modify()
+
+**Note**: Gesture callbacks (`.onChange()`, `.onStart()`, `.onEnd()`) are automatically workletized - you don't need `'worklet'` there. However, `.modify()` callbacks still require the `'worklet'` directive.
 
 ```typescript
-// ❌ BAD: Function runs on JS thread (slow!)
+// ❌ BAD: Missing 'worklet' inside .modify()
 const gesture = Gesture.Pan().onChange((event) => {
   particles.modify((arr) => {
-    arr[0].x = event.x // Might not work correctly
+    arr[0].x = event.x // Missing 'worklet' - might not work correctly
     return arr
   })
 })
 ```
 
 ```typescript
-// ✅ GOOD: Runs on UI thread (fast!)
+// ✅ GOOD: 'worklet' inside .modify() ensures UI thread execution
 const gesture = Gesture.Pan().onChange((event) => {
-  'worklet'
   particles.modify((arr) => {
     'worklet'
     arr[0].x = event.x // ✅ Runs on UI thread
@@ -822,8 +811,6 @@ export function usePixelatedEffect() {
 
   // Gesture updates particles
   const gesture = Gesture.Pan().onChange((event) => {
-    'worklet'
-
     // ✅ Use .modify() for array mutations
     particlesShared.modify((particles) => {
       'worklet'
@@ -920,6 +907,7 @@ function ParticleItem({ index, particlesShared, renderTrigger }) {
 ```
 
 **Key Learnings**:
+
 - ✅ `useSharedValue` instead of `makeMutable` (official recommendation)
 - ✅ `.modify()` for all array mutations (maintains reactivity)
 - ✅ Single `renderTrigger` for efficient batch updates
@@ -940,7 +928,6 @@ function DraggableRect() {
 
   const gesture = Gesture.Pan()
     .onChange((event) => {
-      'worklet'
       x.value += event.changeX
       y.value += event.changeY
     })
@@ -1003,15 +990,15 @@ function AnimatedGradient() {
 
 ### When to Use What
 
-| Use Case | Solution | Example |
-|----------|----------|---------|
-| Single animated value | `useSharedValue` | Moving circle |
-| Complex calculation | `useDerivedValue` | Color interpolation |
-| Large array (100+) | `useSharedValue` + `.modify()` | Particle system |
-| Continuous updates | `useFrameCallback` | Physics loop |
-| Gesture interaction | `Gesture.Pan()` | Draggable objects |
-| Color transitions | `interpolateColors` | Gradient animation |
-| React Compiler | `.get()` / `.set()` | Compiler-compatible code |
+| Use Case              | Solution                       | Example                  |
+| --------------------- | ------------------------------ | ------------------------ |
+| Single animated value | `useSharedValue`               | Moving circle            |
+| Complex calculation   | `useDerivedValue`              | Color interpolation      |
+| Large array (100+)    | `useSharedValue` + `.modify()` | Particle system          |
+| Continuous updates    | `useFrameCallback`             | Physics loop             |
+| Gesture interaction   | `Gesture.Pan()`                | Draggable objects        |
+| Color transitions     | `interpolateColors`            | Gradient animation       |
+| React Compiler        | `.get()` / `.set()`            | Compiler-compatible code |
 
 ---
 
@@ -1042,11 +1029,11 @@ useFrameCallback(() => {
   x.value += 1
 })
 
-// Gesture
+// Gesture (callbacks automatically workletized)
 const gesture = Gesture.Pan()
-  .onStart(() => { 'worklet' /* ... */ })
-  .onChange((e) => { 'worklet' /* ... */ })
-  .onEnd(() => { 'worklet' /* ... */ })
+  .onStart(() => { /* ... */ })
+  .onChange((e) => { /* ... */ })
+  .onEnd(() => { /* ... */ })
 
 // Render
 <GestureDetector gesture={gesture}>
@@ -1064,7 +1051,7 @@ const gesture = Gesture.Pan()
 
 1. **Always use `useSharedValue`** for reactive values (not `makeMutable`)
 2. **Use `.modify()` for array/object mutations** to maintain reactivity
-3. **Always add 'worklet' directive** in gesture handlers, frame callbacks, and .modify()
+3. **Always add 'worklet' directive** in `.modify()` callbacks (gesture callbacks are auto-workletized)
 4. **Extract components** when using hooks in map/loops
 5. **Use `useDerivedValue`** for complex calculations on UI thread
 6. **Use new Gesture API** (`.onChange()`, not `.onActive()`)
@@ -1077,7 +1064,7 @@ const gesture = Gesture.Pan()
 2. ❌ Direct property mutation: `arr.value[i].x = 100` (use `.modify()`)
 3. ❌ Array spreading for updates: `arr.value = [...arr.value]` (use `.modify()`)
 4. ❌ Calling hooks inside loops
-5. ❌ Forgetting 'worklet' directive
+5. ❌ Forgetting 'worklet' directive inside `.modify()` callbacks
 6. ❌ Creating excessive individual shared values (100+)
 7. ❌ Using old gesture handler API
 
