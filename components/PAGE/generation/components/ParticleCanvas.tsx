@@ -15,22 +15,27 @@ export default function ParticleCanvas() {
   // Update particle physics on every frame
   useFrameCallback(() => {
     'worklet'
-    const currentParticles = particlesShared.value
 
-    for (let i = 0; i < currentParticles.length; i++) {
-      const particle = currentParticles[i]
+    particlesShared.modify((particles) => {
+      'worklet'
 
-      // Spring back to saved position
-      particle.x += (particle.savedX - particle.x) * config.moveSpeed
-      particle.y += (particle.savedY - particle.y) * config.moveSpeed
+      for (let i = 0; i < particles.length; i++) {
+        const particle = particles[i]
 
-      // Apply friction and velocity
-      particle.vx *= config.friction
-      particle.vy *= config.friction
+        // Spring back to saved position
+        particle.x += (particle.savedX - particle.x) * config.moveSpeed
+        particle.y += (particle.savedY - particle.y) * config.moveSpeed
 
-      particle.x += particle.vx
-      particle.y += particle.vy
-    }
+        // Apply friction and velocity
+        particle.vx *= config.friction
+        particle.vy *= config.friction
+
+        particle.x += particle.vx
+        particle.y += particle.vy
+      }
+
+      return particles
+    })
 
     // Trigger re-render
     renderTrigger.value += 1

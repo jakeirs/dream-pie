@@ -3,7 +3,7 @@ import { useWindowDimensions } from 'react-native'
 
 import { useImage } from '@shopify/react-native-skia'
 import { Gesture } from 'react-native-gesture-handler'
-import { makeMutable, useSharedValue } from 'react-native-reanimated'
+import { useSharedValue } from 'react-native-reanimated'
 import { useStore } from 'zustand'
 
 import { usePoseStore } from '@/stores'
@@ -18,7 +18,7 @@ export function usePixelatedEffect() {
 
   const image = useImage(selectedPose?.imageUrl)
 
-  const particlesShared = makeMutable<IParticle[]>([])
+  const particlesShared = useSharedValue<IParticle[]>([])
   const renderTrigger = useSharedValue(0)
 
   const config = useMemo(
@@ -39,25 +39,30 @@ export function usePixelatedEffect() {
 
   const gesture = Gesture.Pan().onChange((event) => {
     'worklet'
-    const currentParticles = particlesShared.value
 
-    for (let i = 0; i < currentParticles.length; i++) {
-      const particle = currentParticles[i]
-      const dx = event.x - particle.x
-      const dy = event.y - particle.y
-      const dist = Math.sqrt(dx * dx + dy * dy)
-      const minDist = config.minPushDistance
+    particlesShared.modify((particles) => {
+      'worklet'
 
-      if (dist < minDist) {
-        const angle = Math.atan2(dy, dx)
-        const tx = particle.x + Math.cos(angle) * minDist
-        const ty = particle.y + Math.sin(angle) * minDist
-        const ax = tx - event.x
-        const ay = ty - event.y
-        particle.vx -= ax
-        particle.vy -= ay
+      for (let i = 0; i < particles.length; i++) {
+        const particle = particles[i]
+        const dx = event.x - particle.x
+        const dy = event.y - particle.y
+        const dist = Math.sqrt(dx * dx + dy * dy)
+        const minDist = config.minPushDistance
+
+        if (dist < minDist) {
+          const angle = Math.atan2(dy, dx)
+          const tx = particle.x + Math.cos(angle) * minDist
+          const ty = particle.y + Math.sin(angle) * minDist
+          const ax = tx - event.x
+          const ay = ty - event.y
+          particle.vx -= ax
+          particle.vy -= ay
+        }
       }
-    }
+
+      return particles
+    })
 
     // Trigger re-render
     renderTrigger.value += 1

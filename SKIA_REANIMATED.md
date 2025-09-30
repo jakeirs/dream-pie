@@ -9,12 +9,14 @@
 ## Table of Contents
 
 1. [Core Concepts](#core-concepts)
-2. [Shared Values vs Mutable Values](#shared-values-vs-mutable-values)
-3. [Animation Patterns](#animation-patterns)
-4. [Gesture Integration](#gesture-integration)
-5. [Performance Optimization](#performance-optimization)
-6. [Common Pitfalls](#common-pitfalls)
-7. [Real-World Examples](#real-world-examples)
+2. [useSharedValue - The Foundation](#usesharedvalue---the-foundation)
+3. [The .modify() Method for Arrays](#the-modify-method-for-arrays)
+4. [makeMutable (Discouraged)](#makemutable-discouraged)
+5. [Animation Patterns](#animation-patterns)
+6. [Gesture Integration](#gesture-integration)
+7. [Performance Optimization](#performance-optimization)
+8. [Common Pitfalls](#common-pitfalls)
+9. [Real-World Examples](#real-world-examples)
 
 ---
 
@@ -26,7 +28,7 @@
 
 ```typescript
 import { Canvas, Circle } from '@shopify/react-native-skia'
-import { useSharedValue, withTiming } from 'react-native-reanimated'
+import { useSharedValue, withTiming, useEffect } from 'react-native-reanimated'
 
 function AnimatedCircle() {
   const radius = useSharedValue(50)
@@ -47,15 +49,15 @@ function AnimatedCircle() {
 **❌ NO NEED FOR**:
 - `createAnimatedComponent()`
 - `useAnimatedProps()`
-- Manual re-render triggers (in most cases)
+- Manual re-render triggers (when using `.modify()` correctly)
 
 ---
 
-## Shared Values vs Mutable Values
+## useSharedValue - The Foundation
 
-### `useSharedValue` - Reactive Values
+### Basic Usage
 
-**When to use**: When you need Skia components to react to value changes.
+**When to use**: For any value that needs to trigger Skia re-renders.
 
 ```typescript
 import { useSharedValue } from 'react-native-reanimated'
@@ -63,7 +65,13 @@ import { useSharedValue } from 'react-native-reanimated'
 // ✅ Creates a reactive value that Skia tracks
 const x = useSharedValue(0)
 
-// Skia components will automatically re-render when x changes
+// Simple value updates
+x.value = 100
+
+// Animated updates
+x.value = withSpring(100)
+
+// Skia components will automatically re-render
 <Group transform={[{ translateX: x }]}>
   <Circle cx={50} cy={50} r={20} color="red" />
 </Group>
@@ -72,117 +80,206 @@ const x = useSharedValue(0)
 **Characteristics**:
 - ✅ Triggers Skia re-renders automatically
 - ✅ Works with `useDerivedValue`
-- ✅ Integrates with gesture handlers
-- ⚠️ Performance overhead for many values (100+ objects)
+- ✅ Integrates seamlessly with gesture handlers
+- ✅ Automatic cleanup on component unmount
+- ✅ **One shared value with large array is efficient** (using `.modify()`)
 
 ---
 
-### `makeMutable` - Non-Reactive Values
+### React Compiler Compatibility
 
-**When to use**: When you need to store complex data structures that update frequently but don't need automatic re-renders.
-
-```typescript
-import { makeMutable, useSharedValue } from 'react-native-reanimated'
-
-// ❌ BAD: Skia won't know when particles change
-const particles = makeMutable([{ x: 0, y: 0 }])
-
-particles.value[0].x = 100 // Skia won't re-render!
-
-// ✅ GOOD: Combine makeMutable with render trigger
-const particles = makeMutable([{ x: 0, y: 0 }])
-const renderTrigger = useSharedValue(0)
-
-// Update particles
-particles.value[0].x = 100
-renderTrigger.value += 1 // Forces Skia to re-render
-```
-
-**Characteristics**:
-- ✅ Efficient for storing large data structures
-- ✅ Low memory overhead
-- ❌ Does NOT trigger Skia re-renders
-- ✅ Perfect for particle systems, game objects, bulk data
-
----
-
-### The Render Trigger Pattern
-
-**Problem**: You have 100+ objects stored in `makeMutable` and need efficient updates.
-
-**Solution**: Use a single `useSharedValue` as a render trigger.
+When working with React Compiler, use `.get()` and `.set()` methods instead of `.value`:
 
 ```typescript
-interface Particle {
-  x: number
-  y: number
-  vx: number
-  vy: number
-  picture: SkPicture
-}
+function App() {
+  const sv = useSharedValue(100)
 
-function ParticleSystem() {
-  // Store particles efficiently
-  const particles = makeMutable<Particle[]>([])
-
-  // Single reactive trigger for all particles
-  const renderTrigger = useSharedValue(0)
-
-  // Update particles in gesture or animation
-  const gesture = Gesture.Pan().onChange((event) => {
+  const animatedStyle = useAnimatedStyle(() => {
     'worklet'
-    const currentParticles = particles.value
-
-    for (let i = 0; i < currentParticles.length; i++) {
-      currentParticles[i].x += event.translationX
-      currentParticles[i].y += event.translationY
-    }
-
-    // ✅ Trigger re-render for all particles at once
-    renderTrigger.value += 1
+    return { width: sv.get() * 100 } // ✅ Use .get() instead of .value
   })
 
-  // Render particles
-  return (
-    <Canvas>
-      {initialParticles.map((particle, index) => (
-        <ParticleItem
-          key={index}
-          index={index}
-          particles={particles}
-          renderTrigger={renderTrigger}
-        />
-      ))}
-    </Canvas>
-  )
-}
-
-function ParticleItem({ index, particles, renderTrigger }) {
-  const transform = useDerivedValue(() => {
-    // ✅ Read renderTrigger to force re-computation
-    const _trigger = renderTrigger.value
-
-    // ✅ Read current particle position
-    const particle = particles.value[index]
-    return [
-      { translateX: particle.x },
-      { translateY: particle.y }
-    ]
-  }, [renderTrigger])
-
-  return (
-    <Group transform={transform}>
-      <Picture picture={particle.picture} />
-    </Group>
-  )
+  const handlePress = () => {
+    sv.set((value) => value + 1) // ✅ Use .set() instead of .value =
+  }
 }
 ```
 
-**Why This Works**:
-1. `makeMutable` stores data efficiently (no overhead per particle)
-2. Single `useSharedValue` provides reactivity
-3. `useDerivedValue` re-computes when `renderTrigger` changes
-4. All particle positions update in one render cycle
+---
+
+## The .modify() Method for Arrays
+
+### Why .modify() is Essential
+
+From official Reanimated documentation:
+> **"When storing large arrays or complex objects in a shared value, you can use .modify method to alter the existing value instead of creating a new one."**
+
+### The Problem with Direct Mutation
+
+```typescript
+// ❌ BAD: Direct property mutation loses reactivity
+const particles = useSharedValue([{ x: 0, y: 0 }])
+
+particles.value[0].x = 100 // Reanimated loses reactivity! 🚨
+```
+
+```typescript
+// ⚠️ WORKS BUT INEFFICIENT: Creates new array copy
+const particles = useSharedValue([{ x: 0, y: 0 }])
+
+particles.value = [...particles.value] // Creates copy, memory overhead
+particles.value[0].x = 100
+```
+
+### The Correct Way: .modify()
+
+```typescript
+// ✅ GOOD: Use .modify() for in-place mutations
+const particles = useSharedValue([{ x: 0, y: 0 }])
+
+particles.modify((array) => {
+  'worklet'
+  array[0].x = 100 // ✅ Safe mutation inside .modify()
+  return array
+})
+```
+
+---
+
+### .modify() Syntax
+
+```typescript
+interface SharedValue<T> {
+  modify: (
+    modifier: (value: T) => T,
+    forceUpdate?: boolean
+  ) => void
+}
+
+// Usage
+sharedValue.modify((currentValue) => {
+  'worklet'
+  // Mutate currentValue in-place
+  currentValue.property = newValue
+  return currentValue // Must return the modified value
+})
+```
+
+**Key Points**:
+- ✅ Must include `'worklet'` directive
+- ✅ Must return the modified value
+- ✅ Maintains reactivity for array/object mutations
+- ✅ No array copying overhead
+- ✅ Thread-safe updates
+
+---
+
+### Practical Example: Updating 100+ Particles
+
+```typescript
+function ParticleSystem() {
+  const particles = useSharedValue<Particle[]>([])
+  const renderTrigger = useSharedValue(0)
+
+  const gesture = Gesture.Pan().onChange((event) => {
+    'worklet'
+
+    // ✅ CORRECT: Use .modify() for array mutations
+    particles.modify((particleArray) => {
+      'worklet'
+
+      for (let i = 0; i < particleArray.length; i++) {
+        const particle = particleArray[i]
+        const dx = event.x - particle.x
+        const dy = event.y - particle.y
+        const dist = Math.sqrt(dx * dx + dy * dy)
+
+        if (dist < 100) {
+          particle.vx -= dx * 0.1
+          particle.vy -= dy * 0.1
+        }
+      }
+
+      return particleArray
+    })
+
+    // Trigger re-render for Skia
+    renderTrigger.value += 1
+  })
+}
+```
+
+---
+
+## makeMutable (Discouraged)
+
+### ⚠️ WARNING: Avoid Unless You Know What You're Doing
+
+From official Reanimated documentation:
+> **"The usage of makeMutable is discouraged in most cases. It's recommended to use the useSharedValue hook instead unless you know what you're doing and you are aware of the consequences."**
+
+### Why makeMutable is Problematic
+
+```typescript
+// ❌ BAD: makeMutable in component scope
+function App() {
+  const mv = makeMutable(100) // 🚨 Creates NEW object on every render!
+
+  // State is lost on component re-render
+}
+```
+
+### If You Must Use makeMutable
+
+**Requirements**:
+1. Wrap in `useMemo` to prevent re-creation
+2. Manual cleanup with `cancelAnimation`
+3. Cannot be used directly in component scope
+
+```typescript
+import { makeMutable, useMemo, useEffect, cancelAnimation } from 'react-native-reanimated'
+
+function App() {
+  // ✅ CORRECT: Wrap in useMemo
+  const mv = useMemo(() => makeMutable(0), [])
+
+  useEffect(() => {
+    mv.value = withRepeat(withSpring(100), -1, true)
+
+    return () => {
+      // ✅ REQUIRED: Manual cleanup
+      cancelAnimation(mv)
+    }
+  }, [])
+}
+```
+
+### Comparison: makeMutable vs useSharedValue
+
+| Feature | makeMutable | useSharedValue |
+|---------|-------------|----------------|
+| Component scope | ❌ Needs useMemo | ✅ Safe to use directly |
+| Reuses object on re-render | ❌ No (without useMemo) | ✅ Yes |
+| Auto cleanup | ❌ Manual required | ✅ Automatic |
+| Initial value changes | ❌ Creates new object | ✅ Ignores changes |
+| Can use in loops | ✅ Yes (if iterations constant) | ✅ Yes (if iterations constant) |
+
+### Recommended: Use useSharedValue Instead
+
+```typescript
+// ❌ DON'T DO THIS
+const particles = makeMutable<Particle[]>([])
+
+// ✅ DO THIS INSTEAD
+const particles = useSharedValue<Particle[]>([])
+
+// Use .modify() for array mutations
+particles.modify((arr) => {
+  'worklet'
+  arr[0].x = 100
+  return arr
+})
+```
 
 ---
 
@@ -252,25 +349,51 @@ function RotatingCircle() {
 ### Pattern 3: Frame Callbacks (Physics/Game Loops)
 
 **Use Case**: Continuous updates, physics simulations, particle systems.
+A function passed to the callback argument is automatically workletized and ran on the UI thread.
+
+**Arguments**
+1. `callback`
+A function executed on every frame update. This function receives a frameInfo object containing the following fields:
+
+  - `timestamp` a number indicating the system time (in milliseconds) when the last frame was rendered.
+  - `timeSincePreviousFrame` a number indicating the time (in milliseconds) since last frame. This value will be null on the first frame after activation. Starting from the second frame, it should be ~16 ms on 60 Hz, and ~8 ms on 120 Hz displays (provided there are no frame dropped).
+  - `timeSinceFirstFrame` a number indicating the time (in milliseconds) since the callback was activated.
+
+2. `autostart` (Optional)
+Whether the callback should start automatically. Defaults to true.
+
+**Returns**
+
+`useFrameCallback` returns an object containing these fields:
+
+- `setActive` a function that lets you start the frame callback or stop it from running
+- `isActive` a boolean indicating whether a callback is running
+- `callbackId` a number indicating a unique identifier of the frame callback
+
 
 ```typescript
 function PhysicsSimulation() {
-  const particles = makeMutable([
+  const particles = useSharedValue([
     { x: 100, y: 100, vx: 2, vy: 1 }
   ])
   const renderTrigger = useSharedValue(0)
 
   useFrameCallback(() => {
-    'worklet'
-    const p = particles.value[0]
 
-    // Update physics
-    p.x += p.vx
-    p.y += p.vy
+    particles.modify((particleArray) => {
+      'worklet'
+      const p = particleArray[0]
 
-    // Bounce off walls
-    if (p.x > 300 || p.x < 0) p.vx *= -1
-    if (p.y > 500 || p.y < 0) p.vy *= -1
+      // Update physics
+      p.x += p.vx
+      p.y += p.vy
+
+      // Bounce off walls
+      if (p.x > 300 || p.x < 0) p.vx *= -1
+      if (p.y > 500 || p.y < 0) p.vy *= -1
+
+      return particleArray
+    })
 
     // Trigger re-render
     renderTrigger.value += 1
@@ -280,7 +403,7 @@ function PhysicsSimulation() {
     const _trigger = renderTrigger.value
     const p = particles.value[0]
     return [{ translateX: p.x }, { translateY: p.y }]
-  })
+  }, [renderTrigger])
 
   return (
     <Canvas>
@@ -326,11 +449,11 @@ function DraggableCircle() {
 
 ---
 
-### Advanced Gesture Pattern (Multiple Objects)
+### Advanced Gesture Pattern (Multiple Objects with .modify())
 
 ```typescript
 function InteractiveParticles() {
-  const particles = makeMutable([
+  const particles = useSharedValue([
     { x: 100, y: 100, vx: 0, vy: 0 },
     { x: 200, y: 150, vx: 0, vy: 0 },
     // ... more particles
@@ -339,24 +462,30 @@ function InteractiveParticles() {
 
   const gesture = Gesture.Pan().onChange((event) => {
     'worklet'
-    const touchX = event.x
-    const touchY = event.y
-    const pushDistance = 100
 
-    // Update all particles based on touch position
-    for (let i = 0; i < particles.value.length; i++) {
-      const particle = particles.value[i]
-      const dx = touchX - particle.x
-      const dy = touchY - particle.y
-      const dist = Math.sqrt(dx * dx + dy * dy)
+    particles.modify((particleArray) => {
+      'worklet'
+      const touchX = event.x
+      const touchY = event.y
+      const pushDistance = 100
 
-      if (dist < pushDistance) {
-        const angle = Math.atan2(dy, dx)
-        const force = (pushDistance - dist) / pushDistance
-        particle.vx -= Math.cos(angle) * force * 5
-        particle.vy -= Math.sin(angle) * force * 5
+      // Update all particles based on touch position
+      for (let i = 0; i < particleArray.length; i++) {
+        const particle = particleArray[i]
+        const dx = touchX - particle.x
+        const dy = touchY - particle.y
+        const dist = Math.sqrt(dx * dx + dy * dy)
+
+        if (dist < pushDistance) {
+          const angle = Math.atan2(dy, dx)
+          const force = (pushDistance - dist) / pushDistance
+          particle.vx -= Math.cos(angle) * force * 5
+          particle.vy -= Math.sin(angle) * force * 5
+        }
       }
-    }
+
+      return particleArray
+    })
 
     renderTrigger.value += 1
   })
@@ -416,16 +545,23 @@ function InteractiveCard() {
 
 ## Performance Optimization
 
-### ✅ DO: Use makeMutable for Large Datasets
+### ✅ DO: Use useSharedValue with .modify() for Large Arrays
 
 ```typescript
 // ✅ GOOD: Efficient for 1000+ particles
-const particles = makeMutable<Particle[]>(initialParticles)
-const renderTrigger = useSharedValue(0)
+const particles = useSharedValue<Particle[]>(initialParticles)
+
+particles.modify((arr) => {
+  'worklet'
+  for (let i = 0; i < arr.length; i++) {
+    arr[i].x += 1
+  }
+  return arr
+})
 ```
 
 ```typescript
-// ❌ BAD: Creates 1000+ shared values
+// ❌ BAD: Creates 1000+ individual shared values
 const particles = initialParticles.map(p => ({
   x: useSharedValue(p.x),
   y: useSharedValue(p.y)
@@ -434,15 +570,20 @@ const particles = initialParticles.map(p => ({
 
 ---
 
-### ✅ DO: Batch Updates
+### ✅ DO: Batch Updates with .modify()
 
 ```typescript
-// ✅ GOOD: Single render trigger after all updates
+// ✅ GOOD: Single re-render after all updates
 useFrameCallback(() => {
-  'worklet'
-  for (let i = 0; i < particles.value.length; i++) {
-    updateParticle(particles.value[i])
-  }
+
+  particles.modify((arr) => {
+    'worklet'
+    for (let i = 0; i < arr.length; i++) {
+      updateParticle(arr[i])
+    }
+    return arr
+  })
+
   renderTrigger.value += 1 // Single re-render
 })
 ```
@@ -499,13 +640,13 @@ const transform = useDerivedValue(() => {
 ```
 
 ```typescript
-// ❌ BAD: Re-computes on every render
+// ❌ BAD: Re-computes unnecessarily
 const transform = useDerivedValue(() => {
   return [
     { translateX: x.value },
     { translateY: y.value }
   ]
-  // Missing dependencies - recomputes unnecessarily
+  // Missing dependencies array - recomputes on every render
 })
 ```
 
@@ -513,31 +654,47 @@ const transform = useDerivedValue(() => {
 
 ## Common Pitfalls
 
-### ❌ PITFALL 1: Using makeMutable Without Render Trigger
+### ❌ PITFALL 1: Direct Property Mutation Without .modify()
 
 ```typescript
-// ❌ BAD: Changes won't trigger re-renders
-const particles = makeMutable([{ x: 0, y: 0 }])
+// ❌ BAD: Direct mutation loses reactivity
+const particles = useSharedValue([{ x: 0, y: 0 }])
 
-gesture.onChange(() => {
-  particles.value[0].x = 100 // Skia won't update!
-})
+particles.value[0].x = 100 // Reanimated loses reactivity! 🚨
 ```
 
 ```typescript
-// ✅ GOOD: Use render trigger
-const particles = makeMutable([{ x: 0, y: 0 }])
-const renderTrigger = useSharedValue(0)
+// ✅ GOOD: Use .modify() for mutations
+const particles = useSharedValue([{ x: 0, y: 0 }])
 
-gesture.onChange(() => {
-  particles.value[0].x = 100
-  renderTrigger.value += 1 // Forces re-render
+particles.modify((arr) => {
+  'worklet'
+  arr[0].x = 100
+  return arr
 })
 ```
 
 ---
 
-### ❌ PITFALL 2: Calling Hooks in Loops
+### ❌ PITFALL 2: Using makeMutable in Component Scope
+
+```typescript
+// ❌ BAD: Creates new object on every render
+function App() {
+  const mv = makeMutable(100) // 🚨 State lost on re-render!
+}
+```
+
+```typescript
+// ✅ GOOD: Use useSharedValue instead
+function App() {
+  const sv = useSharedValue(100) // ✅ Persists across renders
+}
+```
+
+---
+
+### ❌ PITFALL 3: Calling Hooks in Loops
 
 ```typescript
 // ❌ BAD: React hooks can't be called in loops
@@ -569,12 +726,15 @@ return (
 
 ---
 
-### ❌ PITFALL 3: Forgetting 'worklet' Directive
+### ❌ PITFALL 4: Forgetting 'worklet' Directive
 
 ```typescript
 // ❌ BAD: Function runs on JS thread (slow!)
 const gesture = Gesture.Pan().onChange((event) => {
-  particles.value[0].x = event.x // Might not work correctly
+  particles.modify((arr) => {
+    arr[0].x = event.x // Might not work correctly
+    return arr
+  })
 })
 ```
 
@@ -582,37 +742,40 @@ const gesture = Gesture.Pan().onChange((event) => {
 // ✅ GOOD: Runs on UI thread (fast!)
 const gesture = Gesture.Pan().onChange((event) => {
   'worklet'
-  particles.value[0].x = event.x // ✅ Runs on UI thread
+  particles.modify((arr) => {
+    'worklet'
+    arr[0].x = event.x // ✅ Runs on UI thread
+    return arr
+  })
 })
 ```
 
 ---
 
-### ❌ PITFALL 4: Mutating Shared Array Reference
+### ❌ PITFALL 5: Array Spreading Instead of .modify()
 
 ```typescript
-// ❌ BAD: Changing array reference doesn't notify dependents
-const particles = makeMutable([{ x: 0 }])
+// ⚠️ WORKS BUT INEFFICIENT: Creates new array on every update
+const particles = useSharedValue([{ x: 0 }])
 
-useDerivedValue(() => {
-  return particles.value.map(p => p.x) // Won't update when particles change!
-}, [particles])
+particles.value = [...particles.value] // Memory overhead!
+particles.value[0].x = 100
 ```
 
 ```typescript
-// ✅ GOOD: Use render trigger to force updates
-const particles = makeMutable([{ x: 0 }])
-const renderTrigger = useSharedValue(0)
+// ✅ GOOD: In-place mutation with .modify()
+const particles = useSharedValue([{ x: 0 }])
 
-useDerivedValue(() => {
-  const _trigger = renderTrigger.value // Force dependency
-  return particles.value.map(p => p.x) // ✅ Updates when trigger changes
-}, [particles, renderTrigger])
+particles.modify((arr) => {
+  'worklet'
+  arr[0].x = 100
+  return arr
+}) // No array copying!
 ```
 
 ---
 
-### ❌ PITFALL 5: Using Wrong Gesture API
+### ❌ PITFALL 6: Using Wrong Gesture API
 
 ```typescript
 // ❌ BAD: Old API (removed in Reanimated 4.x)
@@ -632,7 +795,7 @@ const gestureHandler = useAnimatedGestureHandler({
 import { Gesture, GestureDetector } from 'react-native-gesture-handler'
 
 const gesture = Gesture.Pan()
-  .onUpdate((event) => { /* ... */ }) // ✅ Use onUpdate, not onActive
+  .onChange((event) => { /* ... */ }) // ✅ Use onChange
   .onEnd(() => { /* ... */ })
 
 <GestureDetector gesture={gesture}>
@@ -648,33 +811,42 @@ const gesture = Gesture.Pan()
 
 **Use Case**: 100+ particles that respond to touch gestures and spring back.
 
-**Implementation**:
+**CORRECT Implementation** (After learning official docs):
+
 ```typescript
 // hooks/usePixelatedEffect.ts
 export function usePixelatedEffect() {
-  // Efficient storage for 100+ particles
-  const particlesShared = makeMutable<IParticle[]>([])
-
-  // Single reactive trigger
+  // ✅ Use useSharedValue (NOT makeMutable)
+  const particlesShared = useSharedValue<IParticle[]>([])
   const renderTrigger = useSharedValue(0)
 
   // Gesture updates particles
   const gesture = Gesture.Pan().onChange((event) => {
     'worklet'
-    const currentParticles = particlesShared.value
 
-    for (let i = 0; i < currentParticles.length; i++) {
-      const particle = currentParticles[i]
-      const dx = event.x - particle.x
-      const dy = event.y - particle.y
-      const dist = Math.sqrt(dx * dx + dy * dy)
+    // ✅ Use .modify() for array mutations
+    particlesShared.modify((particles) => {
+      'worklet'
 
-      if (dist < minPushDistance) {
-        const angle = Math.atan2(dy, dx)
-        particle.vx -= Math.cos(angle) * force
-        particle.vy -= Math.sin(angle) * force
+      for (let i = 0; i < particles.length; i++) {
+        const particle = particles[i]
+        const dx = event.x - particle.x
+        const dy = event.y - particle.y
+        const dist = Math.sqrt(dx * dx + dy * dy)
+
+        if (dist < minPushDistance) {
+          const angle = Math.atan2(dy, dx)
+          const tx = particle.x + Math.cos(angle) * minPushDistance
+          const ty = particle.y + Math.sin(angle) * minPushDistance
+          const ax = tx - event.x
+          const ay = ty - event.y
+          particle.vx -= ax
+          particle.vy -= ay
+        }
       }
-    }
+
+      return particles // Must return
+    })
 
     renderTrigger.value += 1
   })
@@ -688,24 +860,29 @@ export default function ParticleCanvas() {
 
   // Physics loop
   useFrameCallback(() => {
-    'worklet'
-    const particles = particlesShared.value
 
-    for (let i = 0; i < particles.length; i++) {
-      const p = particles[i]
+    // ✅ Use .modify() for physics updates
+    particlesShared.modify((particles) => {
+      'worklet'
 
-      // Spring back to original position
-      p.x += (p.savedX - p.x) * 0.88
-      p.y += (p.savedY - p.y) * 0.88
+      for (let i = 0; i < particles.length; i++) {
+        const p = particles[i]
 
-      // Apply friction
-      p.vx *= 0.88
-      p.vy *= 0.88
+        // Spring back to original position
+        p.x += (p.savedX - p.x) * 0.88
+        p.y += (p.savedY - p.y) * 0.88
 
-      // Update position
-      p.x += p.vx
-      p.y += p.vy
-    }
+        // Apply friction
+        p.vx *= 0.88
+        p.vy *= 0.88
+
+        // Update position
+        p.x += p.vx
+        p.y += p.vy
+      }
+
+      return particles // Must return
+    })
 
     renderTrigger.value += 1
   })
@@ -743,10 +920,12 @@ function ParticleItem({ index, particlesShared, renderTrigger }) {
 ```
 
 **Key Learnings**:
-- ✅ `makeMutable` for efficient particle storage
-- ✅ Single `renderTrigger` for all particles
-- ✅ `useDerivedValue` bridges makeMutable and Skia reactivity
+- ✅ `useSharedValue` instead of `makeMutable` (official recommendation)
+- ✅ `.modify()` for all array mutations (maintains reactivity)
+- ✅ Single `renderTrigger` for efficient batch updates
+- ✅ `useDerivedValue` bridges shared value changes to Skia
 - ✅ `useFrameCallback` for smooth physics updates
+- ✅ Automatic cleanup (no manual cancelAnimation needed)
 
 ---
 
@@ -828,10 +1007,11 @@ function AnimatedGradient() {
 |----------|----------|---------|
 | Single animated value | `useSharedValue` | Moving circle |
 | Complex calculation | `useDerivedValue` | Color interpolation |
-| Large dataset (100+) | `makeMutable` + trigger | Particle system |
+| Large array (100+) | `useSharedValue` + `.modify()` | Particle system |
 | Continuous updates | `useFrameCallback` | Physics loop |
 | Gesture interaction | `Gesture.Pan()` | Draggable objects |
 | Color transitions | `interpolateColors` | Gradient animation |
+| React Compiler | `.get()` / `.set()` | Compiler-compatible code |
 
 ---
 
@@ -840,16 +1020,25 @@ function AnimatedGradient() {
 ```typescript
 // Reactive value (triggers re-renders)
 const x = useSharedValue(0)
+x.value = 100
 
-// Non-reactive storage (efficient)
-const data = makeMutable({ x: 0, y: 0 })
+// React Compiler compatible
+x.set(100)
+const value = x.get()
+
+// Array mutations with .modify()
+const arr = useSharedValue([1, 2, 3])
+arr.modify((array) => {
+  'worklet'
+  array[0] = 100
+  return array
+})
 
 // Computed value
 const computed = useDerivedValue(() => x.value * 2, [x])
 
 // Animation loop
 useFrameCallback(() => {
-  'worklet'
   x.value += 1
 })
 
@@ -873,22 +1062,24 @@ const gesture = Gesture.Pan()
 
 ### ✅ Best Practices
 
-1. **Use `useSharedValue` for reactive properties** that Skia needs to track
-2. **Use `makeMutable` for bulk data** with a render trigger
-3. **Always add 'worklet' directive** in gesture handlers and frame callbacks
+1. **Always use `useSharedValue`** for reactive values (not `makeMutable`)
+2. **Use `.modify()` for array/object mutations** to maintain reactivity
+3. **Always add 'worklet' directive** in gesture handlers, frame callbacks, and .modify()
 4. **Extract components** when using hooks in map/loops
-5. **Batch updates** with a single render trigger
-6. **Use `useDerivedValue`** for complex calculations
-7. **Use new Gesture API** (`.onChange()`, not `.onActive()`)
+5. **Use `useDerivedValue`** for complex calculations on UI thread
+6. **Use new Gesture API** (`.onChange()`, not `.onActive()`)
+7. **Batch updates** with single render trigger for multiple changes
+8. **Use `.get()` and `.set()`** when working with React Compiler
 
 ### ❌ Avoid
 
-1. ❌ Using `makeMutable` without a render trigger
-2. ❌ Calling hooks inside loops
-3. ❌ Forgetting 'worklet' directive
-4. ❌ Creating excessive shared values (100+)
-5. ❌ Using old gesture handler API
-6. ❌ Mutating array references without triggers
+1. ❌ Using `makeMutable` in component scope (use `useSharedValue`)
+2. ❌ Direct property mutation: `arr.value[i].x = 100` (use `.modify()`)
+3. ❌ Array spreading for updates: `arr.value = [...arr.value]` (use `.modify()`)
+4. ❌ Calling hooks inside loops
+5. ❌ Forgetting 'worklet' directive
+6. ❌ Creating excessive individual shared values (100+)
+7. ❌ Using old gesture handler API
 
 ---
 
@@ -897,8 +1088,11 @@ const gesture = Gesture.Pan()
 - **Skia Docs**: https://shopify.github.io/react-native-skia/
 - **Reanimated Docs**: https://docs.swmansion.com/react-native-reanimated/
 - **Gesture Handler**: https://docs.swmansion.com/react-native-gesture-handler/
+- **useSharedValue API**: https://docs.swmansion.com/react-native-reanimated/docs/core/useSharedValue
+- **makeMutable Warning**: https://docs.swmansion.com/react-native-reanimated/docs/advanced/makeMutable
 
 ---
 
 **Last Updated**: 2025-09-30
 **Project**: Dream Pie - Pixelated Effect Implementation
+**Version**: 2.0 - Updated with official Reanimated best practices
