@@ -9,7 +9,7 @@ import ParticleRenderer from './ParticleRenderer'
 import { usePixelatedEffect } from '../hooks/usePixelatedEffect'
 
 export default function ParticleCanvas() {
-  const { particles, particlesShared, renderTrigger, config, gesture, stageWidth, stageHeight } =
+  const { image, particles, particlesShared, config, gesture, stageWidth, stageHeight } =
     usePixelatedEffect()
 
   // Update particle physics on every frame
@@ -36,30 +36,28 @@ export default function ParticleCanvas() {
 
       return particles
     })
-
-    // Trigger re-render
-    renderTrigger.value += 1
   })
 
-  if (!particles.length) {
+  if (!particles.length || !image) {
     return null
   }
 
   return (
     <View style={{ flex: 1 }}>
       <GestureDetector gesture={gesture}>
-        <View style={{ width: stageWidth, height: stageHeight }}>
+        <View
+          style={{
+            width: stageWidth,
+            height: stageHeight,
+            flex: 1,
+          }}>
           <Canvas
             style={{
               width: stageWidth,
               height: stageHeight,
               backgroundColor: '#000000',
             }}>
-            <ParticleRenderer
-              particles={particles}
-              particlesShared={particlesShared}
-              renderTrigger={renderTrigger}
-            />
+            <ParticleRenderer image={image} particlesShared={particlesShared} config={config} />
           </Canvas>
         </View>
       </GestureDetector>

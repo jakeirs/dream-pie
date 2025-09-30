@@ -19,7 +19,6 @@ export function usePixelatedEffect() {
   const image = useImage(selectedPose?.imageUrl)
 
   const particlesShared = useSharedValue<IParticle[]>([])
-  const renderTrigger = useSharedValue(0)
 
   const config = useMemo(
     () => getDefaultParticleConfig(stageWidth, stageHeight),
@@ -29,9 +28,9 @@ export function usePixelatedEffect() {
   const particles = useMemo(() => {
     if (!image || !stageWidth || !stageHeight) return []
 
-    const newParticles = makeImageParticles(image, config)
+    const newParticles = makeImageParticles(config)
     return newParticles
-  }, [image, config, stageWidth, stageHeight])
+  }, [config, stageWidth, stageHeight])
 
   useEffect(() => {
     particlesShared.value = particles
@@ -61,16 +60,12 @@ export function usePixelatedEffect() {
 
       return particles
     })
-
-    // Trigger re-render
-    renderTrigger.value += 1
   })
 
   return {
     image,
     particles,
     particlesShared,
-    renderTrigger,
     config,
     gesture,
     stageWidth,

@@ -1,5 +1,3 @@
-import { SkPicture } from '@shopify/react-native-skia'
-
 export interface IParticle {
   x: number
   y: number
@@ -7,7 +5,6 @@ export interface IParticle {
   savedY: number
   vx: number
   vy: number
-  picture: SkPicture
 }
 
 export interface ParticleConfig {

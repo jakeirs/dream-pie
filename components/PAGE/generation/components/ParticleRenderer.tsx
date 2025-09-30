@@ -1,60 +1,44 @@
-import { Group, Picture } from '@shopify/react-native-skia'
+import { ClipOp, Picture, SkImage, Skia, createPicture, rect } from '@shopify/react-native-skia'
 import { SharedValue, useDerivedValue } from 'react-native-reanimated'
 
-import { IParticle } from '../types/types'
+import { IParticle, ParticleConfig } from '../types/types'
 
 interface ParticleRendererProps {
-  particles: IParticle[]
+  image: SkImage
   particlesShared: SharedValue<IParticle[]>
-  renderTrigger: SharedValue<number>
+  config: ParticleConfig
 }
+
+// Shared Paint object - create once and reuse
+const sharedPaint = Skia.Paint()
 
 export default function ParticleRenderer({
-  particles,
+  image,
   particlesShared,
-  renderTrigger,
+  config,
 }: ParticleRendererProps) {
-  return (
-    <>
-      {particles.map((particle, index) => (
-        <ParticleItem
-          key={index}
-          index={index}
-          particle={particle}
-          particlesShared={particlesShared}
-          renderTrigger={renderTrigger}
-        />
-      ))}
-    </>
-  )
-}
+  const picture = useDerivedValue(() => {
+    const currentParticles = particlesShared.value
+    const { particleSize, stageWidth, stageHeight } = config
 
-interface ParticleItemProps {
-  index: number
-  particle: IParticle
-  particlesShared: SharedValue<IParticle[]>
-  renderTrigger: SharedValue<number>
-}
+    // Pre-calculate image rectangles once
+    const srcRect = rect(0, 0, image.width(), image.height())
+    const dstRect = rect(0, 0, stageWidth, stageHeight)
 
-function ParticleItem({
-  index,
-  particle,
-  particlesShared,
-  renderTrigger,
-}: ParticleItemProps) {
-  const transform = useDerivedValue(() => {
-    // This dependency on renderTrigger forces re-computation
-    const _trigger = renderTrigger.value
-    const currentParticle = particlesShared.value[index]
-    if (!currentParticle) {
-      return [{ translateX: particle.x }, { translateY: particle.y }]
-    }
-    return [{ translateX: currentParticle.x }, { translateY: currentParticle.y }]
-  }, [index, particlesShared, renderTrigger])
+    return createPicture((canvas) => {
+      currentParticles.forEach((particle) => {
+        // Create clip path for this particle
+        const clipPath = Skia.Path.Make()
+        clipPath.addCircle(particle.x, particle.y, particleSize)
 
-  return (
-    <Group transform={transform}>
-      <Picture picture={particle.picture} />
-    </Group>
-  )
+        canvas.save()
+        canvas.translate(-particle.x, -particle.y)
+        canvas.clipPath(clipPath, ClipOp.Intersect, true)
+        canvas.drawImageRect(image, srcRect, dstRect, sharedPaint)
+        canvas.restore()
+      })
+    })
+  }, [particlesShared, image, config])
+
+  return <Picture picture={picture} />
 }
