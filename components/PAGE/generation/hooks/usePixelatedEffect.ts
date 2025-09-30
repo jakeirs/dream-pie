@@ -38,8 +38,6 @@ export function usePixelatedEffect() {
   }, [particles, particlesShared])
 
   const gesture = Gesture.Pan().onChange((event) => {
-    'worklet'
-
     particlesShared.modify((particles) => {
       'worklet'
 
