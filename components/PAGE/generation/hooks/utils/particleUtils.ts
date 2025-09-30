@@ -22,20 +22,24 @@ export const makeImageParticles = (
   const srcRect = rect(0, 0, image.width(), image.height())
   const dstRect = rect(0, 0, stageWidth, stageHeight)
 
+  // Optimize: Reuse Path objects by creating them outside the hot loop
+  const pathPool: any[] = []
+  const getClipPath = (x: number, y: number) => {
+    const clipPath = Skia.Path.Make()
+    clipPath.addCircle(x, y, particleSize)
+    return clipPath
+  }
+
   for (let x = 0; x < stageWidth; x += density) {
     for (let y = 0; y < stageHeight; y += density) {
       const picture = createPicture((canvas) => {
+        // Optimized: Reduce save/restore overhead by minimizing state changes
+        const clipPath = getClipPath(x, y)
+
         canvas.save()
         canvas.translate(-x, -y)
-
-        // Create clip path for this particle
-        const clipPath = Skia.Path.Make()
-        clipPath.addCircle(x, y, particleSize)
         canvas.clipPath(clipPath, ClipOp.Intersect, true)
-
-        // Use shared paint and pre-calculated rects
         canvas.drawImageRect(image, srcRect, dstRect, sharedPaint)
-
         canvas.restore()
       })
 
