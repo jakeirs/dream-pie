@@ -1,8 +1,9 @@
-import { useMemo, useRef } from 'react'
+import { useMemo, useEffect } from 'react'
 import { useWindowDimensions } from 'react-native'
 
 import { useImage } from '@shopify/react-native-skia'
 import { Gesture } from 'react-native-gesture-handler'
+import { makeMutable } from 'react-native-reanimated'
 import { useStore } from 'zustand'
 
 import { usePoseStore } from '@/stores'
@@ -17,7 +18,7 @@ export function usePixelatedEffect() {
 
   const image = useImage(selectedPose?.imageUrl)
 
-  const particlesRef = useRef<IParticle[]>([])
+  const particlesShared = makeMutable<IParticle[]>([])
 
   const config = useMemo(
     () => getDefaultParticleConfig(stageWidth, stageHeight),
@@ -28,37 +29,41 @@ export function usePixelatedEffect() {
     if (!image || !stageWidth || !stageHeight) return []
 
     const newParticles = makeImageParticles(image, config)
-    particlesRef.current = newParticles
     return newParticles
   }, [image, config, stageWidth, stageHeight])
 
-  const gesture = Gesture.Pan()
-    .runOnJS(true)
-    .onChange((event) => {
-      const currentParticles = particlesRef.current
-      for (let i = 0; i < currentParticles.length; i++) {
-        const particle = currentParticles[i]
-        const dx = event.x - particle.x
-        const dy = event.y - particle.y
-        const dist = Math.sqrt(dx * dx + dy * dy)
-        const minDist = config.minPushDistance
+  useEffect(() => {
+    particlesShared.value = particles
+  }, [particles, particlesShared])
 
-        if (dist < minDist) {
-          const angle = Math.atan2(dy, dx)
-          const tx = particle.x + Math.cos(angle) * minDist
-          const ty = particle.y + Math.sin(angle) * minDist
-          const ax = tx - event.x
-          const ay = ty - event.y
-          particle.vx -= ax
-          particle.vy -= ay
-        }
+  const gesture = Gesture.Pan().onChange((event) => {
+    'worklet'
+    console.log('Pan gesture event:', event)
+    const currentParticles = particlesShared.value
+
+    for (let i = 0; i < currentParticles.length; i++) {
+      const particle = currentParticles[i]
+      const dx = event.x - particle.x
+      const dy = event.y - particle.y
+      const dist = Math.sqrt(dx * dx + dy * dy)
+      const minDist = config.minPushDistance
+
+      if (dist < minDist) {
+        const angle = Math.atan2(dy, dx)
+        const tx = particle.x + Math.cos(angle) * minDist
+        const ty = particle.y + Math.sin(angle) * minDist
+        const ax = tx - event.x
+        const ay = ty - event.y
+        particle.vx -= ax
+        particle.vy -= ay
       }
-    })
+    }
+  })
 
   return {
     image,
     particles,
-    particlesRef,
+    particlesShared,
     config,
     gesture,
     stageWidth,

@@ -8,7 +8,7 @@ import { useFrameCallback, useSharedValue } from 'react-native-reanimated'
 import { usePixelatedEffect } from '../hooks/usePixelatedEffect'
 
 export default function ParticleCanvas() {
-  const { particles, particlesRef, config, gesture, stageWidth, stageHeight } =
+  const { particles, particlesShared, config, gesture, stageWidth, stageHeight } =
     usePixelatedEffect()
 
   const frameCount = useSharedValue(0)
@@ -16,7 +16,7 @@ export default function ParticleCanvas() {
   // Update particle physics on every frame
   useFrameCallback(() => {
     'worklet'
-    const currentParticles = particlesRef.current
+    const currentParticles = particlesShared.value
 
     for (let i = 0; i < currentParticles.length; i++) {
       const particle = currentParticles[i]
