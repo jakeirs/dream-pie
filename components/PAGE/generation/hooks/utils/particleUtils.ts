@@ -2,12 +2,14 @@ import { ClipOp, SkImage, Skia, createPicture, rect } from '@shopify/react-nativ
 
 import { IParticle, ParticleConfig } from '../../types/types'
 
+// Memoized Skia resources - create once and reuse across all particles
+const sharedPaint = Skia.Paint()
+
 export const makeImageParticles = (
   image: SkImage,
   config: ParticleConfig
 ): IParticle[] => {
   const result: IParticle[] = []
-  const paint = Skia.Paint()
 
   const { density, particleSize, stageWidth, stageHeight } = config
 
@@ -16,22 +18,23 @@ export const makeImageParticles = (
     return result
   }
 
+  // Pre-calculate image rectangles once instead of per particle
+  const srcRect = rect(0, 0, image.width(), image.height())
+  const dstRect = rect(0, 0, stageWidth, stageHeight)
+
   for (let x = 0; x < stageWidth; x += density) {
     for (let y = 0; y < stageHeight; y += density) {
       const picture = createPicture((canvas) => {
         canvas.save()
         canvas.translate(-x, -y)
 
+        // Create clip path for this particle
         const clipPath = Skia.Path.Make()
         clipPath.addCircle(x, y, particleSize)
         canvas.clipPath(clipPath, ClipOp.Intersect, true)
 
-        canvas.drawImageRect(
-          image,
-          rect(0, 0, image.width(), image.height()),
-          rect(0, 0, stageWidth, stageHeight),
-          paint
-        )
+        // Use shared paint and pre-calculated rects
+        canvas.drawImageRect(image, srcRect, dstRect, sharedPaint)
 
         canvas.restore()
       })
