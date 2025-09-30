@@ -17,7 +17,7 @@ export default function GenerationPage() {
         <PixelatedEffect />
       </View>
 
-      {/* <View className="absolute bottom-8 left-0 right-0 px-6">
+      <View className="absolute bottom-8 left-0 right-0 px-6">
         <Button
           onPress={handleNext}
           className="w-full"
@@ -29,7 +29,7 @@ export default function GenerationPage() {
             View Result →
           </Text>
         </Button>
-      </View> */}
+      </View>
     </View>
   )
 }
