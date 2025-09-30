@@ -38,8 +38,6 @@ export default function ParticleCanvas() {
     })
   })
 
-  console.log('particles', particles.length, image)
-
   if (!particles.length || !image) {
     return (
       <View style={{ flex: 1, backgroundColor: '#000000' }}>
@@ -51,7 +49,8 @@ export default function ParticleCanvas() {
   return (
     <View style={{ flex: 1 }}>
       <GestureDetector gesture={gesture}>
-        <Canvas style={{ flex: 1 }}>
+        <Canvas
+          style={{ flex: 1, backgroundColor: '#000000', width: stageWidth, height: stageHeight }}>
           <ParticleRenderer image={image} particlesShared={particlesShared} config={config} />
         </Canvas>
       </GestureDetector>
