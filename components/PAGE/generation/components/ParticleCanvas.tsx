@@ -1,17 +1,16 @@
-import { createElement, useMemo } from 'react'
 import { View } from 'react-native'
 
-import { Canvas, Group, Picture } from '@shopify/react-native-skia'
+import { Canvas } from '@shopify/react-native-skia'
 import { GestureDetector } from 'react-native-gesture-handler'
-import { useFrameCallback, useSharedValue } from 'react-native-reanimated'
+import { useFrameCallback } from 'react-native-reanimated'
+
+import ParticleRenderer from './ParticleRenderer'
 
 import { usePixelatedEffect } from '../hooks/usePixelatedEffect'
 
 export default function ParticleCanvas() {
-  const { particles, particlesShared, config, gesture, stageWidth, stageHeight } =
+  const { particles, particlesShared, renderTrigger, config, gesture, stageWidth, stageHeight } =
     usePixelatedEffect()
-
-  const frameCount = useSharedValue(0)
 
   // Update particle physics on every frame
   useFrameCallback(() => {
@@ -33,44 +32,31 @@ export default function ParticleCanvas() {
       particle.y += particle.vy
     }
 
-    frameCount.value++
+    // Trigger re-render
+    renderTrigger.value += 1
   })
-
-  // Render particles using Picture components
-  const particleElements = useMemo(() => {
-    return particles.map((particle, index) =>
-      createElement(
-        Group,
-        {
-          key: index,
-          transform: [{ translateX: particle.x }, { translateY: particle.y }],
-        },
-        createElement(Picture, { picture: particle.picture })
-      )
-    )
-  }, [particles])
 
   if (!particles.length) {
     return null
   }
 
-  // Use createElement to bypass NativeWind's JSX wrapper for Skia components
-  const skiaCanvas = createElement(
-    Canvas,
-    {
-      style: {
-        width: stageWidth,
-        height: stageHeight,
-        backgroundColor: '#000000',
-      },
-    },
-    particleElements
-  )
-
   return (
     <View style={{ flex: 1 }}>
       <GestureDetector gesture={gesture}>
-        <View style={{ width: stageWidth, height: stageHeight }}>{skiaCanvas}</View>
+        <View style={{ width: stageWidth, height: stageHeight }}>
+          <Canvas
+            style={{
+              width: stageWidth,
+              height: stageHeight,
+              backgroundColor: '#000000',
+            }}>
+            <ParticleRenderer
+              particles={particles}
+              particlesShared={particlesShared}
+              renderTrigger={renderTrigger}
+            />
+          </Canvas>
+        </View>
       </GestureDetector>
     </View>
   )

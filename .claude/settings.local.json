@@ -11,7 +11,8 @@
       "Bash(cat:*)",
       "WebFetch(domain:shopify.github.io)",
       "mcp__context7__resolve-library-id",
-      "mcp__context7__get-library-docs"
+      "mcp__context7__get-library-docs",
+      "Read(//c/Users/kiere/Pictures/Screenshots/**)"
     ],
     "deny": [],
     "ask": []

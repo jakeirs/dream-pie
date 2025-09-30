@@ -3,7 +3,7 @@ import { useWindowDimensions } from 'react-native'
 
 import { useImage } from '@shopify/react-native-skia'
 import { Gesture } from 'react-native-gesture-handler'
-import { makeMutable } from 'react-native-reanimated'
+import { makeMutable, useSharedValue } from 'react-native-reanimated'
 import { useStore } from 'zustand'
 
 import { usePoseStore } from '@/stores'
@@ -19,6 +19,7 @@ export function usePixelatedEffect() {
   const image = useImage(selectedPose?.imageUrl)
 
   const particlesShared = makeMutable<IParticle[]>([])
+  const renderTrigger = useSharedValue(0)
 
   const config = useMemo(
     () => getDefaultParticleConfig(stageWidth, stageHeight),
@@ -38,7 +39,6 @@ export function usePixelatedEffect() {
 
   const gesture = Gesture.Pan().onChange((event) => {
     'worklet'
-    console.log('Pan gesture event:', event)
     const currentParticles = particlesShared.value
 
     for (let i = 0; i < currentParticles.length; i++) {
@@ -58,12 +58,16 @@ export function usePixelatedEffect() {
         particle.vy -= ay
       }
     }
+
+    // Trigger re-render
+    renderTrigger.value += 1
   })
 
   return {
     image,
     particles,
     particlesShared,
+    renderTrigger,
     config,
     gesture,
     stageWidth,
