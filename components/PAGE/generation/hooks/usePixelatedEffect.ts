@@ -30,7 +30,7 @@ export function usePixelatedEffect() {
 
     const newParticles = makeImageParticles(config)
     return newParticles
-  }, [config, stageWidth, stageHeight])
+  }, [config, stageWidth, stageHeight, image])
 
   useEffect(() => {
     particlesShared.value = particles

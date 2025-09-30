@@ -1,4 +1,4 @@
-import { View } from 'react-native'
+import { View, Text } from 'react-native'
 
 import { Canvas } from '@shopify/react-native-skia'
 import { GestureDetector } from 'react-native-gesture-handler'
@@ -38,28 +38,22 @@ export default function ParticleCanvas() {
     })
   })
 
+  console.log('particles', particles.length, image)
+
   if (!particles.length || !image) {
-    return null
+    return (
+      <View style={{ flex: 1, backgroundColor: '#000000' }}>
+        <Text style={{ color: 'white', textAlign: 'center', marginTop: 50 }}>Loading...</Text>
+      </View>
+    )
   }
 
   return (
     <View style={{ flex: 1 }}>
       <GestureDetector gesture={gesture}>
-        <View
-          style={{
-            width: stageWidth,
-            height: stageHeight,
-            flex: 1,
-          }}>
-          <Canvas
-            style={{
-              width: stageWidth,
-              height: stageHeight,
-              backgroundColor: '#000000',
-            }}>
-            <ParticleRenderer image={image} particlesShared={particlesShared} config={config} />
-          </Canvas>
-        </View>
+        <Canvas style={{ flex: 1 }}>
+          <ParticleRenderer image={image} particlesShared={particlesShared} config={config} />
+        </Canvas>
       </GestureDetector>
     </View>
   )

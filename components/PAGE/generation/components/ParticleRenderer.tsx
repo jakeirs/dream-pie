@@ -29,11 +29,12 @@ export default function ParticleRenderer({
       currentParticles.forEach((particle) => {
         // Create clip path for this particle
         const clipPath = Skia.Path.Make()
-        clipPath.addCircle(particle.x, particle.y, particleSize)
+        clipPath.addCircle(0, 0, particleSize)
 
         canvas.save()
-        canvas.translate(-particle.x, -particle.y)
+        canvas.translate(particle.x, particle.y)
         canvas.clipPath(clipPath, ClipOp.Intersect, true)
+        canvas.translate(-particle.x, -particle.y)
         canvas.drawImageRect(image, srcRect, dstRect, sharedPaint)
         canvas.restore()
       })
