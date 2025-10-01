@@ -32,3 +32,10 @@ export interface InformationState {
   isVisible: boolean
   position: InformationPosition
 }
+
+export type TransitionState = 'fullScreen' | 'scaledDown' | 'hiddenParticles'
+
+export interface TransitionAnimationValues {
+  scale: number
+  opacity: number
+}

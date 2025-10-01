@@ -19,8 +19,10 @@ import { InformationPosition } from '../types/types'
  *
  * Position generation uses similar safe zone logic as particle system
  * to avoid screen edges.
+ *
+ * @param shouldAnimate - Control whether the animation cycle should run
  */
-export function useInformationAnimation() {
+export function useInformationAnimation(shouldAnimate = true) {
   const { width: screenWidth, height: screenHeight } = useWindowDimensions()
 
   const [currentMessageIndex, setCurrentMessageIndex] = useState(0)
@@ -29,9 +31,9 @@ export function useInformationAnimation() {
   const centerX = screenWidth / 2 - INFORMATION_CONFIG.BUBBLE_WIDTH / 2
   const centerY = screenHeight / 2 - INFORMATION_CONFIG.BUBBLE_HEIGHT / 2
 
-  const x = useSharedValue(centerX)
-  const y = useSharedValue(centerY)
-  const repulsionStrength = useSharedValue(0)
+  const x = useSharedValue<number>(centerX)
+  const y = useSharedValue<number>(centerY)
+  const repulsionStrength = useSharedValue<number>(0)
 
   const generateRandomPosition = (): InformationPosition => {
     const { POSITION_VARIANCE, BUBBLE_WIDTH, BUBBLE_HEIGHT } = INFORMATION_CONFIG
@@ -49,6 +51,13 @@ export function useInformationAnimation() {
   }
 
   useEffect(() => {
+    // Don't start animation cycle if shouldAnimate is false
+    if (!shouldAnimate) {
+      setIsVisible(false)
+      repulsionStrength.value = withSpring(0, { damping: 15, stiffness: 100 })
+      return
+    }
+
     let visibilityTimer: NodeJS.Timeout
     let hiddenTimer: NodeJS.Timeout
 
@@ -80,7 +89,7 @@ export function useInformationAnimation() {
       clearTimeout(visibilityTimer)
       clearTimeout(hiddenTimer)
     }
-  }, [screenWidth, screenHeight, x, y])
+  }, [screenWidth, screenHeight, x, y, shouldAnimate, repulsionStrength])
 
   return {
     currentMessage: INFORMATION_CONFIG.MESSAGES[currentMessageIndex],

@@ -38,8 +38,8 @@ export const INFORMATION_CONFIG = {
    * Bubble moves slightly from center position (not across entire screen)
    */
   POSITION_VARIANCE: {
-    X_MAX: 100, // Maximum horizontal shift from center (±150px)
-    Y_MAX: 300, // Maximum vertical shift from center (±100px)
+    X_MAX: 80, // Maximum horizontal shift from center (±150px)
+    Y_MAX: 180, // Maximum vertical shift from center (±100px)
   },
 
   /**
