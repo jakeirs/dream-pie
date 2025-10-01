@@ -33,7 +33,7 @@ export interface InformationState {
   position: InformationPosition
 }
 
-export type TransitionState = 'fullScreen' | 'scaledDown' | 'hiddenParticles'
+export type TransitionState = 'fullScreen' | 'scaledDown' | 'fadingOut' | 'hiddenParticles'
 
 export interface TransitionAnimationValues {
   scale: number

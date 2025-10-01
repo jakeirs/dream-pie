@@ -8,10 +8,11 @@ import { TransitionState } from '../types/types'
 /**
  * Custom hook for managing the View Result transition
  *
- * Handles the three-stage transition:
+ * Handles the four-stage transition:
  * 1. fullScreen → scaledDown: Scale down particle effect (shows PhotoCard)
  * 2. scaledDown (hold): PhotoCard visible with scaled particle effect
- * 3. scaledDown → hiddenParticles: Particle effect fades out completely
+ * 3. scaledDown → fadingOut: Particle effect fades out (opacity to 0)
+ * 4. fadingOut → hiddenParticles: Unmount after fade completes
  *
  * Uses Reanimated's withSpring and withTiming for precise control
  */
@@ -25,7 +26,8 @@ export function useViewResultTransition() {
   /**
    * Trigger transition sequence:
    * 1. Scale down (fullScreen → scaledDown)
-   * 2. Wait, then fade out (scaledDown → hiddenParticles)
+   * 2. Wait, then start fade out (scaledDown → fadingOut)
+   * 3. After fade completes, unmount (fadingOut → hiddenParticles)
    */
   const startTransition = useCallback(() => {
     // Stage 1: Scale down
@@ -34,10 +36,15 @@ export function useViewResultTransition() {
 
     // Stage 2: After delay, start fade out
     setTimeout(() => {
-      setTransitionState('hiddenParticles')
+      setTransitionState('fadingOut')
       opacity.value = withTiming(TRANSITION_CONFIG.OPACITY.HIDDEN, {
         duration: TRANSITION_CONFIG.DURATION.FADE_OUT,
       })
+
+      // Stage 3: After fade completes, trigger unmount
+      setTimeout(() => {
+        setTransitionState('hiddenParticles')
+      }, TRANSITION_CONFIG.DURATION.FADE_OUT)
     }, TRANSITION_CONFIG.DURATION.SCALE_DOWN + TRANSITION_CONFIG.DURATION.DELAY_FADE_OUT)
   }, [scale, opacity])
 
@@ -63,8 +70,9 @@ export function useViewResultTransition() {
     // State checks
     isFullScreen: transitionState === 'fullScreen',
     isScaledDown: transitionState === 'scaledDown',
+    isFadingOut: transitionState === 'fadingOut',
     isHiddenParticles: transitionState === 'hiddenParticles',
-    // Helper: Show ResultView for both scaledDown and hiddenParticles states
+    // Helper: Show ResultView for scaledDown, fadingOut, and hiddenParticles states
     showResultView: transitionState !== 'fullScreen',
   }
 }

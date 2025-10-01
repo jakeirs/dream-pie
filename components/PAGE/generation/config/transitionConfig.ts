@@ -32,7 +32,7 @@ export const TRANSITION_CONFIG = {
     FADE_OUT: 600, // Time for PixelatedEffect to fade out completely
     FADE_IN_RESULT: 400, // Time for PhotoCard to fade in
     DELAY_RESULT: 300, // Delay before showing result (after scale starts)
-    DELAY_FADE_OUT: 0, // Delay before starting fade out (after reaching small)
+    DELAY_FADE_OUT: 500, // Delay before starting fade out (after reaching small)
   },
 
   /**
@@ -63,6 +63,7 @@ export const TRANSITION_CONFIG = {
  *
  * fullScreen: Full screen particle effect with information bubbles
  * scaledDown: Scaled down particle effect (35%) with PhotoCard visible
- * hiddenParticles: Particle effect faded out completely, only PhotoCard remains
+ * fadingOut: Particle effect fading out (opacity animating to 0)
+ * hiddenParticles: Particle effect unmounted, only PhotoCard remains
  */
-export type TransitionState = 'fullScreen' | 'scaledDown' | 'hiddenParticles'
+export type TransitionState = 'fullScreen' | 'scaledDown' | 'fadingOut' | 'hiddenParticles'

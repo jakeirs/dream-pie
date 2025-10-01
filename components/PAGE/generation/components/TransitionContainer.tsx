@@ -18,9 +18,11 @@ interface TransitionContainerProps {
  * Provides smooth transition sequence:
  * 1. fullScreen: Full screen (scale: 1.0, opacity: 1.0)
  * 2. scaledDown: Scaled down (scale: 0.35, opacity: 1.0) with rounded corners
- * 3. hiddenParticles: Fading out (scale: 0.35, opacity: 0.0)
+ * 3. fadingOut: Fading out (scale: 0.35, opacity: 1.0 → 0.0)
+ * 4. hiddenParticles: Children unmounted (cleanup triggered)
  *
  * Maintains aspect ratio throughout all transitions.
+ * Unmounts children only after fade-out animation completes.
  */
 export default function TransitionContainer({
   children,
@@ -36,6 +38,11 @@ export default function TransitionContainer({
   })
 
   const isScaled = transitionState !== 'fullScreen'
+
+  // Only unmount after fade-out animation completes (hiddenParticles state)
+  if (transitionState === 'hiddenParticles') {
+    return null
+  }
 
   return (
     <View style={{ flex: 1 }}>
