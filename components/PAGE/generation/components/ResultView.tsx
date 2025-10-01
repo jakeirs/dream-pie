@@ -1,5 +1,3 @@
-import { View } from 'react-native'
-
 import Animated, { useAnimatedStyle, SharedValue } from 'react-native-reanimated'
 
 import PhotoCard from '@/components/ui/PhotoCard/PhotoCard'

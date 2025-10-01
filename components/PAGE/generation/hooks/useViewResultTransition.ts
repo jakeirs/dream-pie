@@ -42,7 +42,10 @@ export function useViewResultTransition() {
         duration: TRANSITION_CONFIG.DURATION.FADE_OUT,
       })
       // Scale up ResultView as PixelatedEffect fades out
-      resultScale.value = withSpring(TRANSITION_CONFIG.SCALE.FULL_SCREEN, TRANSITION_CONFIG.SPRING_CONFIG)
+      resultScale.value = withSpring(
+        TRANSITION_CONFIG.SCALE.FULL_SCREEN,
+        TRANSITION_CONFIG.SPRING_CONFIG
+      )
 
       // Stage 3: After fade completes, trigger unmount
       setTimeout(() => {
@@ -51,29 +54,12 @@ export function useViewResultTransition() {
     }, TRANSITION_CONFIG.DURATION.SCALE_DOWN + TRANSITION_CONFIG.DURATION.DELAY_FADE_OUT)
   }, [scale, opacity, resultScale])
 
-  /**
-   * Reset to fullScreen state (for retry/back navigation)
-   */
-  const resetTransition = useCallback(() => {
-    setTransitionState('fullScreen')
-    scale.value = withTiming(TRANSITION_CONFIG.SCALE.FULL_SCREEN, {
-      duration: TRANSITION_CONFIG.DURATION.SCALE_DOWN,
-    })
-    opacity.value = withTiming(TRANSITION_CONFIG.OPACITY.VISIBLE, {
-      duration: 300,
-    })
-    resultScale.value = withTiming(TRANSITION_CONFIG.SCALE.SCALED_DOWN, {
-      duration: 300,
-    })
-  }, [scale, opacity, resultScale])
-
   return {
     transitionState,
     scale,
     opacity,
     resultScale,
     startTransition,
-    resetTransition,
     // State checks
     isFullScreen: transitionState === 'fullScreen',
     isScaledDown: transitionState === 'scaledDown',
