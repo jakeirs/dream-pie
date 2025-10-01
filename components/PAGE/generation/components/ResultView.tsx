@@ -7,7 +7,7 @@ import Animated, {
 } from 'react-native-reanimated'
 import { Confetti } from 'react-native-fast-confetti'
 
-import PhotoCard from '@/components/ui/PhotoCard/PhotoCard'
+import ZoomablePhoto from '@/components/ui/ZoomablePhoto/ZoomablePhoto'
 
 import { Pose } from '@/types/dream/pose'
 
@@ -18,10 +18,11 @@ interface ResultViewProps {
 }
 
 /**
- * ResultView - Shows PhotoCard with selected pose after transition
+ * ResultView - Shows ZoomablePhoto with selected pose after transition
  *
  * Positioned absolutely behind PixelatedEffect and scales from 0.3 to 1.0
  * as the particle effect disappears. Triggers confetti when fully scaled.
+ * Supports pinch-to-zoom for viewing generated photos.
  */
 export default function ResultView({ selectedPose, scale, onChangePress }: ResultViewProps) {
   const confettiRef = useRef<any>(null)
@@ -66,11 +67,7 @@ export default function ResultView({ selectedPose, scale, onChangePress }: Resul
           },
           animatedStyle,
         ]}>
-        <PhotoCard
-          imageSource={selectedPose.imageUrl}
-          title="GENERATED PHOTO"
-          onChangePress={onChangePress}
-        />
+        <ZoomablePhoto imageSource={selectedPose.imageUrl} maxScale={3} contentFit="contain" />
       </Animated.View>
       <Confetti
         ref={confettiRef}
