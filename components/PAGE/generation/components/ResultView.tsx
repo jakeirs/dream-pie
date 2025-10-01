@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState } from 'react'
+import { useRef } from 'react'
 import Animated, {
   useAnimatedStyle,
   SharedValue,
@@ -25,12 +25,10 @@ interface ResultViewProps {
  */
 export default function ResultView({ selectedPose, scale, onChangePress }: ResultViewProps) {
   const confettiRef = useRef<any>(null)
-  const [hasTriggered, setHasTriggered] = useState(false)
 
   const triggerConfetti = () => {
-    if (!hasTriggered && confettiRef.current) {
+    if (confettiRef.current) {
       confettiRef.current.restart()
-      setHasTriggered(true)
     }
   }
 
@@ -41,14 +39,8 @@ export default function ResultView({ selectedPose, scale, onChangePress }: Resul
       if (currentScale >= 0.99 && (previousScale === null || previousScale < 0.99)) {
         runOnJS(triggerConfetti)()
       }
-    },
-    [hasTriggered]
+    }
   )
-
-  // Reset trigger when selectedPose changes
-  useEffect(() => {
-    setHasTriggered(false)
-  }, [selectedPose])
 
   if (!selectedPose) return null
 
