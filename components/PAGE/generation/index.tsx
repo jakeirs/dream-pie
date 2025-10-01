@@ -17,7 +17,7 @@ import { brandColors } from '@/shared/theme'
 export default function GenerationPage() {
   const selectedPose = useStore(usePoseStore, (state) => state.selectedPose)
 
-  const { transitionState, scale, opacity, startTransition, isFullScreen, isScaledDown } =
+  const { transitionState, scale, opacity, startTransition, isFullScreen, showResultView } =
     useViewResultTransition()
 
   const handleNext = () => {
@@ -34,8 +34,6 @@ export default function GenerationPage() {
     repulsionPadding,
     repulsionStrength,
   } = useInformationAnimation(isFullScreen)
-
-  console.log('RENDER GenerationPage', isScaledDown)
 
   return (
     <View className="flex-1 bg-background">
@@ -63,7 +61,7 @@ export default function GenerationPage() {
           />
         )}
 
-        {isScaledDown && <ResultView selectedPose={selectedPose} />}
+        {showResultView && <ResultView selectedPose={selectedPose} />}
       </View>
 
       {isFullScreen && (

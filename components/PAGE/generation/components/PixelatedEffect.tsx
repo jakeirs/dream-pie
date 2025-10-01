@@ -6,6 +6,7 @@ import { useStore } from 'zustand'
 import ParticleCanvas from './ParticleCanvas'
 
 import { usePoseStore } from '@/stores'
+import { useEffect } from 'react'
 
 interface PixelatedEffectProps {
   bubbleX: SharedValue<number>
@@ -27,6 +28,12 @@ export default function PixelatedEffect({
   isBubbleVisible,
 }: PixelatedEffectProps) {
   const selectedPose = useStore(usePoseStore, (state) => state.selectedPose)
+
+  useEffect(() => {
+    return () => {
+      console.log('PixelatedEffect unmounted, cleanup if necessary')
+    }
+  }, [])
 
   if (!selectedPose) {
     return (

@@ -60,8 +60,11 @@ export function useViewResultTransition() {
     opacity,
     startTransition,
     resetTransition,
+    // State checks
     isFullScreen: transitionState === 'fullScreen',
     isScaledDown: transitionState === 'scaledDown',
     isHiddenParticles: transitionState === 'hiddenParticles',
+    // Helper: Show ResultView for both scaledDown and hiddenParticles states
+    showResultView: transitionState !== 'fullScreen',
   }
 }

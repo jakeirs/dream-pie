@@ -32,7 +32,7 @@ export const TRANSITION_CONFIG = {
     FADE_OUT: 600, // Time for PixelatedEffect to fade out completely
     FADE_IN_RESULT: 400, // Time for PhotoCard to fade in
     DELAY_RESULT: 300, // Delay before showing result (after scale starts)
-    DELAY_FADE_OUT: 1500, // Delay before starting fade out (after reaching small)
+    DELAY_FADE_OUT: 0, // Delay before starting fade out (after reaching small)
   },
 
   /**
