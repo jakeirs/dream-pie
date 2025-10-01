@@ -22,6 +22,7 @@ export function useViewResultTransition() {
   // Shared values for smooth animations
   const scale = useSharedValue<number>(TRANSITION_CONFIG.SCALE.FULL_SCREEN)
   const opacity = useSharedValue<number>(TRANSITION_CONFIG.OPACITY.VISIBLE)
+  const resultScale = useSharedValue<number>(TRANSITION_CONFIG.SCALE.SCALED_DOWN)
 
   /**
    * Trigger transition sequence:
@@ -34,19 +35,21 @@ export function useViewResultTransition() {
     setTransitionState('scaledDown')
     scale.value = withSpring(TRANSITION_CONFIG.SCALE.SCALED_DOWN, TRANSITION_CONFIG.SPRING_CONFIG)
 
-    // Stage 2: After delay, start fade out
+    // Stage 2: After delay, start fade out and scale up ResultView
     setTimeout(() => {
       setTransitionState('fadingOut')
       opacity.value = withTiming(TRANSITION_CONFIG.OPACITY.HIDDEN, {
         duration: TRANSITION_CONFIG.DURATION.FADE_OUT,
       })
+      // Scale up ResultView as PixelatedEffect fades out
+      resultScale.value = withSpring(TRANSITION_CONFIG.SCALE.FULL_SCREEN, TRANSITION_CONFIG.SPRING_CONFIG)
 
       // Stage 3: After fade completes, trigger unmount
       setTimeout(() => {
         setTransitionState('hiddenParticles')
       }, TRANSITION_CONFIG.DURATION.FADE_OUT)
     }, TRANSITION_CONFIG.DURATION.SCALE_DOWN + TRANSITION_CONFIG.DURATION.DELAY_FADE_OUT)
-  }, [scale, opacity])
+  }, [scale, opacity, resultScale])
 
   /**
    * Reset to fullScreen state (for retry/back navigation)
@@ -59,12 +62,16 @@ export function useViewResultTransition() {
     opacity.value = withTiming(TRANSITION_CONFIG.OPACITY.VISIBLE, {
       duration: 300,
     })
-  }, [scale, opacity])
+    resultScale.value = withTiming(TRANSITION_CONFIG.SCALE.SCALED_DOWN, {
+      duration: 300,
+    })
+  }, [scale, opacity, resultScale])
 
   return {
     transitionState,
     scale,
     opacity,
+    resultScale,
     startTransition,
     resetTransition,
     // State checks

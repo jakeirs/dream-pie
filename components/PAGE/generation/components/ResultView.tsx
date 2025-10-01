@@ -1,37 +1,47 @@
 import { View } from 'react-native'
 
-import Animated, { FadeIn } from 'react-native-reanimated'
+import Animated, { useAnimatedStyle, SharedValue } from 'react-native-reanimated'
 
 import PhotoCard from '@/components/ui/PhotoCard/PhotoCard'
 
 import { Pose } from '@/types/dream/pose'
-import { TRANSITION_CONFIG } from '../config/transitionConfig'
 
 interface ResultViewProps {
   selectedPose: Pose | null
+  scale: SharedValue<number>
   onChangePress?: () => void
 }
 
 /**
  * ResultView - Shows PhotoCard with selected pose after transition
  *
- * Displays the generated result using PhotoCard component with
- * smooth fade-in animation.
+ * Positioned absolutely behind PixelatedEffect and scales from 0.3 to 1.0
+ * as the particle effect disappears.
  */
-export default function ResultView({ selectedPose, onChangePress }: ResultViewProps) {
+export default function ResultView({ selectedPose, scale, onChangePress }: ResultViewProps) {
   if (!selectedPose) return null
+
+  const animatedStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{ scale: scale.value }],
+    }
+  })
 
   return (
     <Animated.View
-      entering={FadeIn.duration(TRANSITION_CONFIG.DURATION.FADE_IN_RESULT).delay(
-        TRANSITION_CONFIG.DURATION.DELAY_RESULT
-      )}
-      style={{
-        position: 'absolute',
-        bottom: 100,
-        left: 20,
-        right: 20,
-      }}>
+      style={[
+        {
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          justifyContent: 'center',
+          alignItems: 'center',
+          paddingHorizontal: 20,
+        },
+        animatedStyle,
+      ]}>
       <PhotoCard
         imageSource={selectedPose.imageUrl}
         title="GENERATED PHOTO"

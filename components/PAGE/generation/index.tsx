@@ -17,8 +17,15 @@ import { brandColors } from '@/shared/theme'
 export default function GenerationPage() {
   const selectedPose = useStore(usePoseStore, (state) => state.selectedPose)
 
-  const { transitionState, scale, opacity, startTransition, isFullScreen, showResultView } =
-    useViewResultTransition()
+  const {
+    transitionState,
+    scale,
+    opacity,
+    resultScale,
+    startTransition,
+    isFullScreen,
+    showResultView,
+  } = useViewResultTransition()
 
   const handleNext = () => {
     startTransition()
@@ -38,17 +45,21 @@ export default function GenerationPage() {
   return (
     <View className="flex-1 bg-background">
       <View className="flex-1">
-        <TransitionContainer scale={scale} opacity={opacity} transitionState={transitionState}>
-          <PixelatedEffect
-            bubbleX={x}
-            bubbleY={y}
-            bubbleWidth={bubbleWidth}
-            bubbleHeight={bubbleHeight}
-            repulsionPadding={repulsionPadding}
-            repulsionStrength={repulsionStrength}
-            isBubbleVisible={isVisible}
-          />
-        </TransitionContainer>
+        {showResultView && <ResultView selectedPose={selectedPose} scale={resultScale} />}
+
+        {transitionState !== 'hiddenParticles' && (
+          <TransitionContainer scale={scale} opacity={opacity} transitionState={transitionState}>
+            <PixelatedEffect
+              bubbleX={x}
+              bubbleY={y}
+              bubbleWidth={bubbleWidth}
+              bubbleHeight={bubbleHeight}
+              repulsionPadding={repulsionPadding}
+              repulsionStrength={repulsionStrength}
+              isBubbleVisible={isVisible}
+            />
+          </TransitionContainer>
+        )}
 
         {isFullScreen && (
           <InformationBubble
@@ -60,8 +71,6 @@ export default function GenerationPage() {
             fadeOutDuration={INFORMATION_CONFIG.FADE_OUT_DURATION}
           />
         )}
-
-        {showResultView && <ResultView selectedPose={selectedPose} />}
       </View>
 
       {isFullScreen && (
