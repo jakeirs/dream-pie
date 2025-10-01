@@ -21,3 +21,14 @@ export interface PixelatedEffectState {
   particles: IParticle[]
   isInitialized: boolean
 }
+
+export interface InformationPosition {
+  x: number
+  y: number
+}
+
+export interface InformationState {
+  message: string
+  isVisible: boolean
+  position: InformationPosition
+}

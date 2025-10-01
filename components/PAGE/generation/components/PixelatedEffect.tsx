@@ -1,13 +1,31 @@
 import { View, Text } from 'react-native'
 
+import { SharedValue } from 'react-native-reanimated'
 import { useStore } from 'zustand'
 
 import ParticleCanvas from './ParticleCanvas'
 
 import { usePoseStore } from '@/stores'
-import { usePixelatedEffect } from '../hooks/usePixelatedEffect'
 
-export default function PixelatedEffect() {
+interface PixelatedEffectProps {
+  bubbleX: SharedValue<number>
+  bubbleY: SharedValue<number>
+  bubbleWidth: number
+  bubbleHeight: number
+  repulsionPadding: number
+  repulsionStrength: SharedValue<number>
+  isBubbleVisible: boolean
+}
+
+export default function PixelatedEffect({
+  bubbleX,
+  bubbleY,
+  bubbleWidth,
+  bubbleHeight,
+  repulsionPadding,
+  repulsionStrength,
+  isBubbleVisible,
+}: PixelatedEffectProps) {
   const selectedPose = useStore(usePoseStore, (state) => state.selectedPose)
 
   if (!selectedPose) {
@@ -20,7 +38,15 @@ export default function PixelatedEffect() {
 
   return (
     <View className="flex-1 bg-background">
-      <ParticleCanvas />
+      <ParticleCanvas
+        bubbleX={bubbleX}
+        bubbleY={bubbleY}
+        bubbleWidth={bubbleWidth}
+        bubbleHeight={bubbleHeight}
+        repulsionPadding={repulsionPadding}
+        repulsionStrength={repulsionStrength}
+        isBubbleVisible={isBubbleVisible}
+      />
     </View>
   )
 }
