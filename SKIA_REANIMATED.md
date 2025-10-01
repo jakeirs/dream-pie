@@ -28,7 +28,8 @@
 
 ```typescript
 import { Canvas, Circle } from '@shopify/react-native-skia'
-import { useSharedValue, withTiming, useEffect } from 'react-native-reanimated'
+import { useSharedValue, withTiming } from 'react-native-reanimated'
+import { useEffect } from 'react'
 
 function AnimatedCircle() {
   const radius = useSharedValue(50)
@@ -180,7 +181,6 @@ sharedValue.modify((currentValue) => {
 ```typescript
 function ParticleSystem() {
   const particles = useSharedValue<Particle[]>([])
-  const renderTrigger = useSharedValue(0)
 
   const gesture = Gesture.Pan().onChange((event) => {
     // ✅ CORRECT: Use .modify() for array mutations
@@ -201,9 +201,6 @@ function ParticleSystem() {
 
       return particleArray
     })
-
-    // Trigger re-render for Skia
-    renderTrigger.value += 1
   })
 }
 ```
@@ -326,7 +323,7 @@ function RotatingCircle() {
       { translateY: 100 },
       { rotateZ: rotation.value }
     ]
-  }, [rotation])
+  })
 
   useEffect(() => {
     rotation.value = withRepeat(
@@ -377,9 +374,9 @@ function PhysicsSimulation() {
   const particles = useSharedValue([
     { x: 100, y: 100, vx: 2, vy: 1 }
   ])
-  const renderTrigger = useSharedValue(0)
 
   useFrameCallback(() => {
+    'worklet'
 
     particles.modify((particleArray) => {
       'worklet'
@@ -395,16 +392,12 @@ function PhysicsSimulation() {
 
       return particleArray
     })
-
-    // Trigger re-render
-    renderTrigger.value += 1
   })
 
   const transform = useDerivedValue(() => {
-    const _trigger = renderTrigger.value
     const p = particles.value[0]
     return [{ translateX: p.x }, { translateY: p.y }]
-  }, [renderTrigger])
+  })
 
   return (
     <Canvas>
@@ -458,7 +451,6 @@ function InteractiveParticles() {
     { x: 200, y: 150, vx: 0, vy: 0 },
     // ... more particles
   ])
-  const renderTrigger = useSharedValue(0)
 
   const gesture = Gesture.Pan().onChange((event) => {
     particles.modify((particleArray) => {
@@ -484,8 +476,6 @@ function InteractiveParticles() {
 
       return particleArray
     })
-
-    renderTrigger.value += 1
   })
 
   return (
@@ -568,8 +558,10 @@ const particles = initialParticles.map((p) => ({
 ### ✅ DO: Batch Updates with .modify()
 
 ```typescript
-// ✅ GOOD: Single re-render after all updates
+// ✅ GOOD: Single update with .modify()
 useFrameCallback(() => {
+  'worklet'
+
   particles.modify((arr) => {
     'worklet'
     for (let i = 0; i < arr.length; i++) {
@@ -577,13 +569,11 @@ useFrameCallback(() => {
     }
     return arr
   })
-
-  renderTrigger.value += 1 // Single re-render
 })
 ```
 
 ```typescript
-// ❌ BAD: Triggers re-render for each particle
+// ❌ BAD: Multiple individual shared values (causes many re-renders)
 for (let i = 0; i < particles.length; i++) {
   particles[i].x.value += 1 // Re-render!
   particles[i].y.value += 1 // Re-render!
@@ -602,7 +592,7 @@ const color = useDerivedValue(() => {
     [0, 1],
     ['#FF0000', '#00FF00']
   )
-}, [progress])
+})
 
 <Circle color={color} />
 ```
@@ -621,20 +611,111 @@ useAnimatedReaction(
 
 ---
 
-### ✅ DO: Minimize useDerivedValue Dependencies
+## Reanimated Dependencies - Critical Mobile Rules
+
+### 🚨 CRITICAL: SharedValues in React Hook Dependencies
+
+**Rule 1: Never use sharedValues in React hook dependency arrays**
+
+SharedValues **do not trigger React re-renders** when their `.value` changes. Including them in `useEffect`, `useMemo`, or `useCallback` dependencies is an antipattern.
 
 ```typescript
-// ✅ GOOD: Only re-computes when necessary
-const transform = useDerivedValue(() => {
-  return [{ translateX: x.value }, { translateY: y.value }]
-}, [x, y]) // Only x and y
+// ❌ BAD: sharedValue in useEffect dependencies (won't work)
+const x = useSharedValue(0)
+const y = useSharedValue(100)
+
+useEffect(() => {
+  console.log('x changed:', x.value)
+}, [x]) // ❌ Never triggers when x.value changes!
 ```
 
 ```typescript
-// ❌ BAD: Re-computes unnecessarily
+// ✅ GOOD: Use useAnimatedReaction for sharedValue changes
+const x = useSharedValue(0)
+
+useAnimatedReaction(
+  () => x.value,
+  (currentValue, previousValue) => {
+    console.log('x changed from', previousValue, 'to', currentValue)
+  }
+)
+```
+
+**Why this matters:**
+- SharedValues are **worklet-based** (UI thread)
+- React hooks are **JS thread** based
+- `.value` changes don't trigger React's reconciliation
+- Use `useAnimatedReaction` to bridge UI thread → JS thread
+
+---
+
+### 🚨 Dependency Arrays in Reanimated Hooks (Mobile vs Web)
+
+**Rule 2: Dependency arrays behave differently on mobile vs web**
+
+| Platform | Behavior | Dependencies Needed? |
+|----------|----------|---------------------|
+| **Mobile (iOS/Android)** | Auto-tracks all accessed sharedValues | ❌ No (optional for clarity) |
+| **Web** | Manual tracking like React's useMemo | ✅ Yes (required) |
+
+**For Mobile-Only Apps:**
+```typescript
+// ✅ MOBILE BEST PRACTICE: Omit dependency array (auto-tracking)
 const transform = useDerivedValue(() => {
-  return [{ translateX: x.value }, { translateY: y.value }]
-  // Missing dependencies array - recomputes on every render
+  return [
+    { translateX: x.value },
+    { translateY: y.value }
+  ]
+}) // Automatically tracks x, y on mobile
+```
+
+**For Cross-Platform (Mobile + Web):**
+```typescript
+// ✅ CROSS-PLATFORM: Include dependencies for web compatibility
+const transform = useDerivedValue(() => {
+  return [
+    { translateX: x.value },
+    { translateY: y.value }
+  ]
+}, [x, y]) // Required for web, optional on mobile
+```
+
+**Recommendation:**
+- **Mobile-only projects**: Omit dependency arrays for cleaner code
+- **Web support needed**: Include dependency arrays
+- **Team preference**: Pick one style and stay consistent
+
+---
+
+### 🚨 Common Mistakes with Dependencies
+
+**Mistake 1: Expecting React hooks to react to sharedValues**
+```typescript
+// ❌ BAD: useMemo won't update when x.value changes
+const x = useSharedValue(0)
+const doubled = useMemo(() => x.value * 2, [x])
+```
+
+```typescript
+// ✅ GOOD: Use useDerivedValue for computed sharedValues
+const x = useSharedValue(0)
+const doubled = useDerivedValue(() => x.value * 2)
+```
+
+**Mistake 2: Using regular state when sharedValue is needed**
+```typescript
+// ❌ BAD: React state causes JS thread bottleneck
+const [x, setX] = useState(0)
+const gesture = Gesture.Pan().onChange((e) => {
+  runOnJS(setX)(e.x) // Slow: UI → JS thread bridge
+})
+```
+
+```typescript
+// ✅ GOOD: sharedValue stays on UI thread
+const x = useSharedValue(0)
+const gesture = Gesture.Pan().onChange((e) => {
+  x.value = e.x // Fast: UI thread only
 })
 ```
 
@@ -807,7 +888,6 @@ const gesture = Gesture.Pan()
 export function usePixelatedEffect() {
   // ✅ Use useSharedValue (NOT makeMutable)
   const particlesShared = useSharedValue<IParticle[]>([])
-  const renderTrigger = useSharedValue(0)
 
   // Gesture updates particles
   const gesture = Gesture.Pan().onChange((event) => {
@@ -834,19 +914,18 @@ export function usePixelatedEffect() {
 
       return particles // Must return
     })
-
-    renderTrigger.value += 1
   })
 
-  return { particlesShared, renderTrigger, gesture }
+  return { particlesShared, gesture }
 }
 
 // components/ParticleCanvas.tsx
 export default function ParticleCanvas() {
-  const { particlesShared, renderTrigger, gesture } = usePixelatedEffect()
+  const { particlesShared, gesture } = usePixelatedEffect()
 
   // Physics loop
   useFrameCallback(() => {
+    'worklet'
 
     // ✅ Use .modify() for physics updates
     particlesShared.modify((particles) => {
@@ -870,39 +949,34 @@ export default function ParticleCanvas() {
 
       return particles // Must return
     })
-
-    renderTrigger.value += 1
   })
 
   return (
     <GestureDetector gesture={gesture}>
       <Canvas>
-        <ParticleRenderer
-          particles={initialParticles}
-          particlesShared={particlesShared}
-          renderTrigger={renderTrigger}
-        />
+        <ParticleRenderer particlesShared={particlesShared} />
       </Canvas>
     </GestureDetector>
   )
 }
 
 // components/ParticleRenderer.tsx
-function ParticleItem({ index, particlesShared, renderTrigger }) {
-  const transform = useDerivedValue(() => {
-    const _trigger = renderTrigger.value // Force update
-    const particle = particlesShared.value[index]
-    return [
-      { translateX: particle.x },
-      { translateY: particle.y }
-    ]
-  }, [index, particlesShared, renderTrigger])
+function ParticleRenderer({ particlesShared }) {
+  // ✅ useDerivedValue auto-tracks particlesShared changes (no manual trigger needed)
+  const picture = useDerivedValue(() => {
+    const particles = particlesShared.value
 
-  return (
-    <Group transform={transform}>
-      <Picture picture={particle.picture} />
-    </Group>
-  )
+    return createPicture((canvas) => {
+      particles.forEach((particle) => {
+        canvas.save()
+        canvas.translate(particle.x, particle.y)
+        // ... render particle
+        canvas.restore()
+      })
+    })
+  })
+
+  return <Picture picture={picture} />
 }
 ```
 
@@ -910,8 +984,8 @@ function ParticleItem({ index, particlesShared, renderTrigger }) {
 
 - ✅ `useSharedValue` instead of `makeMutable` (official recommendation)
 - ✅ `.modify()` for all array mutations (maintains reactivity)
-- ✅ Single `renderTrigger` for efficient batch updates
-- ✅ `useDerivedValue` bridges shared value changes to Skia
+- ✅ No manual render triggers needed - `useDerivedValue` auto-tracks sharedValue changes
+- ✅ `useDerivedValue` automatically re-renders Skia when dependencies change
 - ✅ `useFrameCallback` for smooth physics updates
 - ✅ Automatic cleanup (no manual cancelAnimation needed)
 
@@ -968,7 +1042,7 @@ function AnimatedGradient() {
       [0, 0.5, 1],
       ['#FF0000', '#00FF00', '#0000FF']
     )
-  }, [progress])
+  })
 
   return (
     <Canvas>
@@ -1021,8 +1095,8 @@ arr.modify((array) => {
   return array
 })
 
-// Computed value
-const computed = useDerivedValue(() => x.value * 2, [x])
+// Computed value (mobile: auto-tracks x; web: add [x] for compatibility)
+const computed = useDerivedValue(() => x.value * 2)
 
 // Animation loop
 useFrameCallback(() => {
@@ -1055,8 +1129,10 @@ const gesture = Gesture.Pan()
 4. **Extract components** when using hooks in map/loops
 5. **Use `useDerivedValue`** for complex calculations on UI thread
 6. **Use new Gesture API** (`.onChange()`, not `.onActive()`)
-7. **Batch updates** with single render trigger for multiple changes
-8. **Use `.get()` and `.set()`** when working with React Compiler
+7. **Use `.get()` and `.set()`** when working with React Compiler
+8. **Never put sharedValues in React hook dependencies** (`useEffect`, `useMemo`, `useCallback`)
+9. **Use `useAnimatedReaction`** to respond to sharedValue changes
+10. **Dependency arrays in `useDerivedValue`** are optional on mobile (auto-tracking), required on web
 
 ### ❌ Avoid
 
@@ -1067,6 +1143,9 @@ const gesture = Gesture.Pan()
 5. ❌ Forgetting 'worklet' directive inside `.modify()` callbacks
 6. ❌ Creating excessive individual shared values (100+)
 7. ❌ Using old gesture handler API
+8. ❌ Using sharedValues in `useEffect`/`useMemo`/`useCallback` dependencies
+9. ❌ Manual render triggers (e.g., `renderTrigger.value += 1`)
+10. ❌ Expecting React hooks to react to `.value` changes
 
 ---
 
@@ -1080,6 +1159,6 @@ const gesture = Gesture.Pan()
 
 ---
 
-**Last Updated**: 2025-09-30
+**Last Updated**: 2025-10-01
 **Project**: Dream Pie - Pixelated Effect Implementation
-**Version**: 2.0 - Updated with official Reanimated best practices
+**Version**: 3.0 - Added critical mobile dependency rules, removed antipatterns (renderTrigger, sharedValues in React hooks)
