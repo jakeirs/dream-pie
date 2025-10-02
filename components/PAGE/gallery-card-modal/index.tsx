@@ -1,6 +1,8 @@
 import { View, Text } from 'react-native'
 import { Image } from 'expo-image'
 
+import type { Gesture } from 'react-native-gesture-handler/lib/typescript/handlers/gestures/gesture'
+
 import Button from '@/components/ui/Button/Button'
 
 import { brandColors } from '@/shared/theme'
@@ -11,6 +13,7 @@ interface GalleryCardModalProps {
   title: string
   description?: string
   onClose: () => void
+  pinchGestureRef?: React.MutableRefObject<Gesture | undefined>
 }
 
 export default function GalleryCardModal({
@@ -18,6 +21,7 @@ export default function GalleryCardModal({
   title,
   description,
   onClose,
+  pinchGestureRef,
 }: GalleryCardModalProps) {
   return (
     <View className="flex-1 py-4">
@@ -29,7 +33,12 @@ export default function GalleryCardModal({
           zIndex: 10,
         }}>
         {imageUri && (
-          <ZoomablePhoto imageSource={imageUri} scaleFromCenter={false} contentFit="contain" />
+          <ZoomablePhoto
+            imageSource={imageUri}
+            scaleFromCenter={false}
+            contentFit="contain"
+            gestureRef={pinchGestureRef}
+          />
         )}
       </View>
 

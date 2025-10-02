@@ -21,6 +21,7 @@ const ZoomablePhoto = ({
   onLoad,
   onError,
   className = '',
+  gestureRef,
 }: ZoomablePhotoProps) => {
   const { pinchGesture, animatedStyle, iconAnimatedStyle, containerHeight } = useZoomablePhoto({
     maxScale,
@@ -28,6 +29,7 @@ const ZoomablePhoto = ({
     scaleFromCenter,
     onZoomStart,
     onZoomEnd,
+    gestureRef,
   })
 
   return (
