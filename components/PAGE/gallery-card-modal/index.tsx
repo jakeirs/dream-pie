@@ -34,7 +34,7 @@ export default function GalleryCardModal({
       {/* Content flows naturally below image */}
       <View className="flex-shrink">
         {/* Header */}
-        <Text className="mb-6 text-center text-2xl font-bold text-textPrimary">{title}</Text>
+        <Text className="mb-6 text-center text-2xl font-bold text-textLight">{title}</Text>
 
         {/* Description */}
         {description && (
