@@ -17,6 +17,7 @@ export interface BottomSheetProps extends Omit<BottomSheetLibProps, 'children'> 
   index?: number
   backdropAppearsIndex?: number
   enablePanDownToClose?: boolean
+  activeOffsetY?: number
 }
 
 export interface BottomSheetModalExtendedProps extends Omit<BottomSheetModalProps, 'children'> {
@@ -24,6 +25,7 @@ export interface BottomSheetModalExtendedProps extends Omit<BottomSheetModalProp
   scrollView?: boolean
   isModal: true
   backdropAppearsIndex?: number
+  activeOffsetY?: number
 }
 
 export type CombinedBottomSheetProps = BottomSheetProps | BottomSheetModalExtendedProps

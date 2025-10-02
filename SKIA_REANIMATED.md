@@ -1159,6 +1159,42 @@ const gesture = Gesture.Pan()
 
 ---
 
-**Last Updated**: 2025-10-01
+## Resolving Gesture Conflicts with BottomSheet
+
+### Problem: Nested Gesture Handlers Conflicting
+
+When using gestures inside `@gorhom/bottom-sheet`, child gestures (pinch, tap) can conflict with the sheet's pan gesture.
+
+### Solution: Two-Step Coordination
+
+**Step 1: Allow Simultaneous Gestures**
+```typescript
+const pinchGestureRef = useRef<Gesture>()
+
+<BottomSheet simultaneousHandlers={pinchGestureRef}>
+  <ZoomablePhoto gestureRef={pinchGestureRef} />
+</BottomSheet>
+```
+
+**Step 2: Add Activation Threshold**
+```typescript
+<BottomSheet
+  simultaneousHandlers={pinchGestureRef}
+  activeOffsetY={30}>  // Requires 30 points of drag before pan activates
+```
+
+**How It Works:**
+- `simultaneousHandlers` - Allows both gestures to work together
+- `activeOffsetY` - Delays pan gesture activation, giving pinch a "safe zone"
+- Result: Pinch activates instantly, pan requires 30+ points of vertical movement
+
+**Recommended Values:**
+- `20-30`: Balanced protection (recommended)
+- `40-50`: Maximum protection
+- `10-15`: Minimal delay
+
+---
+
+**Last Updated**: 2025-10-02
 **Project**: Dream Pie - Pixelated Effect Implementation
-**Version**: 3.0 - Added critical mobile dependency rules, removed antipatterns (renderTrigger, sharedValues in React hooks)
+**Version**: 3.1 - Added BottomSheet gesture conflict resolution patterns
