@@ -22,7 +22,7 @@ export default function LoginPage() {
   }
 
   const handleGoToTestApi = () => {
-    router.push('/(auth)/test-api')
+    router.push('/(auth)/(test_screens)/test-api')
   }
 
   return (
@@ -52,7 +52,6 @@ export default function LoginPage() {
           </Button>
         </View>
 
-
         {/* Paywall Button */}
         <View className="mb-6 w-full">
           <Button
@@ -74,7 +73,6 @@ export default function LoginPage() {
             <Text className="text-xl font-bold text-white">🔧 Go to Test Api</Text>
           </Button>
         </View>
-
       </View>
 
       {/* Paywall Modal */}
