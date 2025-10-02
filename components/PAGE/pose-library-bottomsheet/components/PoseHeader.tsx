@@ -1,11 +1,8 @@
-// Following Import Order Standards (React 19+)
-// 1. React Native Core & Expo
 import { View, Text } from 'react-native'
 
-// 2. UI components (@/components/ui)
 import Button from '@/components/ui/Button/Button'
+import { PoseIcon } from '@/components/ui/icons/custom/PoseIcon'
 
-// 3. Theme imports
 import { brandColors } from '@/shared/theme'
 
 interface PoseHeaderProps {
@@ -17,9 +14,16 @@ export const PoseHeader = ({ onClose }: PoseHeaderProps) => {
     <View
       className="flex-row items-center justify-between p-6"
       style={{ borderBottomWidth: 1, borderBottomColor: brandColors.borderLight }}>
-      <Text className="text-xl font-bold" style={{ color: brandColors.textLight }}>
-        Choose a Pose
-      </Text>
+      <View className="flex-row items-center gap-3">
+        <PoseIcon
+          size={55}
+          primaryColor={brandColors.background}
+          secondaryColor={brandColors.primaryForeground}
+        />
+        <Text className="text-xl font-bold" style={{ color: brandColors.textLight }}>
+          Choose a Pose
+        </Text>
+      </View>
       <Button variant="secondary" size="small" onPress={onClose}>
         <Text style={{ color: brandColors.textPrimary }}>Done</Text>
       </Button>

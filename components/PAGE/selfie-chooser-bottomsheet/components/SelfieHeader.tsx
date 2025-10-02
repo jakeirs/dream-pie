@@ -1,19 +1,14 @@
-// Following Import Order Standards (React 19+)
-// 1. React Native Core & Expo
 import { View, Text } from 'react-native'
 
-// 2. UI components (@/components/ui)
 import Button from '@/components/ui/Button/Button'
 import ButtonDelete from '@/components/ui/ButtonDelete/ButtonDelete'
 import ButtonExit from '@/components/ui/ButtonExit/ButtonExit'
+import { SelfieIcon } from '@/components/ui/icons/custom/SelfieIcon'
 
-// 3. Hooks
 import { useSelfieHeader } from './hooks/useSelfieHeader'
 
-// 4. Store imports
 import { useSelfieChooserStore } from '@/stores'
 
-// 5. Theme imports
 import { brandColors } from '@/shared/theme'
 
 interface SelfieHeaderProps {
@@ -28,12 +23,18 @@ export const SelfieHeader = ({ onClose }: SelfieHeaderProps) => {
     <View
       className="flex-row items-center justify-between p-6"
       style={{ borderBottomWidth: 1, borderBottomColor: brandColors.borderLight }}>
-      <Text className="text-xl font-bold" style={{ color: brandColors.textLight }}>
-        Choose a Selfie
-      </Text>
+      <View className="flex-row items-center gap-3">
+        <SelfieIcon
+          size={45}
+          primaryColor={brandColors.background}
+          secondaryColor={brandColors.primaryForeground}
+        />
+        <Text className="text-xl font-bold" style={{ color: brandColors.textLight }}>
+          Choose a Selfie
+        </Text>
+      </View>
 
       <View className="flex-row items-center gap-3">
-        {/* Delete Button */}
         <ButtonDelete
           onPress={handleDeletePress}
           disabled={isDeleting}
@@ -42,7 +43,6 @@ export const SelfieHeader = ({ onClose }: SelfieHeaderProps) => {
           isDeleting={isDeleting}
         />
 
-        {/* Done/Cancel Button */}
         {deleteMode ? (
           <ButtonExit onPress={handleCancelDelete} />
         ) : (
