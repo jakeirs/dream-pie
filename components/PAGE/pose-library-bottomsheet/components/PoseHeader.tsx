@@ -14,9 +14,9 @@ export const PoseHeader = ({ onClose }: PoseHeaderProps) => {
     <View
       className="flex-row items-center justify-between p-6"
       style={{ borderBottomWidth: 1, borderBottomColor: brandColors.borderLight }}>
-      <View className="flex-row items-center gap-3">
+      <View className="h-12 flex-row items-center gap-3">
         <PoseIcon
-          size={55}
+          size={80}
           primaryColor={brandColors.background}
           secondaryColor={brandColors.primaryForeground}
         />

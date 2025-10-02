@@ -12,8 +12,14 @@ export const PoseIcon = ({
   secondaryColor = '#FEFEFE',
   ...props
 }: PoseIconProps) => {
+  // Adjusted viewBox: Path 8 at x=865 is a tiny outlier, main content starts around x=919-1352
+  // Let's try centering better by starting viewBox at x=900 instead of 865
+  // This should help center the main pose figure
+  const height = size
+  const width = size * 0.5 // 1:2 ratio for vertical pose
+
   return (
-    <Svg width={size} height={size} viewBox="0 0 2048 1606" {...props}>
+    <Svg width={width} height={height} viewBox="0 0  1500 1387" {...props}>
       <Path
         fill={primaryColor}
         d="M1352 153h7l5 3 4 10v13l-3 15-4 5-8 7-8 8-8 7-57 57-7 8-16 16-7 8-12 14-9 9-9 11-10 11-8 10-10 12-11 14-10 13-12 17-10 15-11 18-9 17-7 18-7 30-5 33-2 22-1 18v63l1 34v50l-2 5-2 40-3 26-4 16-7 16-9 16-10 13-9 10-8 9-8 7-10 9-14 10-17 12-10 7h-2l1 68 1 41 1 17h16l19 3 13 5 12 6 16 12 10 10 6 10 3 9-1 8-12 31-22 55-19 48-9 22h-9l-16-4 3 62 3 43v7l8-1 3 7 22 81 9 33v5l-14 17-18 22-11 13-27 33-8 3-5 1h-23l-10-3-10-6-8-8-5-9-2-10 1-11 4-12 9-17 11-17 8-13 5-12 1-5v-28l-5-27-9-62-24-160-10-66v-8l-9-3-33-13-49-21-24-11-29-15-23-14-14-10-9-7-10-9-9-10-7-11-4-10-1-4v-14l4-13 7-14 8-11 12-14 12-13 2-5 7-50 14-89 11-66 10-53 9-44 11-48 8-30 7-21 8-16 7-6 24-10 36-11 16-5 4-9 2-11-4 4-5 7-9 5h-3l1-9v-25l-4-23-4-9-11-19-6-18-2-12v-20l3-18 4-15 5-12 9-14 7-8 12-9 14-7 18-4 12-2h15l11 2 12 5 11 8 8 9 10 17 6 15 6 24 3 23v20l-9 44-2 17 2 7 7-1 17-7 18-10 17-11 14-11 12-12 9-11 11-14 15-16 7-8 3-3h2l2-4 10-9 8-8 8-7 12-11 11-9 10-9 11-9 14-11 17-14 19-14 14-11 17-12 10-7 27-18 15-8z"
