@@ -10,7 +10,11 @@ export const makeImageParticles = (config: ParticleConfig): IParticle[] => {
     return result
   }
 
-  for (let x = 0; x < stageWidth; x += density) {
+  // Shift particles to the right by half density to reduce left/right edge gaps
+  const offsetX = density / 2
+
+  // Create particles with right shift
+  for (let x = offsetX; x <= stageWidth; x += density) {
     for (let y = 0; y < stageHeight; y += density) {
       result.push({
         x: x,
