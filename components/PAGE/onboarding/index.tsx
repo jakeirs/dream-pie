@@ -1,99 +1,47 @@
-import { View, Text, ScrollView } from 'react-native'
-import { useState } from 'react'
+import { View, Text, ImageBackground } from 'react-native'
+import { LinearGradient } from 'expo-linear-gradient'
 import { router } from 'expo-router'
 
-import PageHeader from '@/components/ui/PageHeader/PageHeader'
-import PoseCard from '@/components/ui/PoseCard/PoseCard'
 import Button from '@/components/ui/Button/Button'
 
-import { mockPoses } from '@/mockData/dream/poses'
-
 export default function OnboardingPage() {
-  const [selectedPoseId, setSelectedPoseId] = useState<string | null>(null)
-
-  const handlePoseSelect = (poseId: string) => {
-    // Toggle selection - if same pose clicked, deselect
-    setSelectedPoseId((current) => (current === poseId ? null : poseId))
-  }
-
-  const handleContinue = () => {
-    if (selectedPoseId) {
-      const selectedPose = mockPoses.find((pose) => pose.id === selectedPoseId)
-      console.log('Selected pose:', selectedPose)
-      // Navigate to next step
-      router.push('/(auth)/login')
-    }
+  const handleGetStarted = () => {
+    router.push('/(tabs)')
   }
 
   return (
-    <View className="flex-1 bg-background">
-      <PageHeader title="Choose Your Style" />
-
-      <ScrollView className="flex-1 px-4" showsVerticalScrollIndicator={false}>
-        {/* Header Section */}
-        <View className="py-6">
-          <Text className="mb-2 text-2xl font-bold text-textPrimary">
-            Select Your Favorite Pose
-          </Text>
-          <Text className="text-base leading-6 text-textSecondary">
-            Choose a pose style that resonates with you. This will help us personalize your Dream
-            Pie experience.
-          </Text>
-        </View>
-
-        {/* Pose Grid */}
-        <View className="mb-8 gap-4">
-          {mockPoses.map((pose) => (
-            <PoseCard
-              key={pose.id}
-              pose={pose}
-              isSelected={pose.id === selectedPoseId}
-              onSelect={handlePoseSelect}
-            />
-          ))}
-        </View>
-
-        {/* Statistics */}
-        <View className="bg-surface mb-6 rounded-xl p-4">
-          <Text className="mb-2 font-semibold text-textPrimary">Pose Collection Stats</Text>
-          <View className="flex-row justify-between">
-            <View>
-              <Text className="text-sm text-textSecondary">Total Poses</Text>
-              <Text className="text-lg font-bold text-primary">{mockPoses.length}</Text>
-            </View>
-            <View>
-              <Text className="text-sm text-textSecondary">Categories</Text>
-              <Text className="text-lg font-bold text-primary">
-                {new Set(mockPoses.map((pose) => pose.category)).size}
+    <View className="flex-1">
+      <ImageBackground
+        source={require('@/assets/poses/poses-selfie/pose-selfie-outside-nature-golden-h-look-up-from-bottom.jpg')}
+        className="h-full w-full flex-1"
+        resizeMode="cover">
+        <LinearGradient
+          colors={['transparent', 'rgba(255, 255, 255, 0.8)', '#FFFFFF']}
+          locations={[0, 0.6, 1]}
+          className="flex-1">
+          <View className="flex-1 justify-end px-6 pb-12">
+            <View className="mb-8">
+              <Text className="mb-2 text-center text-4xl font-bold text-textPrimary">
+                Welcome to
+              </Text>
+              <Text className="mb-4 text-center text-4xl font-bold text-[#8B5CF6]">
+                Dream Pie®
+              </Text>
+              <Text className="text-center text-lg text-textSecondary">
+                Create stunning AI-generated photos
               </Text>
             </View>
-            <View>
-              <Text className="text-sm text-textSecondary">Selected</Text>
-              <Text className="text-lg font-bold text-primary">{selectedPoseId ? '1' : '0'}</Text>
-            </View>
+
+            <Button variant="primary" onPress={handleGetStarted} className="mb-4 w-full" title="Get Started" />
+
+            <Text className="text-center text-sm text-textMuted">
+              By continuing, you agree to our{' '}
+              <Text className="font-semibold text-textSecondary">Privacy Policy</Text> and{' '}
+              <Text className="font-semibold text-textSecondary">Terms of Service</Text>
+            </Text>
           </View>
-        </View>
-      </ScrollView>
-
-      {/* Bottom Action Bar */}
-      <View className="border-t border-border bg-card p-4">
-        <Button
-          variant={selectedPoseId ? 'primary' : 'secondary'}
-          disabled={!selectedPoseId}
-          onPress={handleContinue}
-          className="w-full"
-          title={selectedPoseId ? 'Continue with Selection' : 'Select a Pose to Continue'}
-        />
-
-        {selectedPoseId && (
-          <Button
-            variant="secondary"
-            onPress={() => setSelectedPoseId(null)}
-            className="mt-2 w-full"
-            title="Clear Selection"
-          />
-        )}
-      </View>
+        </LinearGradient>
+      </ImageBackground>
     </View>
   )
 }
