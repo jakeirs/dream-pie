@@ -2,7 +2,7 @@ import { useRef } from 'react'
 import { View, ScrollView } from 'react-native'
 import { router } from 'expo-router'
 
-import type { Gesture } from 'react-native-gesture-handler/lib/typescript/handlers/gestures/gesture'
+import type { GestureType } from 'react-native-gesture-handler/lib/typescript/handlers/gestures/gesture'
 
 import BottomSheet from '@/components/ui/BottomSheet/BottomSheet'
 import PageHeader from '@/components/ui/PageHeader/PageHeader'
@@ -21,7 +21,7 @@ export default function GalleryPage() {
   const filters = useGalleryFilters()
 
   // Ref for coordinating pinch gesture with BottomSheet
-  const pinchGestureRef = useRef<Gesture>()
+  const pinchGestureRef = useRef<GestureType | undefined>(undefined)
 
   const handleSettingsPress = () => {
     router.push('/settings')
