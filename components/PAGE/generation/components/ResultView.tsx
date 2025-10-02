@@ -1,4 +1,4 @@
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
 import Animated, {
   useAnimatedStyle,
   SharedValue,
@@ -8,6 +8,7 @@ import Animated, {
 import { Confetti } from 'react-native-fast-confetti'
 
 import ZoomablePhoto from '@/components/ui/ZoomablePhoto/ZoomablePhoto'
+import SuccessMessage from '@/components/ui/SuccessMessage/SuccessMessage'
 
 import { Pose } from '@/types/dream/pose'
 
@@ -21,16 +22,18 @@ interface ResultViewProps {
  * ResultView - Shows ZoomablePhoto with selected pose after transition
  *
  * Positioned absolutely behind PixelatedEffect and scales from 0.3 to 1.0
- * as the particle effect disappears. Triggers confetti when fully scaled.
+ * as the particle effect disappears. Triggers confetti and UI elements when fully scaled.
  * Supports pinch-to-zoom for viewing generated photos.
  */
-export default function ResultView({ selectedPose, scale, onChangePress }: ResultViewProps) {
+export default function ResultView({ selectedPose, scale }: ResultViewProps) {
   const confettiRef = useRef<any>(null)
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false)
 
-  const triggerConfetti = () => {
+  const triggerUIElements = () => {
     if (confettiRef.current) {
       confettiRef.current.restart()
     }
+    setShowSuccessMessage(true)
   }
 
   // Use useAnimatedReaction to monitor scale value changes
@@ -38,7 +41,7 @@ export default function ResultView({ selectedPose, scale, onChangePress }: Resul
     () => scale.value,
     (currentScale, previousScale) => {
       if (currentScale >= 0.99 && (previousScale === null || previousScale < 0.99)) {
-        runOnJS(triggerConfetti)()
+        runOnJS(triggerUIElements)()
       }
     }
   )
@@ -69,6 +72,7 @@ export default function ResultView({ selectedPose, scale, onChangePress }: Resul
         ]}>
         <ZoomablePhoto imageSource={selectedPose.imageUrl} maxScale={3} contentFit="contain" />
       </Animated.View>
+
       <Confetti
         ref={confettiRef}
         count={200}
@@ -77,6 +81,13 @@ export default function ResultView({ selectedPose, scale, onChangePress }: Resul
         fallDuration={3000}
         blastDuration={400}
         flakeSize={{ width: 10, height: 10 }}
+      />
+
+      <SuccessMessage
+        message="✨ Your Dream Photo is Ready!"
+        visible={showSuccessMessage}
+        duration={2500}
+        onDismiss={() => setShowSuccessMessage(false)}
       />
     </>
   )
