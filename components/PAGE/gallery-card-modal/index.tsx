@@ -20,10 +20,10 @@ export default function GalleryCardModal({
   onClose,
 }: GalleryCardModalProps) {
   return (
-    <View className="flex-1 px-6 py-4">
+    <View className="flex-1 py-4">
       {/* Zoomable Image Container with aspectRatio */}
       <View
-        className="mb-6 w-full"
+        className="w-full"
         style={{
           aspectRatio: 1,
           zIndex: 10,
