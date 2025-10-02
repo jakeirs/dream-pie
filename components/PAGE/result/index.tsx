@@ -1,4 +1,4 @@
-import { View, Text, Image, ScrollView, StyleSheet } from 'react-native'
+import { View, StyleSheet } from 'react-native'
 import { router } from 'expo-router'
 
 import { Canvas, Skia, createPicture, Picture, SkPoint } from '@shopify/react-native-skia'
@@ -9,17 +9,12 @@ import {
   useFrameCallback,
 } from 'react-native-reanimated'
 
-import Button from '@/components/ui/Button/Button'
-
-import { brandColors } from '@/shared/theme'
-import { appAssets } from '@/shared/assets/assets'
-
 const CIRCLE_RADIUS = 3
 const CIRCLE_SPEED = 0.15
 
 export default function ResultPage() {
   const size = useSharedValue({ width: 0, height: 0 })
-  const circles = useSharedValue<Array<{ x: number; y: number }>>([])
+  const circles = useSharedValue<{ x: number; y: number }[]>([])
 
   useAnimatedReaction(
     () => size.value,
@@ -76,7 +71,7 @@ export default function ResultPage() {
   }, [])
 
   const handleBackToCreate = () => {
-    router.push('/(tabs)')
+    router.replace('/(tabs)')
   }
 
   return (
