@@ -15,11 +15,11 @@ export default function OnboardingPage() {
         source={require('@/assets/poses/poses-selfie/pose-selfie-outside-nature-golden-h-look-up-from-bottom.jpg')}
         className="h-full w-full flex-1"
         resizeMode="cover">
-        <LinearGradient
-          colors={['transparent', 'rgba(255, 255, 255, 0.8)', '#FFFFFF']}
-          locations={[0, 0.6, 1]}
-          className="flex-1">
-          <View className="flex-1 justify-end px-6 pb-12">
+        <View className="flex-1 justify-end">
+          <LinearGradient
+            colors={['transparent', 'rgba(255, 255, 255, 0.8)', '#FFFFFF']}
+            locations={[0, 0.5, 1]}
+            className="px-6 pb-12 pt-32">
             <View className="mb-8">
               <Text className="mb-2 text-center text-4xl font-bold text-textPrimary">
                 Welcome to
@@ -39,8 +39,8 @@ export default function OnboardingPage() {
               <Text className="font-semibold text-textSecondary">Privacy Policy</Text> and{' '}
               <Text className="font-semibold text-textSecondary">Terms of Service</Text>
             </Text>
-          </View>
-        </LinearGradient>
+          </LinearGradient>
+        </View>
       </ImageBackground>
     </View>
   )
