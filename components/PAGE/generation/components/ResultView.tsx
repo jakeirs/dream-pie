@@ -56,23 +56,6 @@ export default function ResultView({ selectedPose, scale }: ResultViewProps) {
 
   return (
     <>
-      <Animated.View
-        style={[
-          {
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            justifyContent: 'center',
-            alignItems: 'center',
-            paddingHorizontal: 20,
-          },
-          animatedStyle,
-        ]}>
-        <ZoomablePhoto imageSource={selectedPose.imageUrl} maxScale={3} contentFit="contain" />
-      </Animated.View>
-
       <Confetti
         ref={confettiRef}
         count={200}
@@ -89,6 +72,23 @@ export default function ResultView({ selectedPose, scale }: ResultViewProps) {
         duration={2500}
         onDismiss={() => setShowSuccessMessage(false)}
       />
+
+      <Animated.View
+        style={[
+          {
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            justifyContent: 'center',
+            alignItems: 'center',
+            paddingHorizontal: 20,
+          },
+          animatedStyle,
+        ]}>
+        <ZoomablePhoto imageSource={selectedPose.imageUrl} maxScale={3} contentFit="contain" />
+      </Animated.View>
     </>
   )
 }

@@ -76,21 +76,14 @@ const styles = StyleSheet.create({
     height: '100%',
     justifyContent: 'center',
     alignItems: 'center',
-    overflow: 'visible',
-    zIndex: 100,
-    position: 'absolute',
   },
   imageWrapper: {
     width: '100%',
     height: '100%',
-    zIndex: 100,
-    position: 'absolute',
   },
   image: {
     width: '100%',
     height: '100%',
-    zIndex: 100,
-    position: 'absolute',
   },
 })
 
