@@ -6,7 +6,7 @@ import Button from '@/components/ui/Button/Button'
 
 export default function OnboardingPage() {
   const handleGetStarted = () => {
-    router.push('/(tabs)')
+    router.push('/(auth)/login')
   }
 
   return (
