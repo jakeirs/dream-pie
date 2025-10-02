@@ -3,6 +3,7 @@ import { LinearGradient } from 'expo-linear-gradient'
 import { router } from 'expo-router'
 
 import Button from '@/components/ui/Button/Button'
+import { appAssets } from '@/shared/assets/assets'
 
 export function OnboardingStep1Page() {
   const handleGetStarted = () => {
@@ -12,7 +13,7 @@ export function OnboardingStep1Page() {
   return (
     <View className="flex-1">
       <ImageBackground
-        source={require('@/assets/poses/poses-selfie/pose-selfie-outside-nature-golden-h-look-up-from-bottom.jpg')}
+        source={appAssets.posesSelfie.outsideNatureGoldenLookUp}
         className="h-full w-full flex-1"
         resizeMode="cover">
         <View className="flex-1 justify-end">
@@ -41,6 +42,7 @@ export function OnboardingStep1Page() {
                 onPress={handleGetStarted}
                 className="mb-4 w-full"
                 title="Get Started"
+                size="lg"
               />
 
               <Text className="text-center text-sm text-textMuted">
