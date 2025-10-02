@@ -6,6 +6,7 @@ export interface ZoomablePhotoProps {
   minScale?: number
   contentFit?: ImageContentFit
   contentPosition?: ImageContentPosition
+  scaleFromCenter?: boolean
   onZoomStart?: () => void
   onZoomEnd?: () => void
   onLoad?: () => void

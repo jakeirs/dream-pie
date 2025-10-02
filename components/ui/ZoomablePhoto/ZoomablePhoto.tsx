@@ -16,6 +16,7 @@ const ZoomablePhoto = ({
   minScale = 1,
   contentFit = 'cover',
   contentPosition = 'center',
+  scaleFromCenter = true,
   onZoomStart,
   onZoomEnd,
   onLoad,
@@ -26,6 +27,7 @@ const ZoomablePhoto = ({
   const savedScale = useSharedValue(1)
   const translateX = useSharedValue(0)
   const translateY = useSharedValue(0)
+  const containerHeight = useSharedValue(0)
 
   const pinchGesture = Gesture.Pinch()
     .onStart(() => {
@@ -44,17 +46,29 @@ const ZoomablePhoto = ({
       onZoomEnd?.()
     })
 
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [
-      { translateX: translateX.value },
-      { translateY: translateY.value },
-      { scale: scale.value },
-    ],
-  }))
+  const animatedStyle = useAnimatedStyle(() => {
+    const scaleOffset =
+      !scaleFromCenter && containerHeight.value > 0
+        ? ((scale.value - 1) * containerHeight.value) / 2
+        : 0
+
+    return {
+      transform: [
+        { translateX: translateX.value },
+        { translateY: translateY.value + scaleOffset },
+        { scale: scale.value },
+      ],
+    }
+  })
 
   return (
     <GestureDetector gesture={pinchGesture}>
-      <Animated.View style={[styles.container]} className={className}>
+      <Animated.View
+        style={[styles.container]}
+        className={className}
+        onLayout={(event) => {
+          containerHeight.value = event.nativeEvent.layout.height
+        }}>
         <Animated.View style={[styles.imageWrapper, animatedStyle]}>
           <Image
             source={imageSource}
