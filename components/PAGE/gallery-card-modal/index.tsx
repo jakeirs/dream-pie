@@ -28,7 +28,9 @@ export default function GalleryCardModal({
           aspectRatio: 1,
           zIndex: 10,
         }}>
-        {imageUri && <ZoomablePhoto imageSource={imageUri} contentFit="contain" />}
+        {imageUri && (
+          <ZoomablePhoto imageSource={imageUri} scaleFromCenter={false} contentFit="contain" />
+        )}
       </View>
 
       {/* Content flows naturally below image */}

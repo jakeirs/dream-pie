@@ -1,4 +1,4 @@
-import { StyleSheet } from 'react-native'
+import { View } from 'react-native'
 import { Image } from 'expo-image'
 import Animated, {
   useSharedValue,
@@ -8,6 +8,9 @@ import Animated, {
 } from 'react-native-reanimated'
 import { Gesture, GestureDetector } from 'react-native-gesture-handler'
 
+import { Icon, ICON_FAMILY_NAME } from '../icons'
+
+import { brandColors } from '@/shared/theme'
 import { ZoomablePhotoProps } from './types'
 
 const ZoomablePhoto = ({
@@ -64,41 +67,31 @@ const ZoomablePhoto = ({
   return (
     <GestureDetector gesture={pinchGesture}>
       <Animated.View
-        style={[styles.container]}
-        className={className}
+        className={`w-full h-full justify-center items-center relative ${className}`}
         onLayout={(event) => {
           containerHeight.value = event.nativeEvent.layout.height
         }}>
-        <Animated.View style={[styles.imageWrapper, animatedStyle]}>
+        <Animated.View style={animatedStyle} className="w-full h-full">
           <Image
             source={imageSource}
-            style={styles.image}
+            style={{ width: '100%', height: '100%' }}
             contentFit={contentFit}
             contentPosition={contentPosition}
             onLoad={onLoad}
             onError={onError}
           />
         </Animated.View>
+        <View className="absolute bottom-4 left-4 w-12 h-12 rounded-full bg-primary justify-center items-center pointer-events-none">
+          <Icon
+            family={ICON_FAMILY_NAME.MaterialIcons}
+            name="pinch"
+            size={24}
+            color={brandColors.primaryForeground}
+          />
+        </View>
       </Animated.View>
     </GestureDetector>
   )
 }
-
-const styles = StyleSheet.create({
-  container: {
-    width: '100%',
-    height: '100%',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  imageWrapper: {
-    width: '100%',
-    height: '100%',
-  },
-  image: {
-    width: '100%',
-    height: '100%',
-  },
-})
 
 export default ZoomablePhoto
