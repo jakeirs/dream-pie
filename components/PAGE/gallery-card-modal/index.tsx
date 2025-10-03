@@ -1,5 +1,5 @@
 import { View, Text } from 'react-native'
-import { Image } from 'expo-image'
+import { useImage } from 'expo-image'
 
 import type { Gesture } from 'react-native-gesture-handler/lib/typescript/handlers/gestures/gesture'
 
@@ -23,18 +23,22 @@ export default function GalleryCardModal({
   onClose,
   pinchGestureRef,
 }: GalleryCardModalProps) {
+  const image = useImage(imageUri)
+
+  const imageAspectRatio = image ? image.width / image.height : 1
+
   return (
     <View className="flex-1 py-4">
-      {/* Zoomable Image Container with aspectRatio */}
+      {/* Zoomable Image Container with dynamic aspectRatio */}
       <View
         className="w-full"
         style={{
-          aspectRatio: 1,
+          aspectRatio: imageAspectRatio,
           zIndex: 10,
         }}>
-        {imageUri && (
+        {image && (
           <ZoomablePhoto
-            imageSource={imageUri}
+            imageSource={image}
             scaleFromCenter={false}
             contentFit="contain"
             gestureRef={pinchGestureRef}

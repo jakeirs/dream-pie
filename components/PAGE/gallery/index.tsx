@@ -64,7 +64,7 @@ export default function GalleryPage() {
         isModal={true}
         scrollView={true}
         simultaneousHandlers={pinchGestureRef}
-        activeOffsetY={12}>
+        activeOffsetY={35}>
         {gallery.selectedItem && (
           <GalleryCardModal
             imageUri={gallery.getItemDisplayData(gallery.selectedItem).imageUri}
