@@ -56,7 +56,7 @@ const ZoomablePhoto = ({
         </Animated.View>
         <Animated.View
           style={iconAnimatedStyle}
-          className="pointer-events-none absolute bottom-4 left-4 h-12 w-12 items-center justify-center rounded-full bg-primary">
+          className="pointer-events-none absolute left-4 top-4 h-12 w-12 items-center justify-center rounded-full bg-primary">
           <Icon
             family={ICON_FAMILY_NAME.MaterialIcons}
             name="pinch"

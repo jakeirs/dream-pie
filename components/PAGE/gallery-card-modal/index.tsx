@@ -1,4 +1,4 @@
-import { View, StyleSheet } from 'react-native'
+import { View, Text, StyleSheet } from 'react-native'
 import { Image, useImage } from 'expo-image'
 import Animated, {
   useSharedValue,
@@ -37,7 +37,7 @@ export default function GalleryCardModal({
 
   const handleZoomStart = () => {
     'worklet'
-    thumbnailOpacity.value = withTiming(0, { duration: 200 })
+    thumbnailOpacity.value = withTiming(0, { duration: 50 })
   }
 
   const handleZoomEnd = () => {
@@ -87,23 +87,26 @@ export default function GalleryCardModal({
         </View>
       </View>
 
-      {/* Photo Thumbnails Container - Overlapping the zoomable photo */}
-      <Animated.View
-        className="w-full max-w-80 flex-row justify-center gap-3 px-4"
-        style={[
-          {
-            marginTop: -40,
-            zIndex: 20,
-          },
-          thumbnailAnimatedStyle,
-        ]}>
-        <View style={{ flex: 1, maxWidth: 180 }}>
-          <PhotoThumbnail imageUri={imageUri} />
-        </View>
-        <View style={{ flex: 1, maxWidth: 180 }}>
-          <PhotoThumbnail imageUri={imageUri} />
-        </View>
-      </Animated.View>
+      <View className="items-end">
+        {/* Photo Thumbnails Container - Overlapping the zoomable photo */}
+        <Animated.View
+          className="w-full max-w-80 flex-row justify-center gap-3  px-4"
+          style={[
+            {
+              marginTop: -40,
+              zIndex: 20,
+            },
+            thumbnailAnimatedStyle,
+          ]}>
+          <View style={{ flex: 1, maxWidth: 180 }}>
+            <PhotoThumbnail imageUri={imageUri} />
+          </View>
+          <View style={{ flex: 1, maxWidth: 180 }}>
+            <PhotoThumbnail imageUri={imageUri} />
+          </View>
+        </Animated.View>
+        <Text className="mb-4 mt-2 text-lg font-medium text-white">{title}</Text>
+      </View>
 
       {/* Content flows naturally below thumbnails */}
       <View className="flex-shrink"></View>
