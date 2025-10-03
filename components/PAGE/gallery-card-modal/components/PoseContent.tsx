@@ -1,12 +1,21 @@
 import { View, Text } from 'react-native'
 
 import { Pose } from '@/types'
+import Button from '@/components/ui/Button/Button'
+import { ICON_FAMILY_NAME } from '@/components/ui/icons'
+import { useRouter } from 'expo-router'
 
 interface PoseContentProps {
   item: Pose
 }
 
 export default function PoseContent({ item }: PoseContentProps) {
+  const router = useRouter()
+
+  const handleGoToCreate = () => {
+    router.push(`/(tabs)`)
+  }
+
   return (
     <>
       <View className="mt-4 px-6">
@@ -20,6 +29,25 @@ export default function PoseContent({ item }: PoseContentProps) {
               <Text className="text-sm text-textSecondary">#{tag}</Text>
             </View>
           ))}
+        </View>
+      </View>
+
+      <View
+        className="mt-12 w-full flex-1"
+        style={{ borderTopLeftRadius: 44, borderTopRightRadius: 44 }}>
+        <View className="flex-1 justify-center px-10">
+          <Button
+            title="Create"
+            variant="primary"
+            className="w-full"
+            size="lg"
+            icon={{
+              family: ICON_FAMILY_NAME.SimpleLineIcons,
+              name: 'magic-wand',
+              position: 'left',
+            }}
+            onPress={() => handleGoToCreate()}
+          />
         </View>
       </View>
     </>
