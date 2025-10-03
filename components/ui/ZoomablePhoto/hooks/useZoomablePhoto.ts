@@ -77,5 +77,6 @@ export const useZoomablePhoto = ({
     animatedStyle,
     iconAnimatedStyle,
     containerHeight,
+    scale,
   }
 }

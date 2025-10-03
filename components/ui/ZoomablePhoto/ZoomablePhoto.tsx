@@ -21,14 +21,21 @@ const ZoomablePhoto = ({
   onLoad,
   onError,
   className = '',
+  scaleValue,
 }: ZoomablePhotoProps) => {
-  const { pinchGesture, animatedStyle, iconAnimatedStyle, containerHeight } = useZoomablePhoto({
-    maxScale,
-    minScale,
-    scaleFromCenter,
-    onZoomStart,
-    onZoomEnd,
-  })
+  const { pinchGesture, animatedStyle, iconAnimatedStyle, containerHeight, scale } =
+    useZoomablePhoto({
+      maxScale,
+      minScale,
+      scaleFromCenter,
+      onZoomStart,
+      onZoomEnd,
+    })
+
+  // Pass scale to parent if scaleValue ref is provided
+  if (scaleValue) {
+    scaleValue.value = scale.value
+  }
 
   return (
     <GestureDetector gesture={pinchGesture}>
