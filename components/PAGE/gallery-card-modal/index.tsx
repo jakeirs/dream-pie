@@ -27,7 +27,7 @@ export default function GalleryCardModal({
         <View
           style={{
             ...StyleSheet.absoluteFillObject,
-            height: 500,
+            maxHeight: 500,
           }}>
           <Image
             source={imageUri}
