@@ -1,9 +1,6 @@
 import { View, Text } from 'react-native'
 import { useImage } from 'expo-image'
 
-import Button from '@/components/ui/Button/Button'
-
-import { brandColors } from '@/shared/theme'
 import ZoomablePhoto from '@/components/ui/ZoomablePhoto/ZoomablePhoto'
 
 interface GalleryCardModalProps {
@@ -25,52 +22,26 @@ export default function GalleryCardModal({
 
   return (
     <View className="flex-1 py-4">
-      {/* Zoomable Image Container with dynamic aspectRatio */}
+      {/* Zoomable Image Container with dynamic aspectRatio and max height */}
       <View
-        className="w-full"
+        className="w-full items-center"
         style={{
-          aspectRatio: imageAspectRatio,
           zIndex: 10,
         }}>
-        {image && (
-          <ZoomablePhoto imageSource={image} scaleFromCenter={false} contentFit="contain" />
-        )}
+        <View
+          style={{
+            aspectRatio: imageAspectRatio,
+            maxHeight: 500,
+            width: '100%',
+          }}>
+          {image && (
+            <ZoomablePhoto imageSource={image} scaleFromCenter={false} contentFit="contain" />
+          )}
+        </View>
       </View>
 
       {/* Content flows naturally below image */}
-      <View className="flex-shrink">
-        {/* Header */}
-        <Text className="mb-6 text-center text-2xl font-bold text-textLight">{title}</Text>
-
-        {/* Description */}
-        {description && (
-          <View className="mb-6 rounded-xl bg-cardSecondary p-4">
-            <Text className="text-textSecondary">{description}</Text>
-          </View>
-        )}
-
-        {/* Details */}
-        <View className="mb-6 rounded-xl bg-cardSecondary p-4">
-          <Text className="mb-2 text-lg font-bold text-textPrimary">Photo Details</Text>
-          <Text className="text-textSecondary">
-            • Created with Dream Pie AI{'\n'}• Professional quality enhancement{'\n'}• Background
-            replacement applied{'\n'}• Color grading optimized
-          </Text>
-        </View>
-
-        {/* Close Button */}
-        <Button
-          onPress={onClose}
-          className="w-full"
-          style={{
-            backgroundColor: brandColors.primary,
-            paddingVertical: 18,
-          }}>
-          <Text className="text-lg font-bold" style={{ color: brandColors.primaryForeground }}>
-            Close
-          </Text>
-        </Button>
-      </View>
+      <View className="flex-shrink"></View>
     </View>
   )
 }
