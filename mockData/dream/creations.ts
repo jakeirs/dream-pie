@@ -27,6 +27,7 @@ import { appAssets } from '@/shared/assets/assets'
 export const mockCreations: Creation[] = [
   {
     id: 'creation_1',
+    name: 'Professional Portrait Creation',
     usedPose: mockPoses[0], // Professional Portrait
     usedSelfie: mockSelfies[0], // Extended Arm Selfie
     imageUrl: appAssets.gallery.img,
@@ -34,6 +35,7 @@ export const mockCreations: Creation[] = [
   },
   {
     id: 'creation_2',
+    name: 'Elegant Dress Creation',
     usedPose: mockPoses[1], // Elegant Dress
     usedSelfie: mockSelfies[0], // Extended Arm Selfie
     imageUrl: appAssets.gallery.jsonInstruction,
@@ -41,6 +43,7 @@ export const mockCreations: Creation[] = [
   },
   {
     id: 'creation_3',
+    name: 'Professional Portrait Creation',
     usedPose: mockPoses[0], // Professional Portrait
     usedSelfie: mockSelfies[0], // Extended Arm Selfie
     imageUrl: appAssets.gallery.img,
@@ -48,6 +51,7 @@ export const mockCreations: Creation[] = [
   },
   {
     id: 'creation_4',
+    name: 'Elegant Dress Creation',
     usedPose: mockPoses[1], // Elegant Dress
     usedSelfie: mockSelfies[0], // Extended Arm Selfie
     imageUrl: appAssets.gallery.jsonInstruction,
@@ -55,6 +59,7 @@ export const mockCreations: Creation[] = [
   },
   {
     id: 'creation_5',
+    name: 'Professional Portrait Creation',
     usedPose: mockPoses[0], // Professional Portrait
     usedSelfie: mockSelfies[0], // Extended Arm Selfie
     imageUrl: appAssets.gallery.img,
@@ -62,6 +67,7 @@ export const mockCreations: Creation[] = [
   },
   {
     id: 'creation_6',
+    name: 'Elegant Dress Creation',
     usedPose: mockPoses[1], // Elegant Dress
     usedSelfie: mockSelfies[0], // Extended Arm Selfie
     imageUrl: appAssets.gallery.jsonInstruction,

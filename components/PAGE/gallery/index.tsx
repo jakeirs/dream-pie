@@ -55,12 +55,7 @@ export default function GalleryPage() {
       {/* Gallery Card Modal */}
       <BottomSheet ref={gallery.modalRef} isModal={true} scrollView={false} activeOffsetY={15}>
         {gallery.selectedItem && (
-          <GalleryCardModal
-            imageUri={gallery.getItemDisplayData(gallery.selectedItem).imageUri}
-            title={gallery.getItemDisplayData(gallery.selectedItem).title}
-            description={gallery.getItemDisplayData(gallery.selectedItem).description}
-            onClose={gallery.handleModalClose}
-          />
+          <GalleryCardModal item={gallery.selectedItem} onClose={gallery.handleModalClose} />
         )}
       </BottomSheet>
     </View>
