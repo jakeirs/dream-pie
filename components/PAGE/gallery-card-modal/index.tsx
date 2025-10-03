@@ -2,6 +2,7 @@ import { View, StyleSheet } from 'react-native'
 import { Image, useImage } from 'expo-image'
 
 import ZoomablePhoto from '@/components/ui/ZoomablePhoto/ZoomablePhoto'
+import PhotoThumbnail from '@/components/ui/PhotoThumbnail/PhotoThumbnail'
 
 interface GalleryCardModalProps {
   imageUri: string
@@ -57,7 +58,22 @@ export default function GalleryCardModal({
         </View>
       </View>
 
-      {/* Content flows naturally below image */}
+      {/* Photo Thumbnails Container - Overlapping the zoomable photo */}
+      <View
+        className="w-full max-w-80 flex-row justify-center gap-3 px-4"
+        style={{
+          marginTop: -40,
+          zIndex: 20,
+        }}>
+        <View style={{ flex: 1, maxWidth: 180 }}>
+          <PhotoThumbnail imageUri={imageUri} />
+        </View>
+        <View style={{ flex: 1, maxWidth: 180 }}>
+          <PhotoThumbnail imageUri={imageUri} />
+        </View>
+      </View>
+
+      {/* Content flows naturally below thumbnails */}
       <View className="flex-shrink"></View>
     </View>
   )
