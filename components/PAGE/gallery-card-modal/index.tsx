@@ -26,10 +26,7 @@ export default function GalleryCardModal({
       {image && (
         <View
           style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
+            ...StyleSheet.absoluteFillObject,
             height: 500,
           }}>
           <Image
