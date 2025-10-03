@@ -4,6 +4,7 @@ import { Pose } from '@/types'
 import Button from '@/components/ui/Button/Button'
 import { ICON_FAMILY_NAME } from '@/components/ui/icons'
 import { useRouter } from 'expo-router'
+import { usePoseStore } from '@/stores'
 
 interface PoseContentProps {
   item: Pose
@@ -12,10 +13,12 @@ interface PoseContentProps {
 
 export default function PoseContent({ item, onClose }: PoseContentProps) {
   const router = useRouter()
+  const setSelectedPose = usePoseStore((state) => state.setSelectedPose)
 
   const handleGoToCreate = () => {
-    router.push(`/(tabs)`)
+    setSelectedPose(item)
     onClose()
+    router.push(`/(tabs)`)
   }
 
   return (
@@ -39,7 +42,7 @@ export default function PoseContent({ item, onClose }: PoseContentProps) {
         style={{ borderTopLeftRadius: 44, borderTopRightRadius: 44 }}>
         <View className="flex-1 justify-center px-10">
           <Button
-            title="Create"
+            title="Use this Pose"
             variant="primary"
             className="w-full"
             size="lg"
