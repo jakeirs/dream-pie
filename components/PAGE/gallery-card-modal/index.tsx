@@ -1,5 +1,5 @@
-import { View, Text } from 'react-native'
-import { useImage } from 'expo-image'
+import { View, StyleSheet } from 'react-native'
+import { Image, useImage } from 'expo-image'
 
 import ZoomablePhoto from '@/components/ui/ZoomablePhoto/ZoomablePhoto'
 
@@ -21,7 +21,26 @@ export default function GalleryCardModal({
   const imageAspectRatio = image ? image.width / image.height : 1
 
   return (
-    <View className="flex-1 py-4">
+    <View className="flex-1 ">
+      {/* Blurred Background Layer - Full Width Behind Everything */}
+      {image && (
+        <View
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            height: 500,
+          }}>
+          <Image
+            source={imageUri}
+            style={{ width: '100%', height: '100%' }}
+            contentFit="cover"
+            blurRadius={100}
+          />
+        </View>
+      )}
+
       {/* Zoomable Image Container with dynamic aspectRatio and max height */}
       <View
         className="w-full items-center"
@@ -34,6 +53,7 @@ export default function GalleryCardModal({
             maxHeight: 500,
             width: '100%',
           }}>
+          {/* Zoomable Photo on Top */}
           {image && (
             <ZoomablePhoto imageSource={image} scaleFromCenter={false} contentFit="contain" />
           )}
