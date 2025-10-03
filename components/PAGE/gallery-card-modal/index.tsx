@@ -1,16 +1,12 @@
-import { View, Text, StyleSheet, Alert } from 'react-native'
-import { Image, useImage } from 'expo-image'
-import * as Sharing from 'expo-sharing'
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withTiming,
-  withDelay,
-} from 'react-native-reanimated'
+import { View, Text, StyleSheet } from 'react-native'
+import { Image } from 'expo-image'
+import Animated from 'react-native-reanimated'
 
 import ZoomablePhoto from '@/components/ui/ZoomablePhoto/ZoomablePhoto'
 import PhotoThumbnail from '@/components/ui/PhotoThumbnail/PhotoThumbnail'
 import Button from '@/components/ui/Button/Button'
+
+import { useGalleryImage, useImageShare } from './hooks'
 
 import { ICON_FAMILY_NAME } from '@/components/ui/icons/constants'
 
@@ -27,45 +23,9 @@ export default function GalleryCardModal({
   description,
   onClose,
 }: GalleryCardModalProps) {
-  const image = useImage(imageUri)
-  const thumbnailOpacity = useSharedValue(1)
-
-  const imageAspectRatio = image ? image.width / image.height : 1
-
-  // Animate thumbnail opacity based on zoom events
-  const thumbnailAnimatedStyle = useAnimatedStyle(() => {
-    return {
-      opacity: thumbnailOpacity.value,
-    }
-  })
-
-  const handleZoomStart = () => {
-    'worklet'
-    thumbnailOpacity.value = withTiming(0, { duration: 50 })
-  }
-
-  const handleZoomEnd = () => {
-    'worklet'
-    thumbnailOpacity.value = withDelay(200, withTiming(1, { duration: 400 }))
-  }
-
-  const handleShare = async () => {
-    try {
-      const isAvailable = await Sharing.isAvailableAsync()
-      if (!isAvailable) {
-        Alert.alert('Error', 'Sharing is not available on this device')
-        return
-      }
-
-      await Sharing.shareAsync(imageUri, {
-        dialogTitle: `Share ${title}`,
-        mimeType: 'image/jpeg',
-      })
-    } catch (error) {
-      Alert.alert('Error', 'Failed to share image')
-      console.error('Share error:', error)
-    }
-  }
+  const { image, imageAspectRatio, thumbnailAnimatedStyle, handleZoomStart, handleZoomEnd } =
+    useGalleryImage(imageUri)
+  const { handleShare } = useImageShare()
 
   return (
     <View className="min-h-full pb-6">
@@ -146,7 +106,7 @@ export default function GalleryCardModal({
                 name: 'send',
                 position: 'left',
               }}
-              onPress={handleShare}
+              onPress={() => handleShare(imageUri, title)}
             />
           </View>
         </View>
