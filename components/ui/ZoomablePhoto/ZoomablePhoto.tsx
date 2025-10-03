@@ -40,7 +40,7 @@ const ZoomablePhoto = ({
         <Animated.View style={animatedStyle} className="h-full w-full">
           <Image
             source={imageSource}
-            style={{ width: '100%', height: '100%' }}
+            style={{ width: '100%', height: '100%', borderRadius: 52, borderWidth: 1 }}
             contentFit={contentFit}
             contentPosition={contentPosition}
             onLoad={onLoad}
