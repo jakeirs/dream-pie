@@ -1,4 +1,4 @@
-import { View, StyleSheet } from 'react-native'
+import { View, StyleSheet, BackHandler } from 'react-native'
 import { Image } from 'expo-image'
 
 import ZoomablePhoto from '@/components/ui/ZoomablePhoto/ZoomablePhoto'
@@ -10,6 +10,7 @@ import { useGalleryImage, useImageShare } from './hooks'
 import { isCreation, isPose, isSelfie } from './types'
 
 import { GalleryContent } from '@/types'
+import { useEffect } from 'react'
 
 interface GalleryCardModalProps {
   item: GalleryContent
@@ -23,6 +24,16 @@ export default function GalleryCardModal({ item, onClose }: GalleryCardModalProp
   const { image, imageAspectRatio, thumbnailAnimatedStyle, handleZoomStart, handleZoomEnd } =
     useGalleryImage(imageUri)
   const { handleShare } = useImageShare()
+
+  useEffect(() => {
+    // Handle hardware back button (Android)
+    const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
+      onClose()
+      return true // Let the system handle the back press
+    })
+
+    return () => backHandler.remove()
+  }, [])
 
   return (
     <View className="min-h-full pb-6">
@@ -75,7 +86,7 @@ export default function GalleryCardModal({ item, onClose }: GalleryCardModalProp
             onShare={handleShare}
           />
         )}
-        {isPose(item) && <PoseContent item={item} />}
+        {isPose(item) && <PoseContent item={item} onClose={onClose} />}
         {isSelfie(item) && <SelfieContent item={item} />}
       </View>
     </View>

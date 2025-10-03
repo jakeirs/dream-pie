@@ -7,13 +7,15 @@ import { useRouter } from 'expo-router'
 
 interface PoseContentProps {
   item: Pose
+  onClose: () => void
 }
 
-export default function PoseContent({ item }: PoseContentProps) {
+export default function PoseContent({ item, onClose }: PoseContentProps) {
   const router = useRouter()
 
   const handleGoToCreate = () => {
     router.push(`/(tabs)`)
+    onClose()
   }
 
   return (
