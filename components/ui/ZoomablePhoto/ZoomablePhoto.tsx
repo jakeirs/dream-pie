@@ -1,6 +1,6 @@
 import { Image } from 'expo-image'
 import Animated from 'react-native-reanimated'
-import { GestureDetector, NativeViewGestureHandler } from 'react-native-gesture-handler'
+import { GestureDetector } from 'react-native-gesture-handler'
 
 import { Icon, ICON_FAMILY_NAME } from '../icons'
 
@@ -21,7 +21,6 @@ const ZoomablePhoto = ({
   onLoad,
   onError,
   className = '',
-  gestureRef,
 }: ZoomablePhotoProps) => {
   const { pinchGesture, animatedStyle, iconAnimatedStyle, containerHeight } = useZoomablePhoto({
     maxScale,
@@ -29,7 +28,6 @@ const ZoomablePhoto = ({
     scaleFromCenter,
     onZoomStart,
     onZoomEnd,
-    gestureRef,
   })
 
   return (

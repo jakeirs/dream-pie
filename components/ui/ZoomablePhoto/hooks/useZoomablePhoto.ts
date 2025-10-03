@@ -1,7 +1,11 @@
-import { useSharedValue, useAnimatedStyle, withTiming, Easing } from 'react-native-reanimated'
+import {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+  Easing,
+  withDelay,
+} from 'react-native-reanimated'
 import { Gesture } from 'react-native-gesture-handler'
-
-import type { Gesture as GestureType } from 'react-native-gesture-handler/lib/typescript/handlers/gestures/gesture'
 
 interface UseZoomablePhotoParams {
   maxScale?: number
@@ -9,7 +13,6 @@ interface UseZoomablePhotoParams {
   scaleFromCenter?: boolean
   onZoomStart?: () => void
   onZoomEnd?: () => void
-  gestureRef?: React.MutableRefObject<GestureType | undefined>
 }
 
 export const useZoomablePhoto = ({
@@ -18,7 +21,6 @@ export const useZoomablePhoto = ({
   scaleFromCenter = true,
   onZoomStart,
   onZoomEnd,
-  gestureRef,
 }: UseZoomablePhotoParams) => {
   const scale = useSharedValue(1)
   const savedScale = useSharedValue(1)
@@ -40,16 +42,14 @@ export const useZoomablePhoto = ({
       scale.value = withTiming(1, { duration: 200, easing: Easing.out(Easing.ease) })
       translateX.value = withTiming(0, { duration: 200, easing: Easing.out(Easing.ease) })
       translateY.value = withTiming(0, { duration: 200, easing: Easing.out(Easing.ease) })
-      iconOpacity.value = withTiming(1, { duration: 200, easing: Easing.out(Easing.ease) })
+      iconOpacity.value = withDelay(
+        400,
+        withTiming(1, { duration: 1000, easing: Easing.out(Easing.ease) })
+      )
       savedScale.value = 1
 
       onZoomEnd?.()
     })
-
-  // Assign gesture to ref if provided (for external gesture coordination)
-  if (gestureRef) {
-    gestureRef.current = pinchGesture
-  }
 
   const animatedStyle = useAnimatedStyle(() => {
     const scaleOffset =

@@ -1,8 +1,5 @@
-import { useRef } from 'react'
 import { View, ScrollView } from 'react-native'
 import { router } from 'expo-router'
-
-import type { GestureType } from 'react-native-gesture-handler/lib/typescript/handlers/gestures/gesture'
 
 import BottomSheet from '@/components/ui/BottomSheet/BottomSheet'
 import PageHeader from '@/components/ui/PageHeader/PageHeader'
@@ -19,9 +16,6 @@ export default function GalleryPage() {
   // Custom hooks for clean separation of concerns
   const gallery = useGallery()
   const filters = useGalleryFilters()
-
-  // Ref for coordinating pinch gesture with BottomSheet
-  const pinchGestureRef = useRef<GestureType | undefined>(undefined)
 
   const handleSettingsPress = () => {
     router.push('/settings')
@@ -59,19 +53,13 @@ export default function GalleryPage() {
       </ScrollView>
 
       {/* Gallery Card Modal */}
-      <BottomSheet
-        ref={gallery.modalRef}
-        isModal={true}
-        scrollView={true}
-        simultaneousHandlers={pinchGestureRef}
-        activeOffsetY={35}>
+      <BottomSheet ref={gallery.modalRef} isModal={true} scrollView={false} activeOffsetY={15}>
         {gallery.selectedItem && (
           <GalleryCardModal
             imageUri={gallery.getItemDisplayData(gallery.selectedItem).imageUri}
             title={gallery.getItemDisplayData(gallery.selectedItem).title}
             description={gallery.getItemDisplayData(gallery.selectedItem).description}
             onClose={gallery.handleModalClose}
-            pinchGestureRef={pinchGestureRef}
           />
         )}
       </BottomSheet>
