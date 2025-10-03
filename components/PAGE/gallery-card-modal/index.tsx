@@ -1,5 +1,6 @@
-import { View, Text, StyleSheet } from 'react-native'
+import { View, Text, StyleSheet, Alert } from 'react-native'
 import { Image, useImage } from 'expo-image'
+import * as Sharing from 'expo-sharing'
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -9,6 +10,9 @@ import Animated, {
 
 import ZoomablePhoto from '@/components/ui/ZoomablePhoto/ZoomablePhoto'
 import PhotoThumbnail from '@/components/ui/PhotoThumbnail/PhotoThumbnail'
+import Button from '@/components/ui/Button/Button'
+
+import { ICON_FAMILY_NAME } from '@/components/ui/icons/constants'
 
 interface GalleryCardModalProps {
   imageUri: string
@@ -43,6 +47,24 @@ export default function GalleryCardModal({
   const handleZoomEnd = () => {
     'worklet'
     thumbnailOpacity.value = withDelay(200, withTiming(1, { duration: 400 }))
+  }
+
+  const handleShare = async () => {
+    try {
+      const isAvailable = await Sharing.isAvailableAsync()
+      if (!isAvailable) {
+        Alert.alert('Error', 'Sharing is not available on this device')
+        return
+      }
+
+      await Sharing.shareAsync(imageUri, {
+        dialogTitle: `Share ${title}`,
+        mimeType: 'image/jpeg',
+      })
+    } catch (error) {
+      Alert.alert('Error', 'Failed to share image')
+      console.error('Share error:', error)
+    }
   }
 
   return (
@@ -111,8 +133,19 @@ export default function GalleryCardModal({
         </View>
 
         {/* Content flows naturally below thumbnails */}
-        <View className="absolute bottom-10 w-full bg-primary">
-          <Text>SIEMA</Text>
+        <View className="absolute bottom-10 w-full px-4">
+          <Button
+            title="Share"
+            variant="primary"
+            isHollow={true}
+            size="lg"
+            icon={{
+              family: ICON_FAMILY_NAME.FontAwesome,
+              name: 'send',
+              position: 'left',
+            }}
+            onPress={handleShare}
+          />
         </View>
       </View>
     </View>

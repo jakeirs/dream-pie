@@ -1,5 +1,5 @@
 import React from 'react'
-import { TouchableOpacity, Text, ViewStyle } from 'react-native'
+import { TouchableOpacity, Text, ViewStyle, View } from 'react-native'
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -7,6 +7,10 @@ import Animated, {
   withSequence,
   withTiming,
 } from 'react-native-reanimated'
+
+import { Icon } from '@/components/ui/icons/Icon'
+import { ICON_FAMILY_NAME } from '@/components/ui/icons/constants'
+import { brandColors } from '@/shared/theme/colors'
 
 const AnimatedTouchableOpacity = Animated.createAnimatedComponent(TouchableOpacity)
 
@@ -19,6 +23,13 @@ interface ButtonProps {
   disabled?: boolean
   className?: string
   style?: ViewStyle
+  isHollow?: boolean
+  icon?: {
+    family: ICON_FAMILY_NAME
+    name: string
+    size?: number
+    position?: 'left' | 'right'
+  }
 }
 
 const variants = {
@@ -28,6 +39,15 @@ const variants = {
   warning: 'bg-warning text-warningForeground',
   error: 'bg-error text-errorForeground',
   accent: 'bg-accent text-accentForeground',
+}
+
+const hollowVariants = {
+  primary: 'bg-transparent border-2 border-primary text-primary',
+  secondary: 'bg-transparent border-2 border-cardSecondary text-textPrimary',
+  success: 'bg-transparent border-2 border-success text-success',
+  warning: 'bg-transparent border-2 border-warning text-warning',
+  error: 'bg-transparent border-2 border-error text-error',
+  accent: 'bg-transparent border-2 border-accent text-accent',
 }
 
 const sizes = {
@@ -53,6 +73,8 @@ const Button = ({
   disabled = false,
   className = '',
   style,
+  isHollow = false,
+  icon,
 }: ButtonProps) => {
   const scale = useSharedValue(1)
 
@@ -71,9 +93,77 @@ const Button = ({
     transform: [{ scale: scale.value }],
   }))
 
-  const baseClasses = `rounded-lg ${variants[variant]} ${sizes[size]} ${
+  const variantClasses = isHollow ? hollowVariants[variant] : variants[variant]
+  const baseClasses = `rounded-full ${variantClasses} ${sizes[size]} ${
     disabled ? 'opacity-50' : ''
   } ${className}`
+
+  const iconSize = icon?.size || (size === 'sm' || size === 'small' ? 16 : size === 'lg' ? 24 : 20)
+
+  // Get color based on variant and hollow state
+  const getVariantColor = () => {
+    if (isHollow) {
+      switch (variant) {
+        case 'primary':
+          return brandColors.primary
+        case 'secondary':
+          return brandColors.textPrimary
+        case 'success':
+          return brandColors.success
+        case 'warning':
+          return brandColors.warning
+        case 'error':
+          return brandColors.error
+        case 'accent':
+          return brandColors.accent
+        default:
+          return brandColors.primary
+      }
+    }
+    // Solid button foreground colors
+    switch (variant) {
+      case 'primary':
+        return brandColors.primaryForeground
+      case 'secondary':
+        return brandColors.textPrimary
+      case 'success':
+        return brandColors.successForeground
+      case 'warning':
+        return brandColors.warningForeground
+      case 'error':
+        return brandColors.errorForeground
+      case 'accent':
+        return brandColors.accentForeground
+      default:
+        return brandColors.primaryForeground
+    }
+  }
+
+  const iconColor = getVariantColor()
+
+  const renderContent = () => {
+    if (children) return children
+
+    const textContent = (
+      <Text className={`text-center font-semibold ${textSizes[size]}`} style={{ color: iconColor }}>
+        {title}
+      </Text>
+    )
+
+    if (!icon) return textContent
+
+    return (
+      <View className="flex-row items-center justify-center gap-2">
+        {icon.position !== 'right' && (
+          <Icon family={icon.family} name={icon.name} size={iconSize} color={iconColor} />
+        )}
+        {title && textContent}
+        {icon.position === 'right' && (
+          <Icon family={icon.family} name={icon.name} size={iconSize} color={iconColor} />
+        )}
+      </View>
+    )
+  }
 
   return (
     <AnimatedTouchableOpacity
@@ -84,11 +174,7 @@ const Button = ({
       onPressOut={handlePressOut}
       disabled={disabled}
       activeOpacity={0.8}>
-      {children ? (
-        children
-      ) : (
-        <Text className={`text-center font-semibold ${textSizes[size]}`}>{title}</Text>
-      )}
+      {renderContent()}
     </AnimatedTouchableOpacity>
   )
 }

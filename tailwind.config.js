@@ -13,7 +13,7 @@ module.exports = {
 
         // Primary Brand Colors
         primary: '#FDE047', // Yellow CTA buttons (like "Share!")
-        primaryForeground: '#000000', // Text on yellow buttons
+        primaryForeground: '#181818', // Text on yellow buttons
 
         // Text Colors
         textPrimary: '#1F1F1F', // Main headings (dark gray)
