@@ -131,21 +131,24 @@ export default function GalleryCardModal({
             </View>
           </Animated.View>
         </View>
-
         {/* Content flows naturally below thumbnails */}
-        <View className="absolute bottom-10 w-full px-4">
-          <Button
-            title="Share"
-            variant="primary"
-            isHollow={true}
-            size="lg"
-            icon={{
-              family: ICON_FAMILY_NAME.FontAwesome,
-              name: 'send',
-              position: 'left',
-            }}
-            onPress={handleShare}
-          />
+        <View
+          className="mt-16 w-full flex-1  "
+          style={{ borderTopLeftRadius: 44, borderTopRightRadius: 44 }}>
+          <View className="flex-1 justify-center px-10 ">
+            <Button
+              title="Share"
+              variant="primary"
+              className="w-full"
+              size="lg"
+              icon={{
+                family: ICON_FAMILY_NAME.FontAwesome,
+                name: 'send',
+                position: 'left',
+              }}
+              onPress={handleShare}
+            />
+          </View>
         </View>
       </View>
     </View>
