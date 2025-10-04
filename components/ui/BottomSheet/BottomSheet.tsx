@@ -64,8 +64,8 @@ const BottomSheet = forwardRef<BottomSheetLib, CombinedBottomSheetProps>(
         snapPoints: ['100%'],
         index: 0,
         enableDynamicSizing: false,
-        handleIndicatorStyle: { backgroundColor: brandColors.textLight },
-        backgroundStyle: { backgroundColor: brandColors.primaryForeground },
+        handleIndicatorStyle: { backgroundColor: brandColors.textPrimary },
+        backgroundStyle: { backgroundColor: brandColors.background },
         backdropComponent: renderBackdrop,
         topInset: top,
       }

@@ -12,7 +12,7 @@ export default function PhotoThumbnail({ imageUri }: PhotoThumbnailProps) {
     <View
       style={{
         borderWidth: 3,
-        borderColor: brandColors.card,
+        borderColor: brandColors.primary,
         borderRadius: 12,
         overflow: 'hidden',
         height: 160,

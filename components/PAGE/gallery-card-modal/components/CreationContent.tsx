@@ -27,7 +27,7 @@ export default function CreationContent({
     <>
       {/* Photo Thumbnails Container - Overlapping the zoomable photo */}
       <View className="flex-row items-end px-4" style={{ marginTop: -40 }}>
-        <Text className="mt-2 text-lg font-medium leading-tight text-textLight">
+        <Text className="mt-2 text-lg font-medium leading-tight text-textPrimary">
           Used{'\n'}photos:
         </Text>
         <Animated.View
