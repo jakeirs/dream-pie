@@ -65,7 +65,7 @@ export default function CreationContent({
       {/* Date Display */}
       <View className="mt-4  px-10">
         <Text className="text-right text-sm text-textSecondary">
-          Created:<Text className="font-semibold text-textPrimary"> {formattedDate}</Text>
+          Created on:<Text className="font-semibold text-textPrimary"> {formattedDate}</Text>
         </Text>
       </View>
 
