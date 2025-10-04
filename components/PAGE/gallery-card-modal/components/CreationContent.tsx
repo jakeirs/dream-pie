@@ -71,12 +71,12 @@ export default function CreationContent({
 
       {/* Content flows naturally below thumbnails */}
       <View
-        className="mt-12 w-full flex-1"
+        className="mt-0 w-full flex-1"
         style={{ borderTopLeftRadius: 44, borderTopRightRadius: 44 }}>
         <View className="flex-1 justify-center px-10">
           <Button
-            title="Share"
-            variant="secondary"
+            title="Recreate"
+            variant="primaryForeground"
             className="mb-8 w-full"
             size="lg"
             icon={{
@@ -84,7 +84,7 @@ export default function CreationContent({
               name: 'magic-wand',
               position: 'left',
             }}
-            onPress={() => onShare(item.imageUrl, title)}
+            onPress={handleGoToCreate}
           />
           <Button
             title="Share"

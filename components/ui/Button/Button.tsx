@@ -18,7 +18,7 @@ interface ButtonProps {
   title?: string
   children?: React.ReactNode
   onPress: () => void
-  variant?: 'primary' | 'secondary' | 'success' | 'warning' | 'error' | 'accent'
+  variant?: 'primary' | 'secondary' | 'success' | 'warning' | 'error' | 'accent' | 'primaryForeground'
   size?: 'sm' | 'md' | 'lg' | 'small'
   disabled?: boolean
   className?: string
@@ -39,6 +39,7 @@ const variants = {
   warning: 'bg-warning text-warningForeground',
   error: 'bg-error text-errorForeground',
   accent: 'bg-accent text-accentForeground',
+  primaryForeground: 'bg-primaryForeground text-primary',
 }
 
 const hollowVariants = {
@@ -48,6 +49,7 @@ const hollowVariants = {
   warning: 'bg-transparent border-4 border-warning text-warning',
   error: 'bg-transparent border-4 border-error text-error',
   accent: 'bg-transparent border-4 border-accent text-accent',
+  primaryForeground: 'bg-transparent border-4 border-primaryForeground text-primaryForeground',
 }
 
 const sizes = {
@@ -116,6 +118,8 @@ const Button = ({
           return brandColors.error
         case 'accent':
           return brandColors.accent
+        case 'primaryForeground':
+          return brandColors.primaryForeground
         default:
           return brandColors.primary
       }
@@ -134,6 +138,8 @@ const Button = ({
         return brandColors.errorForeground
       case 'accent':
         return brandColors.accentForeground
+      case 'primaryForeground':
+        return brandColors.primary
       default:
         return brandColors.primaryForeground
     }

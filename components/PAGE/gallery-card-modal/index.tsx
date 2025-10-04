@@ -49,7 +49,7 @@ export default function GalleryCardModal({ item, onClose }: GalleryCardModalProp
             <View
               style={{
                 ...StyleSheet.absoluteFillObject,
-                maxHeight: 500,
+                maxHeight: 450,
               }}>
               <Image
                 source={imageUri}
@@ -62,7 +62,7 @@ export default function GalleryCardModal({ item, onClose }: GalleryCardModalProp
           <View
             style={{
               aspectRatio: imageAspectRatio,
-              maxHeight: 500,
+              maxHeight: 450,
               width: '100%',
             }}>
             {/* Zoomable Photo on Top */}
