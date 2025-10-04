@@ -20,7 +20,7 @@ export default function CreationContent({
   onShare,
 }: CreationContentProps) {
   // Format date: "1 May 2025"
-  const formattedDate = format(new Date(item.generatedAt), 'd MMMM yyyy')
+  const formattedDate = format(new Date(item.generatedAt), 'd MMM yyyy')
   const title = `${item.usedPose.name} Creation`
 
   return (
@@ -49,7 +49,9 @@ export default function CreationContent({
 
       {/* Date Display */}
       <View className="mt-4 px-4">
-        <Text className="text-sm text-textSecondary">Created on {formattedDate}</Text>
+        <Text className="text-sm text-textSecondary">
+          Created:<Text className="font-semibold text-textPrimary"> {formattedDate}</Text>
+        </Text>
       </View>
 
       {/* Content flows naturally below thumbnails */}
