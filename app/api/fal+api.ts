@@ -1,4 +1,4 @@
-import { fal,  } from '@fal-ai/client'
+import { fal } from '@fal-ai/client'
 
 import { FalRequest, FalResponse, FalRawResponse, ValidationError } from '@/types'
 
