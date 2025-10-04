@@ -87,7 +87,7 @@ export default function GalleryCardModal({ item, onClose }: GalleryCardModalProp
           />
         )}
         {isPose(item) && <PoseContent item={item} onClose={onClose} />}
-        {isSelfie(item) && <SelfieContent item={item} />}
+        {isSelfie(item) && <SelfieContent item={item} onClose={onClose} />}
       </View>
     </View>
   )
