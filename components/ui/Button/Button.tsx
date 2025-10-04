@@ -42,12 +42,12 @@ const variants = {
 }
 
 const hollowVariants = {
-  primary: 'bg-transparent border-2 border-primary text-primary',
-  secondary: 'bg-transparent border-2 border-cardSecondary text-textPrimary',
-  success: 'bg-transparent border-2 border-success text-success',
-  warning: 'bg-transparent border-2 border-warning text-warning',
-  error: 'bg-transparent border-2 border-error text-error',
-  accent: 'bg-transparent border-2 border-accent text-accent',
+  primary: 'bg-transparent border-4 border-primary text-primary',
+  secondary: 'bg-transparent border-4 border-cardSecondary text-textPrimary',
+  success: 'bg-transparent border-4 border-success text-success',
+  warning: 'bg-transparent border-4 border-warning text-warning',
+  error: 'bg-transparent border-4 border-error text-error',
+  accent: 'bg-transparent border-4 border-accent text-accent',
 }
 
 const sizes = {
@@ -94,9 +94,9 @@ const Button = ({
   }))
 
   const variantClasses = isHollow ? hollowVariants[variant] : variants[variant]
-  const baseClasses = `shadow-md shadow-primaryForeground rounded-full ${variantClasses} ${sizes[size]} ${
+  const baseClasses = `rounded-full ${variantClasses} ${sizes[size]} ${
     disabled ? 'opacity-50' : ''
-  } ${className}`
+  } ${className} ${!isHollow ? 'shadow-md shadow-primaryForeground' : ''}`
 
   const iconSize = icon?.size || (size === 'sm' || size === 'small' ? 16 : size === 'lg' ? 24 : 20)
 
@@ -105,7 +105,7 @@ const Button = ({
     if (isHollow) {
       switch (variant) {
         case 'primary':
-          return brandColors.primary
+          return brandColors.textPrimary
         case 'secondary':
           return brandColors.textPrimary
         case 'success':

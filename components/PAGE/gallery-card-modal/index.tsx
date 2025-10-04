@@ -84,6 +84,7 @@ export default function GalleryCardModal({ item, onClose }: GalleryCardModalProp
             item={item}
             thumbnailAnimatedStyle={thumbnailAnimatedStyle}
             onShare={handleShare}
+            onClose={onClose}
           />
         )}
         {isPose(item) && <PoseContent item={item} onClose={onClose} />}

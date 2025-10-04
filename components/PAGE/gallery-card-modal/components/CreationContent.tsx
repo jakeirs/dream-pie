@@ -7,18 +7,33 @@ import Button from '@/components/ui/Button/Button'
 
 import { Creation } from '@/types'
 import { ICON_FAMILY_NAME } from '@/components/ui/icons/constants'
+import { useRouter } from 'expo-router'
+import { usePoseStore, useSelfieChooserStore } from '@/stores'
 
 interface CreationContentProps {
   item: Creation
   thumbnailAnimatedStyle: any
   onShare: (imageUri: string, title: string) => void
+  onClose: () => void
 }
 
 export default function CreationContent({
   item,
   thumbnailAnimatedStyle,
   onShare,
+  onClose,
 }: CreationContentProps) {
+  const router = useRouter()
+  const setSelectedPose = usePoseStore((state) => state.setSelectedPose)
+  const setSelectedSelfie = useSelfieChooserStore((state) => state.setSelectedSelfie)
+
+  const handleGoToCreate = () => {
+    setSelectedPose(item.usedPose)
+    setSelectedSelfie(item.usedSelfie)
+    onClose()
+    router.push(`/(tabs)`)
+  }
+
   // Format date: "1 May 2025"
   const formattedDate = format(new Date(item.generatedAt), 'd MMM yyyy')
   const title = `${item.usedPose.name} Creation`
@@ -48,8 +63,8 @@ export default function CreationContent({
       </View>
 
       {/* Date Display */}
-      <View className="mt-4 px-4">
-        <Text className="text-sm text-textSecondary">
+      <View className="mt-4  px-10">
+        <Text className="text-right text-sm text-textSecondary">
           Created:<Text className="font-semibold text-textPrimary"> {formattedDate}</Text>
         </Text>
       </View>
@@ -59,6 +74,18 @@ export default function CreationContent({
         className="mt-12 w-full flex-1"
         style={{ borderTopLeftRadius: 44, borderTopRightRadius: 44 }}>
         <View className="flex-1 justify-center px-10">
+          <Button
+            title="Share"
+            variant="secondary"
+            className="mb-8 w-full"
+            size="lg"
+            icon={{
+              family: ICON_FAMILY_NAME.SimpleLineIcons,
+              name: 'magic-wand',
+              position: 'left',
+            }}
+            onPress={() => onShare(item.imageUrl, title)}
+          />
           <Button
             title="Share"
             variant="primary"
