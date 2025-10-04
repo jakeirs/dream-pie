@@ -45,7 +45,6 @@ export default function SelfieContent({ item, onClose }: SelfieContentProps) {
           <Button
             title="Use this Selfie"
             variant="primary"
-            className="w-full"
             size="lg"
             icon={{
               family: ICON_FAMILY_NAME.SimpleLineIcons,

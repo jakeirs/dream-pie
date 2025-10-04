@@ -94,7 +94,7 @@ const Button = ({
   }))
 
   const variantClasses = isHollow ? hollowVariants[variant] : variants[variant]
-  const baseClasses = `rounded-full ${variantClasses} ${sizes[size]} ${
+  const baseClasses = `shadow-md shadow-primaryForeground rounded-full ${variantClasses} ${sizes[size]} ${
     disabled ? 'opacity-50' : ''
   } ${className}`
 
