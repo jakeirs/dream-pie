@@ -1,6 +1,7 @@
 import { analyzeMultipleImages } from '../providers/gemini'
 import { PersonComparisonResult } from '../types'
 import { COMPARE_PERSON_PROMPT } from '@/shared/prompts/validation/comparePerson'
+import { ImageMimeType } from '@/shared/types/image'
 
 /**
  * Compare if same person appears in two images
@@ -10,22 +11,22 @@ import { COMPARE_PERSON_PROMPT } from '@/shared/prompts/validation/comparePerson
  *
  * @param generatedPhotoBase64 - Base64 encoded generated photo
  * @param selfieBase64 - Base64 encoded selfie photo
- * @param mimeType - Image MIME type (e.g., 'image/jpeg')
+ * @param mediaType - Image MIME type (e.g., 'image/jpeg')
  * @param abortSignal - Optional abort signal for cancellation
  * @returns PersonComparisonResult with isSamePerson boolean and confidence score
  */
 export async function comparePerson(
   generatedPhotoBase64: string,
   selfieBase64: string,
-  mimeType: string = 'image/jpeg',
+  mediaType: ImageMimeType = 'image/jpeg',
   abortSignal?: AbortSignal
 ): Promise<PersonComparisonResult> {
   try {
     const result = await analyzeMultipleImages({
       prompt: COMPARE_PERSON_PROMPT,
       images: [
-        { base64: generatedPhotoBase64, mimeType },
-        { base64: selfieBase64, mimeType },
+        { base64: generatedPhotoBase64, mediaType },
+        { base64: selfieBase64, mediaType },
       ],
       abortSignal,
     })

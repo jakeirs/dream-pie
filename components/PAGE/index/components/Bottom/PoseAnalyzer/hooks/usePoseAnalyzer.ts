@@ -5,6 +5,7 @@ import { File } from 'expo-file-system'
 import { usePoseStore } from '@/stores'
 import { GeminiImageAnalysisRequest, GeminiResponse } from '@/types'
 import { PoseAnalyzerState } from '../types'
+import { getMimeTypeFromExtension } from '@/shared/types/image'
 
 export const usePoseAnalyzer = (): PoseAnalyzerState & { analyzePose: () => Promise<void> } => {
   const [isAnalyzing, setIsAnalyzing] = useState(false)
@@ -30,16 +31,8 @@ export const usePoseAnalyzer = (): PoseAnalyzerState & { analyzePose: () => Prom
       const imageBase64 = await file.base64()
 
       // Determine MIME type from file extension
-      const extension = selectedPose.imageUrl.split('.').pop()?.toLowerCase()
-      let mimeType = 'image/jpeg' // default
-
-      if (extension === 'png') {
-        mimeType = 'image/png'
-      } else if (extension === 'webp') {
-        mimeType = 'image/webp'
-      } else if (extension === 'jpg' || extension === 'jpeg') {
-        mimeType = 'image/jpeg'
-      }
+      const extension = selectedPose.imageUrl.split('.').pop()?.toLowerCase() || 'jpg'
+      const mediaType = getMimeTypeFromExtension(extension)
 
       const analysisPrompt = `Analyze this pose photo and provide detailed feedback about:
             1. Body posture and positioning
@@ -54,7 +47,7 @@ export const usePoseAnalyzer = (): PoseAnalyzerState & { analyzePose: () => Prom
       const requestData: GeminiImageAnalysisRequest = {
         prompt: analysisPrompt,
         imageBase64,
-        mimeType,
+        mediaType,
       }
 
       console.log('🚀 Sending request to /api/gemini...')

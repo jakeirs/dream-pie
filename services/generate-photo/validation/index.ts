@@ -1,6 +1,7 @@
 import { checkCollage } from './collage-check'
 import { comparePerson } from './person-comparison'
 import { ValidationParams, ValidationResult } from '../types'
+import { getMimeTypeFromDataUri } from '@/shared/types/image'
 
 /**
  * Validation Orchestrator
@@ -25,12 +26,12 @@ export async function validateGeneration(params: ValidationParams): Promise<Vali
     const selfieBase64 = selfieImage
 
     // Determine MIME type from base64 prefix or default to jpeg
-    const mimeType = getMimeTypeFromBase64(generatedPhotoBase64)
+    const mediaType = getMimeTypeFromDataUri(generatedPhotoBase64)
 
     // Run both validations in parallel for performance
     const [collageResult, comparisonResult] = await Promise.all([
-      checkCollage(generatedPhotoBase64, mimeType, abortSignal),
-      comparePerson(generatedPhotoBase64, selfieBase64, mimeType, abortSignal),
+      checkCollage(generatedPhotoBase64, mediaType, abortSignal),
+      comparePerson(generatedPhotoBase64, selfieBase64, mediaType, abortSignal),
     ])
 
     // Validation passes if NOT a collage AND same person
@@ -57,16 +58,3 @@ export async function validateGeneration(params: ValidationParams): Promise<Vali
   }
 }
 
-/**
- * Extract MIME type from base64 data URI
- * Falls back to 'image/jpeg' if not found
- */
-function getMimeTypeFromBase64(base64: string): string {
-  if (base64.startsWith('data:')) {
-    const match = base64.match(/^data:([^;]+);/)
-    if (match && match[1]) {
-      return match[1]
-    }
-  }
-  return 'image/jpeg' // Default fallback
-}

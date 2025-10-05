@@ -16,6 +16,8 @@
  * RELATIONSHIPS: Independent AI service integration, connects to Zustand pose store for image analysis
  */
 
+import { ImageMimeType } from '@/shared/types/image'
+
 export interface GeminiRequest {
   message: string
 }
@@ -23,7 +25,7 @@ export interface GeminiRequest {
 export interface GeminiImageAnalysisRequest {
   prompt: string
   imageBase64: string
-  mimeType: string
+  mediaType: ImageMimeType
 }
 
 export interface GeminiResponse {

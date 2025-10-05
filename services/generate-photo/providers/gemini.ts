@@ -1,5 +1,5 @@
 import { google } from '@ai-sdk/google'
-import { generateText } from 'ai'
+import { generateText, ImagePart } from 'ai'
 
 import { GeminiAnalysisParams, GeminiAnalysisResult } from '../types'
 
@@ -18,7 +18,7 @@ import { GeminiAnalysisParams, GeminiAnalysisResult } from '../types'
  * @throws Error if analysis fails or is cancelled
  */
 export async function analyzeImage(params: GeminiAnalysisParams): Promise<GeminiAnalysisResult> {
-  const { prompt, imageBase64, mimeType, abortSignal } = params
+  const { prompt, imageBase64, mediaType, abortSignal } = params
 
   // Use AI SDK with multimodal input
   const { text } = await generateText({
@@ -31,8 +31,8 @@ export async function analyzeImage(params: GeminiAnalysisParams): Promise<Gemini
           {
             type: 'image',
             image: imageBase64,
-            mimeType: mimeType,
-          },
+            mimeType: mediaType,
+          } as ImagePart,
         ],
       },
     ],
@@ -64,7 +64,7 @@ export async function analyzeImage(params: GeminiAnalysisParams): Promise<Gemini
  */
 export async function analyzeMultipleImages(params: {
   prompt: string
-  images: Array<{ base64: string; mimeType: string }>
+  images: Array<{ base64: string; mediaType: string }>
   abortSignal?: AbortSignal
 }): Promise<GeminiAnalysisResult> {
   const { prompt, images, abortSignal } = params
@@ -76,7 +76,7 @@ export async function analyzeMultipleImages(params: {
     content.push({
       type: 'image',
       image: img.base64,
-      mimeType: img.mimeType,
+      mimeType: img.mediaType,
     })
   })
 

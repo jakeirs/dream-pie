@@ -1,5 +1,5 @@
 import { google } from '@ai-sdk/google'
-import { generateText } from 'ai'
+import { generateText, ImagePart } from 'ai'
 
 import { GeminiRequest, GeminiImageAnalysisRequest, GeminiResponse } from '@/types'
 
@@ -10,12 +10,12 @@ export async function POST(request: Request): Promise<Response> {
     console.log('📦 Request body keys:', Object.keys(body))
 
     // Handle image analysis requests (multimodal)
-    if ('imageBase64' in body && 'mimeType' in body) {
+    if ('imageBase64' in body && 'mediaType' in body) {
       console.log('🖼️ Processing image analysis request')
-      const { prompt, imageBase64, mimeType }: GeminiImageAnalysisRequest = body
+      const { prompt, imageBase64, mediaType }: GeminiImageAnalysisRequest = body
 
       console.log('📝 Prompt length:', prompt?.length || 0)
-      console.log('🎨 MIME type:', mimeType)
+      console.log('🎨 MIME type:', mediaType)
       console.log('📷 Image data length:', imageBase64?.length || 0)
 
       if (!prompt || prompt.trim().length === 0) {
@@ -23,9 +23,9 @@ export async function POST(request: Request): Promise<Response> {
         return Response.json({ error: 'Prompt is required for image analysis' } as GeminiResponse, { status: 400 })
       }
 
-      if (!imageBase64 || !mimeType) {
-        console.log('❌ Missing image data or mime type')
-        return Response.json({ error: 'Image data and mime type are required' } as GeminiResponse, { status: 400 })
+      if (!imageBase64 || !mediaType) {
+        console.log('❌ Missing image data or media type')
+        return Response.json({ error: 'Image data and media type are required' } as GeminiResponse, { status: 400 })
       }
 
       console.log('🚀 Calling Gemini API...')
@@ -40,8 +40,8 @@ export async function POST(request: Request): Promise<Response> {
               {
                 type: 'image',
                 image: imageBase64,
-                mediaType: mimeType
-              }
+                mimeType: mediaType
+              } as ImagePart
             ]
           }
         ]

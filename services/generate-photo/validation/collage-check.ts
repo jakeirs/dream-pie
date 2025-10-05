@@ -1,6 +1,7 @@
 import { analyzeImage } from '../providers/gemini'
 import { CollageCheckResult } from '../types'
 import { CHECK_COLLAGE_PROMPT } from '@/shared/prompts/validation/checkCollage'
+import { ImageMimeType } from '@/shared/types/image'
 
 /**
  * Check if generated image is a collage
@@ -9,20 +10,20 @@ import { CHECK_COLLAGE_PROMPT } from '@/shared/prompts/validation/checkCollage'
  * (side-by-side comparison) or a single unified photograph.
  *
  * @param imageBase64 - Base64 encoded image to check
- * @param mimeType - Image MIME type (e.g., 'image/jpeg')
+ * @param mediaType - Image MIME type (e.g., 'image/jpeg')
  * @param abortSignal - Optional abort signal for cancellation
  * @returns CollageCheckResult with isCollage boolean
  */
 export async function checkCollage(
   imageBase64: string,
-  mimeType: string = 'image/jpeg',
+  mediaType: ImageMimeType = 'image/jpeg',
   abortSignal?: AbortSignal
 ): Promise<CollageCheckResult> {
   try {
     const result = await analyzeImage({
       prompt: CHECK_COLLAGE_PROMPT,
       imageBase64,
-      mimeType,
+      mediaType,
       abortSignal,
     })
 

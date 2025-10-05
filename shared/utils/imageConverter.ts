@@ -1,6 +1,8 @@
 import { Asset } from 'expo-asset'
 import { File } from 'expo-file-system'
 
+import { getMimeTypeFromUri as getTypedMimeType } from '@/shared/types/image'
+
 /**
  * Image Conversion Utilities for FAL AI Integration
  *
@@ -64,8 +66,8 @@ export const assetToBase64 = async (assetUri: string): Promise<string> => {
     // Read file as base64 using modern API
     const base64String = await file.base64()
 
-    // Determine MIME type from URI
-    const mimeType = getMimeTypeFromUri(assetUri)
+    // Determine MIME type from URI using centralized type
+    const mimeType = getTypedMimeType(assetUri)
 
     // Create data URI
     const dataUri = `data:${mimeType};base64,${base64String}`
@@ -78,30 +80,6 @@ export const assetToBase64 = async (assetUri: string): Promise<string> => {
   }
 }
 
-
-/**
- * Get MIME type from file URI
- *
- * @param uri - File URI
- * @returns string - MIME type
- */
-const getMimeTypeFromUri = (uri: string): string => {
-  const extension = uri.split('.').pop()?.toLowerCase()
-
-  switch (extension) {
-    case 'jpg':
-    case 'jpeg':
-      return 'image/jpeg'
-    case 'png':
-      return 'image/png'
-    case 'webp':
-      return 'image/webp'
-    case 'gif':
-      return 'image/gif'
-    default:
-      return 'image/jpeg' // Default fallback
-  }
-}
 
 /**
  * Check if image size is reasonable for FAL API

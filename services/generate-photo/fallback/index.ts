@@ -2,6 +2,7 @@ import { describePose } from './pose-describer'
 import { buildRegenerationPrompt } from './prompt-builder'
 import { generate } from '../providers/fal'
 import { FallbackParams } from '../types'
+import { getMimeTypeFromDataUri } from '@/shared/types/image'
 
 /**
  * Fallback Regeneration Orchestrator
@@ -26,9 +27,9 @@ export async function regenerateWithFallback(params: FallbackParams): Promise<st
     // STEP 1: Describe the pose from the pose image
     console.log('📝 Step 1: Describing pose...')
     const poseImageBase64 = poseImage
-    const mimeType = getMimeTypeFromBase64(poseImageBase64)
+    const mediaType = getMimeTypeFromDataUri(poseImageBase64)
 
-    const poseDescription = await describePose(poseImageBase64, mimeType, abortSignal)
+    const poseDescription = await describePose(poseImageBase64, mediaType, abortSignal)
     console.log('✅ Pose description generated:', poseDescription.substring(0, 100) + '...')
 
     // STEP 2: Build regeneration prompt
@@ -54,16 +55,3 @@ export async function regenerateWithFallback(params: FallbackParams): Promise<st
   }
 }
 
-/**
- * Extract MIME type from base64 data URI
- * Falls back to 'image/jpeg' if not found
- */
-function getMimeTypeFromBase64(base64: string): string {
-  if (base64.startsWith('data:')) {
-    const match = base64.match(/^data:([^;]+);/)
-    if (match && match[1]) {
-      return match[1]
-    }
-  }
-  return 'image/jpeg' // Default fallback
-}
