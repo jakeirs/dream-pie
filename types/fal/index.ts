@@ -23,6 +23,8 @@ export { ValidationError, ValidationErrorInfo }
 export interface FalRequest {
   prompt: string
   imageData: string // Image URL (not base64, FAL expects URLs)
+  selfieImage?: string // Optional: Selfie for validation
+  poseImage?: string // Optional: Pose image for fallback description
 }
 
 // Raw FAL API Response Structure (for documentation and reference)
@@ -48,6 +50,8 @@ export interface FalResponse {
   requestId: string        // NEW: Track request ID from FAL
   contentType: string      // NEW: Image content type (jpeg, png, etc.)
   fileName: string         // NEW: Generated filename
+  confidence?: number      // NEW: Person match confidence (if validation was performed)
+  wasRegenerated?: boolean // NEW: True if fallback regeneration was used
   error?: string
 }
 

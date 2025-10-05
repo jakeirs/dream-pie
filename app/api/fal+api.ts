@@ -1,10 +1,9 @@
-import { fal } from '@fal-ai/client'
-
-import { FalRequest, FalResponse, FalRawResponse, ValidationError } from '@/types'
+import { generatePhotoWithValidation } from '@/services/generate-photo'
+import { FalRequest, FalResponse } from '@/types'
 
 export async function POST(request: Request): Promise<Response> {
   try {
-    const { prompt, imageData }: FalRequest = await request.json()
+    const { prompt, imageData, selfieImage, poseImage }: FalRequest & { selfieImage?: string; poseImage?: string } = await request.json()
 
     // ERRORS INPUT
     if (!prompt || prompt.trim().length === 0) {
@@ -35,9 +34,7 @@ export async function POST(request: Request): Promise<Response> {
       )
     }
 
-    const apiKey = process.env.FAL_KEY
-
-    if (!apiKey) {
+    if (!poseImage || poseImage.trim().length === 0) {
       return Response.json(
         {
           imageUrl: '',
@@ -45,66 +42,54 @@ export async function POST(request: Request): Promise<Response> {
           requestId: '',
           contentType: '',
           fileName: '',
-          error: 'FAL API key not configured',
+          error: 'Pose image is required',
         } as FalResponse,
-        {
-          status: 500,
-        }
+        { status: 400 }
       )
     }
 
-    // Configure FAL client with API key
-    fal.config({
-      credentials: apiKey,
+    // ═══════════════════════════════════════════════════════════════
+    // MAIN SERVICE CALL - Generate photo with validation
+    // ═══════════════════════════════════════════════════════════════
+    console.log('🚀 Calling generatePhotoWithValidation service...')
+
+    const result = await generatePhotoWithValidation({
+      collageImage: imageData,
+      selfieImage,
+      poseImage,
+      prompt,
+      abortSignal: request.signal,
     })
 
-    // Call FAL AI nano-banana/edit model with AbortSignal support
-    const result = (await fal.subscribe('fal-ai/nano-banana/edit', {
-      input: {
-        prompt: prompt,
-        image_urls: [imageData], // FAL expects array of image URLs | base64 data URIs
-        num_images: 1,
-        output_format: 'jpeg',
-      },
-      logs: true,
-      abortSignal: request.signal, // Pass AbortSignal for server-side cancellation
-      onQueueUpdate: (update: any) => {
-        if (update.status === 'IN_PROGRESS') {
-          console.log(
-            'FAL AI processing:',
-            update.logs?.map((log: any) => log.message)
-          )
-        }
-      },
-    })) as FalRawResponse
-
-    // Extract the response data
-    const { images, description } = result.data
-
-    if (!images || images.length === 0) {
+    // Check for service-level errors
+    if (result.error) {
       return Response.json(
         {
           imageUrl: '',
           description: '',
-          requestId: result.requestId || '',
+          requestId: '',
           contentType: '',
           fileName: '',
-          error: 'No images generated',
+          error: result.error,
         } as FalResponse,
         { status: 500 }
       )
     }
 
-    // SUCCESS
+    // SUCCESS - Return generated photo with validation details
     return Response.json({
-      imageUrl: images[0].url,
-      description: description || 'Image edited successfully',
-      requestId: result.requestId,
-      contentType: images[0].content_type,
-      fileName: images[0].file_name,
+      imageUrl: result.photo,
+      description: result.wasRegenerated
+        ? 'Photo regenerated with fallback (validation failed)'
+        : 'Photo generated successfully',
+      requestId: '', // Service doesn't expose this yet
+      contentType: 'image/jpeg',
+      fileName: 'generated.jpg',
+      confidence: result.confidence,
+      wasRegenerated: result.wasRegenerated,
     } as FalResponse)
 
-    // ERRORS FAL API
+    // ERRORS
   } catch (error) {
     console.log('FAL AI Error Details:', JSON.stringify(error, null, 2))
 
@@ -115,14 +100,7 @@ export async function POST(request: Request): Promise<Response> {
       if (error.name === 'AbortError') {
         errorMessage = 'Generation cancelled by user'
       } else {
-        // If it's a FAL validation error, extract only the messages for UI
-        const validationError = error as ValidationError
-        if (validationError.body?.detail) {
-          const messages = validationError.body.detail.map((d) => d.msg)
-          errorMessage = messages.join('. ')
-        } else {
-          errorMessage = error.message
-        }
+        errorMessage = error.message
       }
     }
 

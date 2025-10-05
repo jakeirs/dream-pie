@@ -36,3 +36,17 @@ export interface GeminiState {
   isLoading: boolean
   error: string | null
 }
+/**
+ * VALIDATION RESULT TYPES
+ *
+ * Used for photo validation responses from Gemini
+ */
+
+export interface CollageCheckResponse {
+  isCollage: boolean
+}
+
+export interface PersonComparisonResponse {
+  isSamePerson: boolean
+  confidence: number // 0.0 to 1.0
+}

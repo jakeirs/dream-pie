@@ -8,17 +8,6 @@ export interface FalHookCallbacks {
 }
 
 /**
- * Parameters for handleImageEdit function
- */
-export interface HandleImageEditParams {
-  collageImage: string // Base64 or URL of collage image
-  selfieImage?: string // Optional: Selfie for validation
-  poseImage: string // Pose image for fallback description
-  prompt: string // Generation prompt
-  abortSignal?: AbortSignal // Optional abort signal
-}
-
-/**
  * Shared FAL AI Hook - Reusable FAL API Integration
  *
  * This hook provides a flexible interface for FAL AI image editing
@@ -31,33 +20,23 @@ export interface HandleImageEditParams {
  *   onError: (error) => setError(error)
  * })
  *
- * Usage with object parameters:
- * await handleImageEdit({
- *   collageImage: base64String,
- *   selfieImage: selfieBase64, // Optional
- *   poseImage: poseBase64,
- *   prompt: 'Generate photo...',
- *   abortSignal: controller.signal
- * })
+ * Usage with useState (for local components):
+ * See components/PAGE/test-api for useState wrapper example
  */
 export const useFal = (callbacks?: FalHookCallbacks) => {
-  const handleImageEdit = async (params: HandleImageEditParams) => {
-    const { collageImage, selfieImage, poseImage, prompt, abortSignal } = params
-
+  const handleImageEdit = async (
+    imageData: string,
+    prompt: string = 'change the clothes to black jacket',
+    abortSignal?: AbortSignal
+  ) => {
     callbacks?.onStart?.()
 
     console.log('handleImageEdit prompt:', prompt)
-    console.log('handleImageEdit has selfie:', !!selfieImage)
 
     try {
-      const request: FalRequest & {
-        selfieImage?: string
-        poseImage: string
-      } = {
+      const request: FalRequest = {
         prompt: prompt,
-        imageData: collageImage,
-        selfieImage,
-        poseImage,
+        imageData: imageData,
       }
 
       const response = await fetch('/api/fal', {

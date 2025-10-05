@@ -15,11 +15,11 @@ import { MAIN_PROMPT } from '@/shared/prompts/mainPrompt'
 /**
  * Photo Generation Logic Hook
  *
- * Orchestrates the complete AI photo generation flow:
+ * Orchestrates the complete AI photo generation flow with validation:
  * 1. Validates selected selfie and pose
- * 2. Converts selfie image to base64 format for FAL API
- * 3. Retrieves pose prompt using posePromptId
- * 4. Calls FAL AI with converted image and pose prompt
+ * 2. Converts images to base64 format for FAL API
+ * 3. Calls FAL AI with collage, selfie, and pose images
+ * 4. Automatic validation and fallback regeneration if needed
  * 5. Manages generation state through photoGeneration store
  *
  * Usage:
@@ -55,18 +55,48 @@ export const useGeneratePhotoLogic = () => {
   // Handle collage image generation when collageImageUri is available
   const handleCollageImageGeneration = async () => {
     try {
-      // Start generation with selected inputs
-
-      // Convert image to base64 format for FAL API
-      let convertedImageData: string
+      // Convert collage image to base64 format for FAL API
+      let convertedCollageImage: string
       try {
-        convertedImageData = await convertImageForFal(photoGeneration.collageImageUri)
+        convertedCollageImage = await convertImageForFal(photoGeneration.collageImageUri)
       } catch (conversionError) {
         const errorMessage =
           conversionError instanceof Error
             ? conversionError.message
-            : 'Failed to prepare image for generation'
+            : 'Failed to prepare collage image for generation'
         photoGeneration.setError(`Image conversion failed: ${errorMessage}`)
+        return
+      }
+
+      // Convert selfie image to base64 (for validation)
+      let convertedSelfieImage: string | undefined
+      if (usedSelfie) {
+        try {
+          convertedSelfieImage = await convertImageForFal(usedSelfie.imageUrl)
+        } catch (conversionError) {
+          console.warn(
+            'Failed to convert selfie image, proceeding without validation:',
+            conversionError
+          )
+          convertedSelfieImage = undefined
+        }
+      }
+
+      // Convert pose image to base64 (for fallback description)
+      let convertedPoseImage: string
+      if (usedPose) {
+        try {
+          convertedPoseImage = await convertImageForFal(usedPose.imageUrl)
+        } catch (conversionError) {
+          const errorMessage =
+            conversionError instanceof Error
+              ? conversionError.message
+              : 'Failed to prepare pose image for generation'
+          photoGeneration.setError(`Pose image conversion failed: ${errorMessage}`)
+          return
+        }
+      } else {
+        photoGeneration.setError('No pose selected')
         return
       }
 
@@ -74,8 +104,14 @@ export const useGeneratePhotoLogic = () => {
       const abortController = new AbortController()
       photoGeneration.setAbortController(abortController)
 
-      // Call FAL AI with converted base64 image and pose prompt
-      await handleImageEdit(convertedImageData, MAIN_PROMPT, abortController.signal)
+      // Call FAL AI with new object-based parameters
+      await handleImageEdit({
+        collageImage: convertedCollageImage,
+        selfieImage: convertedSelfieImage,
+        poseImage: convertedPoseImage,
+        prompt: MAIN_PROMPT,
+        abortSignal: abortController.signal,
+      })
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Failed to generate photo'
       photoGeneration.setError(errorMessage)
@@ -93,7 +129,10 @@ export const useGeneratePhotoLogic = () => {
   const { handleImageEdit } = useFal({
     onStart: () => {},
     onSuccess: (response) => {
-      console.log('FAL Response:', response)
+      console.log('Validation details:', {
+        confidence: response.confidence,
+        wasRegenerated: response.wasRegenerated,
+      })
       photoGeneration.setResult(response)
       photoGeneration.completeGeneration()
     },
@@ -131,7 +170,16 @@ export const useGeneratePhotoLogic = () => {
     if (photoGeneration.isCancelling) return 'Cancelling generation...'
     if (photoGeneration.isProcessing) return 'Generating your photo...'
     if (photoGeneration.error) return `Error: ${photoGeneration.error}`
-    if (photoGeneration.result) return 'Photo generated successfully!'
+    if (photoGeneration.result) {
+      // Show validation details if available
+      if (photoGeneration.result.wasRegenerated) {
+        return 'Photo regenerated with fallback (validation failed)'
+      }
+      if (photoGeneration.result.confidence) {
+        return `Photo generated successfully! (Confidence: ${(photoGeneration.result.confidence * 100).toFixed(0)}%)`
+      }
+      return 'Photo generated successfully!'
+    }
     return 'Ready to generate'
   }
 
