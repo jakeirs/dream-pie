@@ -32,10 +32,7 @@ export default function GalleryPage() {
         }}
       />
 
-      <ScrollView
-        className="flex-1"
-        showsVerticalScrollIndicator={true}
-        contentContainerStyle={{ flexGrow: 1 }}>
+      <ScrollView className="flex-1" contentContainerStyle={{ flexGrow: 1 }}>
         <Top
           filters={filters.filters}
           activeFilter={filters.activeFilter}

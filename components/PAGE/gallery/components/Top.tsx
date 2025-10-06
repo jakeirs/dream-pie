@@ -15,7 +15,7 @@ interface TopProps {
 export function Top({ filters, activeFilter, onFilterChange }: TopProps) {
   return (
     <View className="pb-4">
-      <StatsFiles activeFilter={activeFilter} />
+      {/* <StatsFiles activeFilter={activeFilter} /> */}
       <GalleryFilters
         filters={filters}
         activeFilter={activeFilter}

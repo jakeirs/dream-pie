@@ -5,17 +5,13 @@ import { GalleryContent } from '@/types/dream/gallery'
 import { DisplayData } from '../../hooks/useGallery'
 
 interface GalleryItemProps {
-  item: GalleryContent
   onPress: () => void
   displayData: DisplayData
 }
 
-export default function GalleryItem({ item, onPress, displayData }: GalleryItemProps) {
-  const screenWidth = Dimensions.get('window').width
-  const cardWidth = (screenWidth - 48) / 2 // 2 columns with padding
-
+export default function GalleryItem({ onPress, displayData }: GalleryItemProps) {
   return (
-    <TouchableOpacity onPress={onPress} className="mb-4" style={{ width: cardWidth }}>
+    <TouchableOpacity onPress={onPress} className="mb-4">
       <View className="overflow-hidden rounded-xl bg-cardSecondary">
         {displayData.imageUri && (
           <Image

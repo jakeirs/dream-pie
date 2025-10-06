@@ -22,6 +22,7 @@
     "@react-native-async-storage/async-storage": "2.2.0",
     "@react-navigation/bottom-tabs": "^7.4.7",
     "@react-navigation/native": "^7.1.17",
+    "@shopify/flash-list": "^2.1.0",
     "@shopify/react-native-skia": "2.2.12",
     "ai": "^5.0.47",
     "date-fns": "^4.1.0",

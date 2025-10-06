@@ -1,4 +1,5 @@
-import { FlatList } from 'react-native'
+import { useMemo } from 'react'
+import { FlashList } from '@shopify/flash-list'
 
 import GalleryItem from './GalleryItem'
 
@@ -18,16 +19,18 @@ export default function GalleryContent({
   getItemDisplayData,
   isLoading,
 }: GalleryContentProps) {
+  // Sort items by date (most recent first)
+  const sortedItems = useMemo(() => {
+    return [...items].sort((a, b) => {
+      const dateA = 'generatedAt' in a ? a.generatedAt : a.createdAt
+      const dateB = 'generatedAt' in b ? b.generatedAt : b.createdAt
+      return new Date(dateB).getTime() - new Date(dateA).getTime()
+    })
+  }, [items])
   const renderGalleryItem = ({ item }: { item: GalleryContentType }) => {
     const displayData = getItemDisplayData(item)
 
-    return (
-      <GalleryItem
-        item={item}
-        onPress={() => onCardPress(item)}
-        displayData={displayData}
-      />
-    )
+    return <GalleryItem onPress={() => onCardPress(item)} displayData={displayData} />
   }
 
   const keyExtractor = (item: GalleryContentType, index: number) => {
@@ -43,19 +46,17 @@ export default function GalleryContent({
   }
 
   return (
-    <FlatList
-      data={items}
+    <FlashList
+      data={sortedItems}
       renderItem={renderGalleryItem}
       keyExtractor={keyExtractor}
       numColumns={2}
-      columnWrapperStyle={{ justifyContent: 'space-between' }}
       contentContainerStyle={{
         padding: 16,
         paddingBottom: 32,
       }}
       showsVerticalScrollIndicator={false}
       scrollEnabled={false}
-      nestedScrollEnabled={true}
     />
   )
 }

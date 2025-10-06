@@ -1,10 +1,10 @@
-import { View, Text } from 'react-native'
+import { View } from 'react-native'
 import { router } from 'expo-router'
 
 import Button from '@/components/ui/Button/Button'
 import { useStore } from '@/stores'
 import { usePoseStore, useSelfieChooserStore, usePhotoGenerationStore } from '@/stores'
-import { brandColors } from '@/shared/theme'
+import { ICON_FAMILY_NAME } from '@/components/ui/icons'
 
 interface GenerateButtonProps {
   className?: string
@@ -40,6 +40,11 @@ export default function GenerateButton({ className = '' }: GenerateButtonProps) 
         className="w-full"
         variant="primaryForeground"
         size="lg"
+        icon={{
+          family: ICON_FAMILY_NAME.SimpleLineIcons,
+          name: 'magic-wand',
+          position: 'left',
+        }}
       />
     </View>
   )
