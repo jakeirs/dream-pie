@@ -81,7 +81,6 @@ export interface FalGenerateResult {
 export interface GeminiAnalysisParams {
   prompt: string
   imageBase64: string
-  mediaType: ImageMimeType // AI SDK uses mediaType (not mimeType)
   abortSignal?: AbortSignal
 }
 

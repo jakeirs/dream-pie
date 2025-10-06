@@ -1,5 +1,5 @@
 import { google } from '@ai-sdk/google'
-import { generateText, ImagePart } from 'ai'
+import { generateText } from 'ai'
 
 import { GeminiAnalysisParams, GeminiAnalysisResult } from '../types'
 
@@ -18,7 +18,7 @@ import { GeminiAnalysisParams, GeminiAnalysisResult } from '../types'
  * @throws Error if analysis fails or is cancelled
  */
 export async function analyzeImage(params: GeminiAnalysisParams): Promise<GeminiAnalysisResult> {
-  const { prompt, imageBase64, mediaType, abortSignal } = params
+  const { prompt, imageBase64, abortSignal } = params
 
   // Use AI SDK with multimodal input
   const { text } = await generateText({

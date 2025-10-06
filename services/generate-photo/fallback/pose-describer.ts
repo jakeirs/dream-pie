@@ -16,14 +16,12 @@ import { ImageMimeType } from '@/shared/types/image'
  */
 export async function describePose(
   poseImageBase64: string,
-  mediaType: ImageMimeType = 'image/jpeg',
   abortSignal?: AbortSignal
 ): Promise<string> {
   try {
     const result = await analyzeImage({
       prompt: DESCRIBE_POSE_PROMPT,
       imageBase64: poseImageBase64,
-      mediaType,
       abortSignal,
     })
 

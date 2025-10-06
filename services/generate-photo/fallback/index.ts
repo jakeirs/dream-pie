@@ -2,7 +2,6 @@ import { describePose } from './pose-describer'
 import { buildRegenerationPrompt } from './prompt-builder'
 import { generate } from '../providers/fal'
 import { FallbackParams } from '../types'
-import { getMimeTypeFromDataUri } from '@/shared/types/image'
 
 /**
  * Fallback Regeneration Orchestrator
@@ -27,9 +26,8 @@ export async function regenerateWithFallback(params: FallbackParams): Promise<st
     // STEP 1: Describe the pose from the pose image
     console.log('📝 Step 1: Describing pose...')
     const poseImageBase64 = poseImage
-    const mediaType = getMimeTypeFromDataUri(poseImageBase64)
 
-    const poseDescription = await describePose(poseImageBase64, mediaType, abortSignal)
+    const poseDescription = await describePose(poseImageBase64, abortSignal)
     console.log('✅ Pose description generated:', poseDescription.substring(0, 100) + '...')
 
     // STEP 2: Build regeneration prompt
@@ -54,4 +52,3 @@ export async function regenerateWithFallback(params: FallbackParams): Promise<st
     )
   }
 }
-
