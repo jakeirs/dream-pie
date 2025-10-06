@@ -31,8 +31,7 @@ export async function analyzeImage(params: GeminiAnalysisParams): Promise<Gemini
           {
             type: 'image',
             image: imageBase64,
-            mimeType: mediaType,
-          } as ImagePart,
+          },
         ],
       },
     ],
