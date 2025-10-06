@@ -2,25 +2,25 @@ import { useEffect } from 'react'
 import { View } from 'react-native'
 import { useStore } from 'zustand'
 
-import PixelatedEffect from './components/PixelatedEffect'
 import TransitionContainer from './components/TransitionContainer'
 import ResultView from './components/ResultView'
 
-import { useInformationAnimation } from './hooks/useInformationAnimation'
+import { useInformationAnimation } from './components/ParticlesImage/hooks/useInformationAnimation'
 import { useViewResultTransition } from './hooks/useViewResultTransition'
 import { useGeneratePhotoLogic } from '../index/hooks/useGeneratePhotoLogic'
-import { INFORMATION_CONFIG } from './config/informationConfig'
+import { INFORMATION_CONFIG } from './components/ParticlesImage/config/informationConfig'
 
 import InformationBubble from '@/components/ui/InformationBubble/InformationBubble'
 import { usePhotoGenerationStore } from '@/stores'
 import CollageGenerator from './components/CollageGenerator/CollageGenerator'
+import PixelatedEffect from './components/ParticlesImage/components/PixelatedEffect'
 
 export default function GenerationPage() {
   const usedPose = useStore(usePhotoGenerationStore, (state) => state.usedPose)
   const usedSelfie = useStore(usePhotoGenerationStore, (state) => state.usedSelfie)
   const result = useStore(usePhotoGenerationStore, (state) => state.result)
 
-  const { generatePhoto, isProcessing } = useGeneratePhotoLogic()
+  const { generatePhoto } = useGeneratePhotoLogic()
 
   const {
     transitionState,

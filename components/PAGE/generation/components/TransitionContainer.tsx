@@ -2,8 +2,8 @@ import { View } from 'react-native'
 
 import Animated, { useAnimatedStyle, SharedValue } from 'react-native-reanimated'
 
-import { TRANSITION_CONFIG } from '../config/transitionConfig'
-import { TransitionState } from '../types/types'
+import { TRANSITION_CONFIG } from './ParticlesImage/config/transitionConfig'
+import { TransitionState } from './ParticlesImage/types/types'
 
 interface TransitionContainerProps {
   children: React.ReactNode

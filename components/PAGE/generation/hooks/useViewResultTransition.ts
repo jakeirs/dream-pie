@@ -2,8 +2,8 @@ import { useState, useCallback } from 'react'
 
 import { useSharedValue, withSpring, withTiming, withDelay } from 'react-native-reanimated'
 
-import { TRANSITION_CONFIG } from '../config/transitionConfig'
-import { TransitionState } from '../types/types'
+import { TRANSITION_CONFIG } from '../components/ParticlesImage/config/transitionConfig'
+import { TransitionState } from '../components/ParticlesImage/types/types'
 
 /**
  * Custom hook for managing the View Result transition
