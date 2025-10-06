@@ -12,9 +12,6 @@ export default function CollagePreview() {
 
   return (
     <View className="items-center space-y-4">
-      {/* Preview Title */}
-      <Text className="text-xl font-bold text-textPrimary">Your Dream Pie Collage</Text>
-
       {/* Generated Collage Preview */}
       <View className="rounded-lg bg-card p-4 shadow-md">
         <Image

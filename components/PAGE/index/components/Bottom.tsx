@@ -1,7 +1,6 @@
 import { View } from 'react-native'
 
 import GenerateButton from './Bottom/GenerateButton'
-import CollageGenerator from './Bottom/CollageGenerator/CollageGenerator'
 import Button from '@/components/ui/Button/Button'
 import { useRouter } from 'expo-router'
 

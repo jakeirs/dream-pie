@@ -13,6 +13,7 @@ import { INFORMATION_CONFIG } from './config/informationConfig'
 
 import InformationBubble from '@/components/ui/InformationBubble/InformationBubble'
 import { usePhotoGenerationStore } from '@/stores'
+import CollageGenerator from './components/CollageGenerator/CollageGenerator'
 
 export default function GenerationPage() {
   const usedPose = useStore(usePhotoGenerationStore, (state) => state.usedPose)
@@ -85,6 +86,8 @@ export default function GenerationPage() {
           />
         )}
       </View>
+
+      <CollageGenerator />
     </View>
   )
 }

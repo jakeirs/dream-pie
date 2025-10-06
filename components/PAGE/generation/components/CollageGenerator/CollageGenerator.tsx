@@ -15,10 +15,10 @@ export default function CollageGenerator() {
   }
 
   return (
-    <View className="flex-1 space-y-6 p-4">
+    <View className="">
       <CollageCanvas />
 
-      <CollagePreview />
+      {/* <CollagePreview /> */}
     </View>
   )
 }
