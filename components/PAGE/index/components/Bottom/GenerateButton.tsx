@@ -1,10 +1,9 @@
-import { useState, useEffect } from 'react'
 import { View, Text } from 'react-native'
+import { router } from 'expo-router'
 
 import Button from '@/components/ui/Button/Button'
-import Alert from '@/components/ui/Alert/Alert'
-import Result from '@/components/ui/Result/Result'
-import { useGeneratePhotoLogic } from '../../hooks/useGeneratePhotoLogic'
+import { useStore } from '@/stores'
+import { usePoseStore, useSelfieChooserStore, usePhotoGenerationStore } from '@/stores'
 import { brandColors } from '@/shared/theme'
 
 interface GenerateButtonProps {
@@ -12,114 +11,36 @@ interface GenerateButtonProps {
 }
 
 export default function GenerateButton({ className = '' }: GenerateButtonProps) {
-  const {
-    generatePhoto,
-    stopGeneration,
-    canGenerate,
-    isProcessing,
-    isCancelling,
-    result,
-    error,
-    resetGeneration,
-  } = useGeneratePhotoLogic()
+  const selectedPose = useStore(usePoseStore, (state) => state.selectedPose)
+  const selectedSelfie = useStore(useSelfieChooserStore, (state) => state.selectedSelfie)
+  const photoGeneration = usePhotoGenerationStore()
 
-  const [showResult, setShowResult] = useState(false)
-
-  // Auto-show Alert when result or error is available
-  useEffect(() => {
-    if (result || error) {
-      setShowResult(true)
-    }
-  }, [result, error])
+  const canGenerate = Boolean(selectedSelfie && selectedPose && !photoGeneration.isProcessing)
 
   const handleGeneratePhoto = () => {
-    generatePhoto()
-  }
+    if (!selectedSelfie) {
+      return
+    }
+    if (!selectedPose) {
+      return
+    }
 
-  const handleStopGeneration = () => {
-    stopGeneration()
-  }
+    photoGeneration.reset()
+    photoGeneration.startGeneration(selectedPose, selectedSelfie)
 
-  const handleRetry = () => {
-    resetGeneration()
-    generatePhoto()
-  }
-
-  const handleCloseResult = () => {
-    setShowResult(false)
-    resetGeneration()
-  }
-
-  const getButtonText = () => {
-    if (isCancelling) return '🎨 Cancelling...'
-    if (isProcessing) return '🎨 Generating...'
-    return '🎨 Generate Photo →'
-  }
-
-  const getAlertTitle = () => {
-    if (isCancelling) return 'Cancelling Generation'
-    if (isProcessing) return 'Generating Photo'
-    if (error) return 'Generation Failed'
-    if (result) return 'Photo Ready!'
-    return ''
+    router.push('/generation')
   }
 
   return (
-    <>
-      {/* Generate Photo Button */}
-      <View className={`mb-8 px-6 ${className}`}>
-        <Button
-          onPress={handleGeneratePhoto}
-          disabled={!canGenerate || isProcessing || isCancelling}
-          className="w-full"
-          style={{
-            backgroundColor:
-              isProcessing || isCancelling ? brandColors.cardSecondary : brandColors.primary,
-            paddingVertical: 24,
-          }}>
-          <Text
-            className="text-xl font-bold"
-            style={{
-              color:
-                isProcessing || isCancelling
-                  ? brandColors.textMuted
-                  : brandColors.primaryForeground,
-            }}>
-            {getButtonText()}
-          </Text>
-        </Button>
-
-        {/* Stop Generating Button - Only show when processing */}
-        {isProcessing && (
-          <Button
-            onPress={handleStopGeneration}
-            disabled={isCancelling}
-            className="mt-4 w-full"
-            style={{
-              backgroundColor: isCancelling ? brandColors.cardSecondary : brandColors.error,
-              paddingVertical: 20,
-            }}>
-            <Text
-              className="text-lg font-semibold"
-              style={{
-                color: isCancelling ? brandColors.textMuted : brandColors.primaryForeground,
-              }}>
-              {isCancelling ? '⏹️ Cancelling...' : '⏹️ Stop Generating'}
-            </Text>
-          </Button>
-        )}
-      </View>
-
-      {/* Result Alert */}
-      <Alert visible={showResult} onClose={handleCloseResult} title={getAlertTitle()}>
-        <Result
-          result={result}
-          error={error}
-          isProcessing={isProcessing}
-          onRetry={handleRetry}
-          onClose={handleCloseResult}
-        />
-      </Alert>
-    </>
+    <View className={`mb-8 px-6 ${className}`}>
+      <Button
+        title="🎨 Generate Photo"
+        onPress={handleGeneratePhoto}
+        disabled={!canGenerate}
+        className="w-full"
+        variant="primaryForeground"
+        size="lg"
+      />
+    </View>
   )
 }

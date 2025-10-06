@@ -10,22 +10,22 @@ import { Confetti } from 'react-native-fast-confetti'
 import ZoomablePhoto from '@/components/ui/ZoomablePhoto/ZoomablePhoto'
 import SuccessMessage from '@/components/ui/SuccessMessage/SuccessMessage'
 
-import { Pose } from '@/types/dream/pose'
+import { FalResponse } from '@/types'
 
 interface ResultViewProps {
-  selectedPose: Pose | null
+  result: FalResponse | null
   scale: SharedValue<number>
   onChangePress?: () => void
 }
 
 /**
- * ResultView - Shows ZoomablePhoto with selected pose after transition
+ * ResultView - Shows ZoomablePhoto with generated result after transition
  *
  * Positioned absolutely behind PixelatedEffect and scales from 0.3 to 1.0
  * as the particle effect disappears. Triggers confetti and UI elements when fully scaled.
  * Supports pinch-to-zoom for viewing generated photos.
  */
-export default function ResultView({ selectedPose, scale }: ResultViewProps) {
+export default function ResultView({ result, scale }: ResultViewProps) {
   const confettiRef = useRef<any>(null)
   const [showSuccessMessage, setShowSuccessMessage] = useState(false)
 
@@ -46,7 +46,7 @@ export default function ResultView({ selectedPose, scale }: ResultViewProps) {
     }
   )
 
-  if (!selectedPose) return null
+  if (!result?.imageUrl) return null
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
@@ -87,7 +87,7 @@ export default function ResultView({ selectedPose, scale }: ResultViewProps) {
           },
           animatedStyle,
         ]}>
-        <ZoomablePhoto imageSource={selectedPose.imageUrl} maxScale={3} contentFit="contain" />
+        <ZoomablePhoto imageSource={result.imageUrl} maxScale={3} contentFit="contain" />
       </Animated.View>
     </>
   )

@@ -1,4 +1,5 @@
-import { View, Text } from 'react-native'
+import { useEffect } from 'react'
+import { View } from 'react-native'
 import { useStore } from 'zustand'
 
 import PixelatedEffect from './components/PixelatedEffect'
@@ -7,15 +8,18 @@ import ResultView from './components/ResultView'
 
 import { useInformationAnimation } from './hooks/useInformationAnimation'
 import { useViewResultTransition } from './hooks/useViewResultTransition'
+import { useGeneratePhotoLogic } from '../index/hooks/useGeneratePhotoLogic'
 import { INFORMATION_CONFIG } from './config/informationConfig'
 
-import Button from '@/components/ui/Button/Button'
 import InformationBubble from '@/components/ui/InformationBubble/InformationBubble'
-import { usePoseStore } from '@/stores'
-import { brandColors } from '@/shared/theme'
+import { usePhotoGenerationStore } from '@/stores'
 
 export default function GenerationPage() {
-  const selectedPose = useStore(usePoseStore, (state) => state.selectedPose)
+  const usedPose = useStore(usePhotoGenerationStore, (state) => state.usedPose)
+  const usedSelfie = useStore(usePhotoGenerationStore, (state) => state.usedSelfie)
+  const result = useStore(usePhotoGenerationStore, (state) => state.result)
+
+  const { generatePhoto, isProcessing } = useGeneratePhotoLogic()
 
   const {
     transitionState,
@@ -27,9 +31,18 @@ export default function GenerationPage() {
     showResultView,
   } = useViewResultTransition()
 
-  const handleNext = () => {
-    startTransition()
-  }
+  useEffect(() => {
+    if (usedPose && usedSelfie && !result) {
+      generatePhoto()
+    }
+  }, [usedPose, usedSelfie])
+
+  // Auto-trigger animation when result is ready
+  useEffect(() => {
+    if (result && !showResultView) {
+      startTransition()
+    }
+  }, [result, showResultView])
 
   const {
     currentMessage,
@@ -45,7 +58,7 @@ export default function GenerationPage() {
   return (
     <View className="flex-1 bg-background">
       <View className="flex-1">
-        {showResultView && <ResultView selectedPose={selectedPose} scale={resultScale} />}
+        {showResultView && <ResultView result={result} scale={resultScale} />}
 
         {transitionState !== 'hiddenParticles' && (
           <TransitionContainer scale={scale} opacity={opacity} transitionState={transitionState}>
@@ -72,22 +85,6 @@ export default function GenerationPage() {
           />
         )}
       </View>
-
-      {isFullScreen && (
-        <View className="absolute bottom-8 left-0 right-0 px-6">
-          <Button
-            onPress={handleNext}
-            className="w-full"
-            style={{
-              backgroundColor: brandColors.primary,
-              paddingVertical: 24,
-            }}>
-            <Text className="text-xl font-bold" style={{ color: brandColors.primaryForeground }}>
-              View Result →
-            </Text>
-          </Button>
-        </View>
-      )}
     </View>
   )
 }

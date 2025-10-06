@@ -33,11 +33,10 @@ export default function CreatePage() {
         }}
       />
 
-      {/* Original Components */}
-      <ScrollView className="flex-1">
+      <View className="flex-1 ">
         <Top />
         <Bottom />
-      </ScrollView>
+      </View>
 
       {/* Pose Library Bottom Sheet */}
       <BottomSheet

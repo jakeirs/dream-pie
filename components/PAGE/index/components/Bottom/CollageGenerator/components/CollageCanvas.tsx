@@ -27,13 +27,13 @@ export function CollageCanvas() {
   return (
     <>
       <View className="items-center">
-        <Button
+        {/* <Button
           title={'Create Collage'}
           onPress={generateCollage}
           variant="primary"
           disabled={!layout}
           size="lg"
-        />
+        /> */}
       </View>
       <View
         style={{

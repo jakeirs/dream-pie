@@ -15,21 +15,18 @@ import { MAIN_PROMPT } from '@/shared/prompts/mainPrompt'
 /**
  * Photo Generation Logic Hook
  *
- * Orchestrates the complete AI photo generation flow with validation:
- * 1. Validates selected selfie and pose
- * 2. Converts images to base64 format for FAL API
- * 3. Calls FAL AI with collage, selfie, and pose images
- * 4. Automatic validation and fallback regeneration if needed
- * 5. Manages generation state through photoGeneration store
+ * Orchestrates the complete AI photo generation flow:
+ * 1. Converts images to base64 format for FAL API
+ * 2. Calls FAL AI with collage, selfie, and pose images
+ * 3. Automatic validation and fallback regeneration if needed
+ * 4. Manages generation state through photoGeneration store
+ * 5. Auto-saves creation when result is ready
  *
  * Usage:
- * const { generatePhoto, canGenerate } = useGeneratePhotoLogic()
- * // Call generatePhoto() when user clicks "Generate Photo (real)" button
+ * const { generatePhoto, isProcessing } = useGeneratePhotoLogic()
+ * // Call generatePhoto() from Generation Page
  */
 export const useGeneratePhotoLogic = () => {
-  // Optimized selectors: Only re-render when specific properties change
-  const selectedPose = useStore(usePoseStore, (state) => state.selectedPose)
-  const selectedSelfie = useStore(useSelfieChooserStore, (state) => state.selectedSelfie)
   const photoGeneration = usePhotoGenerationStore()
 
   // Selective subscriptions for creation saving performance optimization
@@ -38,6 +35,7 @@ export const useGeneratePhotoLogic = () => {
   const usedPose = useStore(usePhotoGenerationStore, (state) => state.usedPose)
   const usedSelfie = useStore(usePhotoGenerationStore, (state) => state.usedSelfie)
 
+  // Auto-save creation when result is ready
   useEffect(() => {
     if (result && result.imageUrl && usedPose && usedSelfie) {
       const creation: Creation = {
@@ -142,45 +140,11 @@ export const useGeneratePhotoLogic = () => {
     },
   })
 
-  // Main generation function with image conversion
-  const generatePhoto = async () => {
-    // Validation: Check if both selfie and pose are selected
-    if (!selectedSelfie) {
-      photoGeneration.setError('Please select a selfie first')
-      return
-    }
-
-    if (!selectedPose) {
-      photoGeneration.setError('Please select a pose first')
-      return
-    }
-
-    photoGeneration.startGeneration(selectedPose, selectedSelfie)
-
+  // Main generation function - Triggers collage generation via AbortController
+  const generatePhoto = () => {
     // Create AbortController for cancellation support
     const abortController = new AbortController()
     photoGeneration.setAbortController(abortController)
-  }
-
-  // Helper to check if generation can proceed
-  const canGenerate = Boolean(selectedSelfie && selectedPose && !photoGeneration.isProcessing)
-
-  // Helper to get current generation status
-  const getGenerationStatus = () => {
-    if (photoGeneration.isCancelling) return 'Cancelling generation...'
-    if (photoGeneration.isProcessing) return 'Generating your photo...'
-    if (photoGeneration.error) return `Error: ${photoGeneration.error}`
-    if (photoGeneration.result) {
-      // Show validation details if available
-      if (photoGeneration.result.wasRegenerated) {
-        return 'Photo regenerated with fallback (validation failed)'
-      }
-      if (photoGeneration.result.confidence) {
-        return `Photo generated successfully! (Confidence: ${(photoGeneration.result.confidence * 100).toFixed(0)}%)`
-      }
-      return 'Photo generated successfully!'
-    }
-    return 'Ready to generate'
   }
 
   // Stop generation function
@@ -193,20 +157,10 @@ export const useGeneratePhotoLogic = () => {
     generatePhoto,
     stopGeneration,
 
-    // State Helpers
-    canGenerate,
-    getGenerationStatus,
-
     // Direct State Access (for UI components)
     isProcessing: photoGeneration.isProcessing,
     isCancelling: photoGeneration.isCancelling,
     result: photoGeneration.result,
     error: photoGeneration.error,
-    usedPose: photoGeneration.usedPose,
-    usedSelfie: photoGeneration.usedSelfie,
-    usedPosePrompt: photoGeneration.usedPosePrompt,
-
-    // Store Actions (for manual control)
-    resetGeneration: photoGeneration.reset,
   }
 }

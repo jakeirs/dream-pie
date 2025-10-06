@@ -1,5 +1,5 @@
 // 1. React Native Core & Expo
-import { View, Text, ScrollView } from 'react-native'
+import { View, Text } from 'react-native'
 // components
 import PhotoCardGrid from './Top/PhotoCardGrid'
 
