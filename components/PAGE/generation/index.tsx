@@ -7,7 +7,7 @@ import ResultView from './components/ResultView'
 
 import { useInformationAnimation } from './components/ParticlesImage/hooks/useInformationAnimation'
 import { useViewResultTransition } from './hooks/useViewResultTransition'
-import { useGeneratePhotoLogic } from '../index/hooks/useGeneratePhotoLogic'
+import { useGeneratePhotoLogic } from './hooks/useGeneratePhotoLogic'
 import { INFORMATION_CONFIG } from './components/ParticlesImage/config/informationConfig'
 
 import InformationBubble from '@/components/ui/InformationBubble/InformationBubble'
