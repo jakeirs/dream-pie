@@ -2,8 +2,8 @@ import { View } from 'react-native'
 import { router } from 'expo-router'
 
 import Button from '@/components/ui/Button/Button'
-import { useStore } from '@/stores'
-import { usePoseStore, useSelfieChooserStore, usePhotoGenerationStore } from '@/stores'
+import { useStore , usePoseStore, useSelfieChooserStore, usePhotoGenerationStore } from '@/stores'
+
 import { ICON_FAMILY_NAME } from '@/components/ui/icons'
 
 interface GenerateButtonProps {

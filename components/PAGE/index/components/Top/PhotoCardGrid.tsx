@@ -3,7 +3,6 @@ import { View } from 'react-native'
 import { PhotoCard } from '@/components/ui/PhotoCard/PhotoCard'
 
 import { useStore, useNavigationStore, usePoseStore, useSelfieChooserStore } from '@/stores'
-import { appAssets } from '@/shared/assets/assets'
 
 interface PhotoCardGridProps {}
 
@@ -26,15 +25,17 @@ const PhotoCardGrid = ({}: PhotoCardGridProps) => {
       <View className="flex-1">
         <PhotoCard
           title="Your Selfie"
+          type="selfie"
           onClickCard={handleSelfiePress}
-          imageSource={selectedSelfie?.imageUrl ?? appAssets.selfies.extendPhoto} // Default selfie photo using appAssets
+          imageSource={selectedSelfie?.imageUrl} // Empty state shown when undefined
         />
       </View>
       <View className="flex-1">
         <PhotoCard
           title="Your Pose"
+          type="pose"
           onClickCard={handlePosePress}
-          imageSource={selectedPose?.imageUrl ?? appAssets.poses.dress} // Dynamic pose image path from Zustand (now string)
+          imageSource={selectedPose?.imageUrl} // Empty state shown when undefined
         />
       </View>
     </View>

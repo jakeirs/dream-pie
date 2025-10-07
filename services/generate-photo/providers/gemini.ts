@@ -63,7 +63,7 @@ export async function analyzeImage(params: GeminiAnalysisParams): Promise<Gemini
  */
 export async function analyzeMultipleImages(params: {
   prompt: string
-  images: Array<{ base64: string; mediaType: string }>
+  images: { base64: string; mediaType: string }[]
   abortSignal?: AbortSignal
 }): Promise<GeminiAnalysisResult> {
   const { prompt, images, abortSignal } = params
