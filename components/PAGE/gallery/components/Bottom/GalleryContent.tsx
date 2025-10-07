@@ -21,11 +21,19 @@ export default function GalleryContent({
 }: GalleryContentProps) {
   // Sort items by date (most recent first)
   const sortedItems = useMemo(() => {
-    return [...items].sort((a, b) => {
-      const dateA = 'generatedAt' in a ? a.generatedAt : a.createdAt
-      const dateB = 'generatedAt' in b ? b.generatedAt : b.createdAt
-      return new Date(dateB).getTime() - new Date(dateA).getTime()
-    })
+    return [...items]
+      .filter((item) => {
+        // Only filter selfies with isRemoved flag
+        if ('isRemoved' in item) {
+          return !item.isRemoved
+        }
+        return true // Keep all creations and poses
+      })
+      .sort((a, b) => {
+        const dateA = 'generatedAt' in a ? a.generatedAt : a.createdAt
+        const dateB = 'generatedAt' in b ? b.generatedAt : b.createdAt
+        return new Date(dateB).getTime() - new Date(dateA).getTime()
+      })
   }, [items])
   const renderGalleryItem = ({ item }: { item: GalleryContentType }) => {
     const displayData = getItemDisplayData(item)
