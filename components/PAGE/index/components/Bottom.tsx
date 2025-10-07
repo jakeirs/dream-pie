@@ -10,7 +10,7 @@ interface BottomProps {}
 export function Bottom({}: BottomProps) {
   const router = useRouter()
   return (
-    <View className="flex-1 justify-end bg-red-50 pb-10">
+    <View className="flex-1 justify-center  pb-10">
       <HowItWorks />
       <GenerateButton />
 
