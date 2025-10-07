@@ -1,14 +1,8 @@
-// Following Import Order Standards (React 19+)
-// 1. React Native Core & Expo
 import { View } from 'react-native'
 
-// 2. UI components (@/components/ui)
-import PhotoCard from '@/components/ui/PhotoCard/PhotoCard'
+import { PhotoCard } from '@/components/ui/PhotoCard/PhotoCard'
 
-// 3. Stores with inline selector for performance
 import { useStore, useNavigationStore, usePoseStore, useSelfieChooserStore } from '@/stores'
-
-// 4. Assets
 import { appAssets } from '@/shared/assets/assets'
 
 interface PhotoCardGridProps {}

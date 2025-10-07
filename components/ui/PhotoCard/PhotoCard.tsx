@@ -16,7 +16,7 @@ interface PhotoCardProps {
   className?: string
 }
 
-const PhotoCard = ({
+export const PhotoCard = ({
   imageSource,
   onChangePress,
   onClickCard,
@@ -98,5 +98,3 @@ const PhotoCard = ({
     </AnimatedTouchableOpacity>
   )
 }
-
-export default PhotoCard

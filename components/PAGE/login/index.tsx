@@ -21,10 +21,6 @@ export default function LoginPage() {
     paywallRef.current?.present()
   }
 
-  const handleGoToTestApi = () => {
-    router.push('/(auth)/(test_screens)/test-api')
-  }
-
   return (
     <View className="flex-1 bg-background">
       <View className="flex-1 items-center justify-center px-6">
@@ -60,17 +56,6 @@ export default function LoginPage() {
             className="w-full"
             style={{ paddingVertical: 24 }}>
             <Text className="text-xl font-bold text-white">🚀 Show Paywall Modal</Text>
-          </Button>
-        </View>
-
-        {/* Test API Button */}
-        <View className="w-full">
-          <Button
-            onPress={handleGoToTestApi}
-            variant="primary"
-            className="w-full"
-            style={{ paddingVertical: 24 }}>
-            <Text className="text-xl font-bold text-white">🔧 Go to Test Api</Text>
           </Button>
         </View>
       </View>
