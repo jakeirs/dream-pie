@@ -19,7 +19,7 @@ export default function Alert({ visible, onClose, title, children }: AlertProps)
       statusBarTranslucent={true}
       onRequestClose={onClose}>
       <Animated.View
-        className="flex-1 items-center justify-center px-6"
+        className="flex-1 items-center justify-center  px-6"
         entering={FadeIn.duration(200)}
         exiting={FadeOut.duration(150)}
         style={{ backgroundColor: 'rgba(0, 0, 0, 0.8)' }}>
@@ -28,18 +28,18 @@ export default function Alert({ visible, onClose, title, children }: AlertProps)
         <Animated.View
           entering={SlideInUp.duration(350).springify()}
           exiting={SlideOutUp.duration(200)}
-          className="w-full max-w-sm overflow-hidden rounded-2xl"
-          style={{ backgroundColor: brandColors.card }}>
+          className="w-full max-w-sm overflow-hidden rounded-2xl bg-background">
           {title && (
             <View
-              className="border-b px-6 py-4"
+              className="bg-card px-6 py-4"
               style={{
-                backgroundColor: brandColors.primary,
+                borderBottomWidth: 2,
                 borderBottomColor: brandColors.border,
               }}>
               <Text
                 className="text-center text-xl font-semibold"
-                style={{ color: brandColors.primaryForeground }}>
+                // style={{ color: brandColors.textLight }}
+              >
                 {title}
               </Text>
             </View>
