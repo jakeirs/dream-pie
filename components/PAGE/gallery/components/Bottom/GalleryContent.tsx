@@ -32,11 +32,11 @@ export default function GalleryContent({
 
     return <GalleryItem onPress={() => onCardPress(item)} displayData={displayData} />
   }
-
   const keyExtractor = (item: GalleryContentType, index: number) => {
     if ('id' in item) {
       return item.id
     }
+
     return `gallery-item-${index}`
   }
 
@@ -51,12 +51,11 @@ export default function GalleryContent({
       renderItem={renderGalleryItem}
       keyExtractor={keyExtractor}
       numColumns={2}
+      className="px-4 pb-8"
       contentContainerStyle={{
-        padding: 16,
-        paddingBottom: 32,
+        paddingBottom: 40,
       }}
       showsVerticalScrollIndicator={false}
-      scrollEnabled={false}
     />
   )
 }

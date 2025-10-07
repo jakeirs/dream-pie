@@ -1,7 +1,6 @@
 import { View, Text, TouchableOpacity, Dimensions } from 'react-native'
 import { Image } from 'expo-image'
 
-import { GalleryContent } from '@/types/dream/gallery'
 import { DisplayData } from '../../hooks/useGallery'
 
 interface GalleryItemProps {
@@ -11,7 +10,7 @@ interface GalleryItemProps {
 
 export default function GalleryItem({ onPress, displayData }: GalleryItemProps) {
   return (
-    <TouchableOpacity onPress={onPress} className="mb-4">
+    <TouchableOpacity onPress={onPress} className="mx-1 mb-4">
       <View className="overflow-hidden rounded-xl bg-cardSecondary">
         {displayData.imageUri && (
           <Image
