@@ -12,4 +12,5 @@ export interface Selfie {
   imageUrl: string
   tags: string[]
   createdAt: string
+  isRemoved?: boolean
 }

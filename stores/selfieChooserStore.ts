@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { devtools } from '@csark0812/zustand-expo-devtools'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 import { Selfie } from '@/types/dream/selfie'
 import { addToFileSystemAsyncStorage, deleteItemFromFileSystem } from './fileSystem'
 import { USER_SELFIES } from './AsyncStorage/keys'
@@ -24,6 +25,8 @@ export const useSelfieChooserStore = create<SelfieChooserStore>()(
     (set, get) => ({
       selfies: [],
       setSelfies: (incomingSelfies: Selfie[]) => {
+        console.log('SELFIE', JSON.stringify(incomingSelfies, null, 2))
+
         set({ selfies: incomingSelfies }, false, 'setSelfies-start')
       },
 
@@ -43,16 +46,21 @@ export const useSelfieChooserStore = create<SelfieChooserStore>()(
 
       // Delete specific selfies efficiently - preserves existing references
       deleteSelfiesAndWait: async (selfieIds: string[]) => {
-        // Use bulk delete function for better performance and consistency
-        await deleteItemFromFileSystem(selfieIds, USER_SELFIES)
+        // Soft delete - mark selfies as removed instead of physical deletion
+        // await deleteItemFromFileSystem(selfieIds, USER_SELFIES) // Commented out - preserving files
 
-        // Preserve existing references - only remove deleted items
+        // Mark selfies as removed instead of deleting them
         const currentSelfies = get().selfies
-        const remainingSelfies = currentSelfies.filter((selfie) => !selfieIds.includes(selfie.id))
+        const updatedSelfies = currentSelfies.map((selfie) =>
+          selfieIds.includes(selfie.id) ? { ...selfie, isRemoved: true } : selfie
+        )
 
-        set({ selfies: remainingSelfies }, false, 'deleteSelfiesAndWait-success')
+        // Persist isRemoved flag to AsyncStorage
+        await AsyncStorage.setItem(USER_SELFIES, JSON.stringify(updatedSelfies))
 
-        return remainingSelfies
+        set({ selfies: updatedSelfies }, false, 'deleteSelfiesAndWait-success')
+
+        return updatedSelfies
       },
 
       selectedSelfie: null,

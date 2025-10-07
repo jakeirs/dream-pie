@@ -58,15 +58,20 @@ export const SelfieGrid = () => {
     }
   }
 
+  // Filter out removed selfies and sort by createdAt (most recent first)
+  const visibleSelfies = selfies
+    .filter((selfie) => !selfie.isRemoved)
+    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+
   return (
-    <View className="flex-row flex-wrap p-1">
+    <View className="mb-20 flex-row flex-wrap p-1">
       {/* Camera Button - First item */}
       <View className="w-1/3 p-1">
         <CameraButton onPhotoSelected={handlePhotoSelected} />
       </View>
 
       {/* Existing Selfies */}
-      {selfies.map((selfie) => {
+      {visibleSelfies.map((selfie) => {
         const isSelected = selectedSelfie?.id === selfie.id
 
         return (
