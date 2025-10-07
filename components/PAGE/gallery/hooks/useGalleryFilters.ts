@@ -26,7 +26,9 @@ export const useGalleryFilters = (): UseGalleryFilters => {
   // Count-only selectors for filter pills (most optimal)
   const creationsCount = useCreationStore((state) => state.creations.length)
   const posesCount = usePoseStore((state) => state.poses.length)
-  const selfiesCount = useSelfieChooserStore((state) => state.selfies.length)
+  const selfiesCount = useSelfieChooserStore((state) =>
+    state.selfies.filter((selfie) => !selfie.isRemoved).length
+  )
   const [activeFilter, setActiveFilter] = useState<FilterType>('creations')
 
   // Get current items based on active filter (using selector data)
@@ -37,7 +39,7 @@ export const useGalleryFilters = (): UseGalleryFilters => {
       case 'poses':
         return poses
       case 'selfies':
-        return selfies
+        return selfies.filter((selfie) => !selfie.isRemoved)
       default:
         return []
     }
