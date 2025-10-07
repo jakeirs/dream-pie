@@ -73,20 +73,24 @@ export const PhotoCard = ({
         <>
           {/* Empty State: Blurred Background */}
           <Image
-            source={appAssets.selfies.extendPhoto}
+            source={
+              type === 'pose'
+                ? appAssets.posesStanding.outsideSunSmallCity
+                : appAssets.poses.fromTop
+            }
             style={{ width: '100%', height: '100%' }}
             contentFit="cover"
-            blurRadius={100}
+            blurRadius={15}
           />
           {/* Dark overlay for better icon contrast */}
-          <View
-            style={StyleSheet.absoluteFill}
-            className="items-center justify-center bg-black/40">
+          <View style={StyleSheet.absoluteFill} className="items-center justify-center bg-black/40">
             {/* Icon based on type */}
             {type === 'selfie' ? (
               <SelfieIcon size={90} primaryColor="#1F1F1F" secondaryColor="#FFFFFF" />
             ) : (
-              <PoseIcon size={90} primaryColor="#1F1F1F" secondaryColor="#FFFFFF" />
+              <View className="mb-6">
+                <PoseIcon size={150} primaryColor="#1F1F1F" secondaryColor="#FFFFFF" />
+              </View>
             )}
           </View>
         </>

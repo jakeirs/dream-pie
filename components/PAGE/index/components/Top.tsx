@@ -9,7 +9,7 @@ export function Top({}: TopProps) {
   return (
     <View className="px-2 pb-8 pt-8">
       <Text className="mb-6 px-4 text-center text-3xl font-bold text-textPrimary">
-        Let&apos;s create something new!
+        Create Insta-worthy Photo!
       </Text>
 
       <PhotoCardGrid />
