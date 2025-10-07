@@ -128,7 +128,7 @@ export const PhotoCard = ({
             alignItems: 'center',
           },
         ]}>
-        <View className="rounded-full border border-white/30 bg-white/20 px-6 backdrop-blur-sm">
+        <View className="rounded-full border border-primary/30 bg-white/20 px-6 py-1 backdrop-blur-sm">
           <Text className="text-center text-base font-semibold text-white">Change</Text>
         </View>
       </Animated.View>

@@ -1,5 +1,6 @@
 import { View } from 'react-native'
-import Svg, { Defs, LinearGradient, Stop, Circle } from 'react-native-svg'
+import MaskedView from '@react-native-masked-view/masked-view'
+import { LinearGradient } from 'expo-linear-gradient'
 
 import { Icon } from './Icon'
 import { ICON_FAMILY_NAME } from './constants'
@@ -12,36 +13,26 @@ interface GradientIconProps {
   gradientId?: string
 }
 
-export const GradientIcon = ({
-  family,
-  name,
-  size = 48,
-  gradientColors,
-  gradientId = 'iconGradient',
-}: GradientIconProps) => {
+export const GradientIcon = ({ family, name, size = 48, gradientColors }: GradientIconProps) => {
   return (
-    <View
-      style={{
-        width: size * 1.5,
-        height: size * 1.5,
-        justifyContent: 'center',
-        alignItems: 'center',
-      }}>
-      <Svg width={size * 1.5} height={size * 1.5} viewBox="0 0 100 100">
-        <Defs>
-          <LinearGradient id={gradientId} x1="0%" y1="0%" x2="100%" y2="100%">
-            <Stop offset="0%" stopColor={gradientColors[0]} stopOpacity="1" />
-            <Stop offset="100%" stopColor={gradientColors[1]} stopOpacity="1" />
-          </LinearGradient>
-        </Defs>
-        <Circle cx="50" cy="50" r="45" fill={`url(#${gradientId})`} />
-      </Svg>
-      <View
-        style={{
-          position: 'absolute',
-        }}>
-        <Icon family={family} name={name} size={size} color="white" />
-      </View>
-    </View>
+    <MaskedView 
+      style={{ width: size, height: size }}
+      maskElement={
+        <View
+          style={{
+            backgroundColor: 'transparent',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}>
+          <Icon family={family} name={name} size={size} color="black" />
+        </View>
+      }>
+      <LinearGradient
+        colors={gradientColors}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={{ flex: 1, width: size, height: size }}
+      />
+    </MaskedView>
   )
 }
