@@ -18,7 +18,9 @@ export default function PoseContent({ item, onClose }: PoseContentProps) {
   const handleGoToCreate = () => {
     setSelectedPose(item)
     onClose()
-    router.push(`/(tabs)`)
+    setTimeout(() => {
+      router.push(`/(tabs)`)
+    }, 300)
   }
 
   return (

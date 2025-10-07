@@ -31,7 +31,9 @@ export default function CreationContent({
     setSelectedPose(item.usedPose)
     setSelectedSelfie(item.usedSelfie)
     onClose()
-    router.push(`/(tabs)`)
+    setTimeout(() => {
+      router.push(`/(tabs)`)
+    }, 300)
   }
 
   // Format date: "1 May 2025"

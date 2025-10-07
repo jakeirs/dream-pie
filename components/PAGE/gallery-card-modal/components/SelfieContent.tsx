@@ -18,7 +18,9 @@ export default function SelfieContent({ item, onClose }: SelfieContentProps) {
   const handleGoToCreate = () => {
     setSelectedSelfie(item)
     onClose()
-    router.push(`/(tabs)`)
+    setTimeout(() => {
+      router.push(`/(tabs)`)
+    }, 300)
   }
 
   return (
