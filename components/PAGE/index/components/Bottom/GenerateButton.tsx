@@ -2,7 +2,7 @@ import { View } from 'react-native'
 import { router } from 'expo-router'
 
 import Button from '@/components/ui/Button/Button'
-import { useStore , usePoseStore, useSelfieChooserStore, usePhotoGenerationStore } from '@/stores'
+import { useStore, usePoseStore, useSelfieChooserStore, usePhotoGenerationStore } from '@/stores'
 
 import { ICON_FAMILY_NAME } from '@/components/ui/icons'
 
@@ -34,7 +34,7 @@ export default function GenerateButton({ className = '' }: GenerateButtonProps) 
   return (
     <View className={`mb-8 px-6 ${className}`}>
       <Button
-        title="🎨 Generate Photo"
+        title="Run Photoshoot"
         onPress={handleGeneratePhoto}
         disabled={!canGenerate}
         className="w-full"
