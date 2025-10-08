@@ -1,9 +1,10 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { View } from 'react-native'
 import { useStore } from 'zustand'
 
 import TransitionContainer from './components/TransitionContainer'
 import ResultView from './components/ResultView'
+import ErrorView from './components/ErrorView'
 
 import { useInformationAnimation } from './components/ParticlesImage/hooks/useInformationAnimation'
 import { useViewResultTransition } from './hooks/useViewResultTransition'
@@ -19,6 +20,10 @@ export default function GenerationPage() {
   const usedPose = useStore(usePhotoGenerationStore, (state) => state.usedPose)
   const usedSelfie = useStore(usePhotoGenerationStore, (state) => state.usedSelfie)
   const result = useStore(usePhotoGenerationStore, (state) => state.result)
+  const error = useStore(usePhotoGenerationStore, (state) => state.error)
+  const photoGeneration = usePhotoGenerationStore()
+
+  const [showErrorView, setShowErrorView] = useState(false)
 
   const { generatePhoto } = useGeneratePhotoLogic()
 
@@ -33,17 +38,25 @@ export default function GenerationPage() {
   } = useViewResultTransition()
 
   useEffect(() => {
-    if (usedPose && usedSelfie && !result) {
+    if (usedPose && usedSelfie && !result && !error) {
       generatePhoto()
     }
   }, [usedPose, usedSelfie])
 
-  // Auto-trigger animation when result is ready
   useEffect(() => {
     if (result && !showResultView) {
       startTransition()
     }
   }, [result, showResultView])
+
+  useEffect(() => {
+    if (error && !showErrorView) {
+      if (photoGeneration.abortController) {
+        photoGeneration.abortController.abort()
+      }
+      setShowErrorView(true)
+    }
+  }, [error, showErrorView])
 
   const {
     currentMessage,
@@ -61,7 +74,9 @@ export default function GenerationPage() {
       <View className="flex-1">
         {showResultView && <ResultView result={result} scale={resultScale} />}
 
-        {transitionState !== 'hiddenParticles' && (
+        {showErrorView && <ErrorView error={error} />}
+
+        {transitionState !== 'hiddenParticles' && !showErrorView && (
           <TransitionContainer scale={scale} opacity={opacity} transitionState={transitionState}>
             <PixelatedEffect
               bubbleX={x}
@@ -75,7 +90,7 @@ export default function GenerationPage() {
           </TransitionContainer>
         )}
 
-        {isFullScreen && (
+        {isFullScreen && !showErrorView && (
           <InformationBubble
             message={currentMessage}
             visible={isVisible}
