@@ -40,7 +40,7 @@ export function calculateDualImageLayout(
   // Position reference photo in top-right corner
   const poseImagePosition: CollagePosition = {
     x: canvasWidth - poseImageDimensions.width, // Right edge
-    y: 0, // Top edge
+    y: (canvasHeight - poseImageDimensions.height) / 2, // Top edge
     width: poseImageDimensions.width,
     height: poseImageDimensions.height,
   }
@@ -59,7 +59,7 @@ export function calculateDualImageLayout(
   // Position selfie photo in top-left corner
   const selfiePosition: CollagePosition = {
     x: 0, // Left edge
-    y: 0, // Top edge
+    y: (canvasHeight - selfieDimensions.height) / 2, // Top edge
     width: selfieDimensions.width,
     height: selfieDimensions.height,
   }

@@ -3,7 +3,12 @@ import { FalRequest, FalResponse } from '@/types'
 
 export async function POST(request: Request): Promise<Response> {
   try {
-    const { prompt, imageData, selfieImage, poseImage }: FalRequest & { selfieImage?: string; poseImage?: string } = await request.json()
+    const {
+      prompt,
+      imageData,
+      selfieImage,
+      poseImage,
+    }: FalRequest & { selfieImage?: string; poseImage?: string } = await request.json()
 
     // ERRORS INPUT
     if (!prompt || prompt.trim().length === 0) {
@@ -55,7 +60,7 @@ export async function POST(request: Request): Promise<Response> {
 
     const result = await generatePhotoWithValidation({
       collageImage: imageData,
-      selfieImage,
+      // selfieImage,
       poseImage,
       prompt,
       abortSignal: request.signal,
@@ -90,19 +95,49 @@ export async function POST(request: Request): Promise<Response> {
     } as FalResponse)
 
     // ERRORS
-  } catch (error) {
-    console.log('FAL AI Error Details:', JSON.stringify(error, null, 2))
+  } catch (error: any) {
+    console.error('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
+    console.error('❌ FAL API ERROR DETAILS')
+    console.error('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
 
     let errorMessage = 'Failed to generate image with FAL AI'
+    let statusCode = 500
 
+    // Handle different error types
     if (error instanceof Error) {
       // Handle abort error specifically
       if (error.name === 'AbortError') {
         errorMessage = 'Generation cancelled by user'
+        statusCode = 499 // Client Closed Request
       } else {
         errorMessage = error.message
       }
     }
+
+    // Handle FAL validation errors (status 422)
+    if (error?.status === 422 && error?.body?.detail) {
+      statusCode = 422
+      console.error('🔍 FAL Validation Error - Status:', error.status)
+      console.error('📋 Error Details:')
+
+      if (Array.isArray(error.body.detail)) {
+        // Extract detailed validation messages
+        const validationMessages = error.body.detail.map((detail: any, index: number) => {
+          console.error(`  [${index}]:`, JSON.stringify(detail, null, 2))
+          // Common FAL error structure: { loc, msg, type }
+          return detail.msg || detail.message || JSON.stringify(detail)
+        })
+
+        errorMessage = `Validation Error: ${validationMessages.join(', ')}`
+      } else {
+        console.error('  Detail:', JSON.stringify(error.body.detail, null, 2))
+        errorMessage = `Validation Error: ${JSON.stringify(error.body.detail)}`
+      }
+    }
+
+    // Log full error for debugging
+    console.error('Full Error Object:', JSON.stringify(error, null, 2))
+    console.error('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━')
 
     return Response.json(
       {
@@ -113,7 +148,7 @@ export async function POST(request: Request): Promise<Response> {
         fileName: '',
         error: errorMessage,
       } as FalResponse,
-      { status: 500 }
+      { status: statusCode }
     )
   }
 }
