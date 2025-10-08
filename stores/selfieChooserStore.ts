@@ -25,8 +25,6 @@ export const useSelfieChooserStore = create<SelfieChooserStore>()(
     (set, get) => ({
       selfies: [],
       setSelfies: (incomingSelfies: Selfie[]) => {
-        console.log('SELFIE', JSON.stringify(incomingSelfies, null, 2))
-
         set({ selfies: incomingSelfies }, false, 'setSelfies-start')
       },
 

@@ -50,7 +50,7 @@ interface PhotoGenerationStore {
   startGeneration: (pose: Pose, selfie: Selfie) => void
   setCollageImageUri: (uri: string | null) => void
   setResult: (result: FalResponse) => void
-  setError: (error: string) => void
+  setError: (error: string | null) => void
   completeGeneration: () => void
   reset: () => void
   setAbortController: (controller: AbortController | null) => void

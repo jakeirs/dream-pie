@@ -1,9 +1,7 @@
-import { View, Text, ScrollView } from 'react-native'
+import { View, Text } from 'react-native'
 import { router } from 'expo-router'
-import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated'
 
 import Button from '@/components/ui/Button/Button'
-import PhotoThumbnail from '@/components/ui/PhotoThumbnail/PhotoThumbnail'
 import { GradientIcon } from '@/components/ui/icons/GradientIcon'
 import { ICON_FAMILY_NAME } from '@/components/ui/icons/constants'
 
@@ -31,7 +29,7 @@ const solutionSteps: SolutionStep[] = [
   {
     icon: 'shield-checkmark-outline',
     title: 'Follow Guidelines',
-    description: 'Ensure your photo follows our content policy (no nudity)',
+    description: 'Ensure your photo follows our content policy (no nudity, proper selfie photo)',
     gradientColors: ['#A78BFA', '#EC4899'],
   },
   {
@@ -43,62 +41,16 @@ const solutionSteps: SolutionStep[] = [
 ]
 
 export default function ErrorView({ error }: ErrorViewProps) {
-  const usedSelfie = useStore(usePhotoGenerationStore, (state) => state.usedSelfie)
-  const usedPose = useStore(usePhotoGenerationStore, (state) => state.usedPose)
-  const photoGeneration = usePhotoGenerationStore()
-
   const handleTryAgain = () => {
-    // Reset error state
-    photoGeneration.setError('')
-    photoGeneration.reset()
-
-    // Navigate back to index page
-    setTimeout(() => {
-      router.push('/(tabs)')
-    }, 100)
+    router.replace('/(tabs)')
   }
 
   return (
     <View className="absolute inset-0 bg-background">
-      <ScrollView className="flex-1" contentContainerStyle={{ paddingBottom: 40 }}>
+      <View className="flex-1">
         {/* Used Selfie and Pose */}
-        {(usedSelfie || usedPose) && (
-          <Animated.View entering={FadeIn.duration(300)} className="mb-6 mt-8">
-            <Text
-              className="mb-3 px-6 text-sm font-semibold"
-              style={{ color: brandColors.textSecondary }}>
-              Photos Used
-            </Text>
-            <ScrollView
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              contentContainerStyle={{ paddingHorizontal: 24, gap: 12 }}>
-              {usedSelfie && (
-                <View>
-                  <PhotoThumbnail imageUri={usedSelfie.imageUrl} />
-                  <Text
-                    className="mt-2 text-center text-xs"
-                    style={{ color: brandColors.textSecondary }}>
-                    Your Selfie
-                  </Text>
-                </View>
-              )}
-              {usedPose && (
-                <View>
-                  <PhotoThumbnail imageUri={usedPose.imageUrl} />
-                  <Text
-                    className="mt-2 text-center text-xs"
-                    style={{ color: brandColors.textSecondary }}>
-                    Selected Pose
-                  </Text>
-                </View>
-              )}
-            </ScrollView>
-          </Animated.View>
-        )}
-
         {/* Error Icon */}
-        <Animated.View entering={FadeInDown.delay(100).duration(400)} className="items-center py-8">
+        <View className="items-center py-8">
           <GradientIcon
             family={ICON_FAMILY_NAME.Ionicons}
             name="alert-circle-outline"
@@ -109,17 +61,10 @@ export default function ErrorView({ error }: ErrorViewProps) {
           <Text className="mt-4 text-2xl font-bold" style={{ color: brandColors.textPrimary }}>
             Generation Failed
           </Text>
-          {error && (
-            <Text
-              className="mt-2 px-8 text-center text-sm font-light"
-              style={{ color: brandColors.textSecondary }}>
-              {error}
-            </Text>
-          )}
-        </Animated.View>
+        </View>
 
         {/* Solution Steps */}
-        <Animated.View entering={FadeInDown.delay(200).duration(400)} className="mb-8 px-8">
+        <View className="mb-8 px-8">
           <Text
             className="mb-4 text-center text-base font-semibold"
             style={{ color: brandColors.textPrimary }}>
@@ -148,10 +93,10 @@ export default function ErrorView({ error }: ErrorViewProps) {
               </View>
             </View>
           ))}
-        </Animated.View>
+        </View>
 
         {/* Try Again Button */}
-        <Animated.View entering={FadeInDown.delay(300).duration(400)} className="px-8">
+        <View className="px-8">
           <Button
             title="Try Again"
             variant="primaryForeground"
@@ -163,8 +108,8 @@ export default function ErrorView({ error }: ErrorViewProps) {
             }}
             onPress={handleTryAgain}
           />
-        </Animated.View>
-      </ScrollView>
+        </View>
+      </View>
     </View>
   )
 }

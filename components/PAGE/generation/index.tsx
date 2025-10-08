@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { View } from 'react-native'
 import { useStore } from 'zustand'
 
@@ -22,8 +22,6 @@ export default function GenerationPage() {
   const result = useStore(usePhotoGenerationStore, (state) => state.result)
   const error = useStore(usePhotoGenerationStore, (state) => state.error)
   const photoGeneration = usePhotoGenerationStore()
-
-  const [showErrorView, setShowErrorView] = useState(false)
 
   const { generatePhoto } = useGeneratePhotoLogic()
 
@@ -50,13 +48,21 @@ export default function GenerationPage() {
   }, [result, showResultView])
 
   useEffect(() => {
-    if (error && !showErrorView) {
+    if (error) {
       if (photoGeneration.abortController) {
         photoGeneration.abortController.abort()
       }
-      setShowErrorView(true)
     }
-  }, [error, showErrorView])
+  }, [error])
+
+  useEffect(() => {
+    return () => {
+      if (photoGeneration.abortController) {
+        photoGeneration.abortController.abort()
+      }
+      photoGeneration.reset()
+    }
+  }, [])
 
   const {
     currentMessage,
@@ -74,9 +80,9 @@ export default function GenerationPage() {
       <View className="flex-1">
         {showResultView && <ResultView result={result} scale={resultScale} />}
 
-        {showErrorView && <ErrorView error={error} />}
+        {error && <ErrorView error={error} />}
 
-        {transitionState !== 'hiddenParticles' && !showErrorView && (
+        {transitionState !== 'hiddenParticles' && !error && (
           <TransitionContainer scale={scale} opacity={opacity} transitionState={transitionState}>
             <PixelatedEffect
               bubbleX={x}
@@ -90,7 +96,7 @@ export default function GenerationPage() {
           </TransitionContainer>
         )}
 
-        {isFullScreen && !showErrorView && (
+        {isFullScreen && !error && (
           <InformationBubble
             message={currentMessage}
             visible={isVisible}
